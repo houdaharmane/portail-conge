@@ -23,11 +23,7 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestParam("email") String email,
-            @RequestParam("password") String password,
-            Model model,
-            HttpSession session) {
-
+    public String login(@RequestParam String email, @RequestParam String password, HttpSession session, Model model) {
         Utilisateur utilisateur = utilisateurRepository.findByEmail(email).orElse(null);
 
         if (utilisateur != null && utilisateur.getMotDePasse().equals(password)) {

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>RH Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            background-color: #e9953d;
+            color: white;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .sidebar h2 {
+            margin-top: 0;
+            font-size: 24px;
+        }
+
+        .sidebar .profile {
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #e9953d;
+            border-radius: 5px;
+        }
+
+        .sidebar .profile p {
+            margin: 5px 0;
+        }
+
+        .sidebar a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            margin: 10px 0;
+            font-size: 16px;
+        }
+
+        .sidebar a:hover {
+            background-color: orangered;
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .main-content h1 {
+            color: #e9953d;
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>RH Panel</h2>
+    <div class="profile">
+        <p><i class="fa fa-user"></i> <strong th:text="${rh.email}">rh@modep.com</strong></p>
+        <p><i class="fa fa-briefcase"></i> RH</p>
+    </div>
+    <a href="#"><i class="fa fa-calendar-check"></i> Liste des demandes</a>
+    <a href="#"><i class="fa fa-check-circle"></i> Valider / Refuser</a>
+    <a href="#"><i class="fa fa-wallet"></i> Soldes congés</a>
+    <a href="#"><i class="fa fa-history"></i> Historique validations</a>
+    <a href="/login"><i class="fa fa-sign-out-alt"></i> Déconnexion</a>
+</div>
+
+
+
+</body>
+</html>
