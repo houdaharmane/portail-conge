@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Profil RH - Portail Congé</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+            background: #f6f6f6;
+        }
+        /* Sidebar - professionnel, orange */
+        .sidebar {
+            width: 240px;
+            background-color: #e9953d;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: stretch;
+            min-height: 100vh;
+            box-shadow: 2px 0 12px #e9953d22;
+            padding: 0;
+        }
+        .sidebar-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 24px 0 0 0;
+        }
+        .sidebar-logo {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #fff;
+            box-shadow: 0 2px 8px #fff2;
+            margin-bottom: 0;
+        }
+        .sidebar-title {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: #fff;
+        }
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            margin-top: 30px;
+        }
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            text-decoration: none;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 13px 30px;
+            border-left: 4px solid transparent;
+            transition: background 0.18s, border-left-color 0.18s;
+        }
+        .sidebar-link i {
+            font-size: 20px;
+            min-width: 20px;
+        }
+        .sidebar-link:hover, .sidebar-link.active {
+            background: #fff2;
+            color: #fff;
+            border-left: 4px solid #fff;
+        }
+        .sidebar-footer {
+            margin-bottom: 30px;
+        }
+        .sidebar-footer .sidebar-link {
+            color: #fff;
+            opacity: 0.85;
+            border-left: 4px solid transparent;
+        }
+        .sidebar-footer .sidebar-link:hover {
+            opacity: 1;
+            border-left: 4px solid #fff;
+            background: #fff2;
+        }
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            height: 60px;
+            background-color: #f3f3f3;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 20px;
+            border-bottom: 1px solid #ccc;
+            box-shadow: 0 2px 8px #e9953d11;
+        }
+        .header a {
+            text-decoration: none;
+            color: #e9953d;
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            font-size: 17px;
+        }
+        .header a i {
+            margin-right: 8px;
+            font-size: 24px;
+        }
+        .main-content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f6f6f6;
+        }
+        .profile-card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px #e9953d44;
+            padding: 34px 38px 28px 38px;
+            min-width: 340px;
+            max-width: 410px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .profile-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 18px;
+            width: 100%;
+        }
+        .profile-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #e9953d;
+            letter-spacing: 1px;
+            margin-bottom: 3px;
+        }
+        .profile-subtitle {
+            font-size: 15px;
+            color: #555;
+            margin-bottom: 18px;
+        }
+        .info-list {
+            width: 100%;
+            margin-bottom: 18px;
+        }
+        .info-item {
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            font-size: 17px;
+            padding: 8px 0;
+            border-bottom: 1px solid #f3f3f3;
+        }
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        .info-icon {
+            color: #e9953d;
+            font-size: 19px;
+            margin-right: 10px;
+            min-width: 25px;
+        }
+        .info-label {
+            font-weight: 600;
+            color: #888;
+            margin-right: 7px;
+            min-width: 60px;
+        }
+        .info-value {
+            color: #222;
+            font-weight: 500;
+            flex: 1;
+        }
+        .btn-edit {
+            display: block;
+            width: 100%;
+            background-color: #e9953d;
+            color: white;
+            padding: 10px 0;
+            border-radius: 7px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+            margin-top: 16px;
+            text-align: center;
+            font-size: 16px;
+            letter-spacing: 0.5px;
+        }
+        .btn-edit:hover {
+            background-color: orangered;
+        }
+        @media (max-width: 900px) {
+            .main-content { padding: 18px; }
+            .sidebar { width: 100px; }
+            .sidebar-title { font-size: 15px; }
+            .profile-card { min-width: 220px; padding: 18px 8px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div>
+        <div class="sidebar-header">
+            <img src="/img/modepbg.png" alt="Logo MODEP" class="sidebar-logo">
+        </div>
+        <nav class="sidebar-menu">
+ <a href="#" class="sidebar-link active"><i class="fa fa-tachometer-alt"></i> <span> Tableau de bord</span></a>
+<a th:href="@{/personnel/ajouter}" class="sidebar-link"><i class="fa fa-users"></i> <span> Gestion du personnel</span></a>
+    <a href="#" class="sidebar-link"><i class="fa fa-wallet"></i> <span> Soldes congés</span></a>
+    <a href="#" class="sidebar-link"><i class="fa fa-history"></i> <span> Historique validations</span></a>
+</nav>
+    </div>
+    <div class="sidebar-footer">
+        <a href="/login" class="sidebar-link"><i class="fa fa-sign-out-alt"></i> <span>Déconnexion</span></a>
+    </div>
+</div>
+
+<div class="main-container">
+    <div class="header">
+        <a th:href="@{/profil}">
+            <i class="fa fa-user-circle fa-lg"></i>
+            <span th:text="${rh.role}">RH</span>
+        </a>
+    </div>
+    <div class="main-content">
+
+        <!-- Affichage normal -->
+        <div class="profile-card" th:if="${modification == null or !modification}">
+            <div class="profile-header">
+                <div class="profile-title" th:text="${rh.role}">RH</div>
+                <div class="profile-subtitle">Responsable Ressources Humaines</div>
+            </div>
+            <div class="info-list">
+                <div class="info-item">
+                    <i class="fa fa-user info-icon"></i>
+                    <span class="info-label">Rôle :</span>
+                    <span th:text="${rh.role}">RH</span>
+                </div>
+                <div class="info-item">
+                    <i class="fa fa-envelope info-icon"></i>
+                    <span class="info-label">Email :</span>
+                    <span class="info-value" th:text="${rh.email}"></span>
+                </div>
+            </div>
+            <a th:href="@{/profil(modification=true)}" class="btn-edit">Modifier le profil</a>
+        </div>
+
+        <!-- Formulaire de modification -->
+        <div class="profile-card" th:if="${modification}">
+            <form th:action="@{/profil/save}" th:object="${rh}" method="post">
+                <div class="profile-header">
+                    <div class="profile-title" th:text="${rh.role}">RH</div>
+                    <div class="profile-subtitle">Modifier vos informations</div>
+                </div>
+                <div class="info-list">
+                    <div class="info-item">
+                        <i class="fa fa-envelope info-icon"></i>
+                        <label class="info-label" for="email">Email :</label>
+                        <input class="info-value" type="email" id="email" th:field="*{email}" required />
+                    </div>
+                    <div class="info-item">
+                        <i class="fa fa-key info-icon"></i>
+                        <label class="info-label" for="motDePasse">Mot de passe :</label>
+                        <input class="info-value" type="password" id="motDePasse" th:field="*{motDePasse}" required />
+                    </div>
+                </div>
+                <button type="submit" class="btn-edit" style="background-color: #e9953d; margin-top: 10px;">Enregistrer</button>
+                <a th:href="@{/profil}" class="btn-edit" style="background-color: #888; margin-top: 10px;">Annuler</a>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

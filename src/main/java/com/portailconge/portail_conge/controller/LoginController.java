@@ -27,7 +27,7 @@ public class LoginController {
         Utilisateur utilisateur = utilisateurRepository.findByEmail(email).orElse(null);
 
         if (utilisateur != null && utilisateur.getMotDePasse().equals(password)) {
-            session.setAttribute("user", utilisateur);
+            session.setAttribute("utilisateur", utilisateur);
 
             switch (utilisateur.getRole()) {
                 case PERSONNEL:

@@ -198,29 +198,28 @@
         </a>
     </div>
     <div class="main-content">
-        <div class="dashboard-title">Bienvenue sur votre espace RH</div>
-        <div class="dashboard-cards">
-            <div class="card">
-                <div class="card-icon"><i class="fa fa-calendar-check"></i></div>
-                <div class="card-title">Demandes en attente</div>
-                <div class="card-value">12</div>
-            </div>
-            <div class="card">
-                <div class="card-icon"><i class="fa fa-wallet"></i></div>
-                <div class="card-title">Soldes congés</div>
-                <div class="card-value">32</div>
-            </div>
-            <div class="card">
-                <div class="card-icon"><i class="fa fa-check-circle"></i></div>
-                <div class="card-title">Demandes validées</div>
-                <div class="card-value">7</div>
-            </div>
-            <div class="card">
-                <div class="card-icon"><i class="fa fa-history"></i></div>
-                <div class="card-title">Historique</div>
-                <div class="card-value">28</div>
-            </div>
-        </div>
+      <h2>Ajouter un nouveau personnel</h2>
+
+<form th:action="@{/personnel/ajouter}" method="post">
+    <label>Nom :</label><br>
+    <input type="text" name="nom" required /><br><br>
+
+    <label>Prénom :</label><br>
+    <input type="text" name="prenom" required /><br><br>
+
+    <label>Email :</label><br>
+    <input type="email" name="email" required /><br><br>
+
+    <label>Rôle :</label><br>
+    <select name="role" required>
+        <option value="PERSONNEL">Personnel</option>
+        <option value="RESPONSABLE">Responsable</option>
+<span th:if="${rh != null}" th:text="${rh.role}">RH</span>
+        <option value="DIRECTEUR">Directeur</option>
+    </select><br><br>
+
+    <button type="submit">Ajouter</button>
+</form>
     </div>
 </div>
 
