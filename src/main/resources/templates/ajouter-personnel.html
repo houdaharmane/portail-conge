@@ -13,7 +13,6 @@
             height: 100vh;
             background: #f6f6f6;
         }
-        /* Sidebar - professionnel, orange */
         .sidebar {
             width: 240px;
             background-color: #e9953d;
@@ -116,57 +115,160 @@
             margin-right: 8px;
             font-size: 24px;
         }
-        /* Main content - exemple dashboard */
         .main-content {
             flex: 1;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start;
+            justify-content: center;
             align-items: center;
             padding: 40px 0;
-            background-color: #f6f6f6;
         }
-        .dashboard-title {
-            font-size: 28px;
-            color: #e9953d;
-            font-weight: 700;
-            margin-bottom: 18px;
-        }
-        .dashboard-cards {
-            display: flex;
-            gap: 24px;
-            margin-top: 15px;
-            flex-wrap: wrap;
-        }
-        .card {
+        .form-card {
             background: #fff;
-            border-radius: 14px;
-            box-shadow: 0 2px 10px #e9953d22;
-            min-width: 170px;
-            padding: 32px 24px;
-            text-align: center;
+            border-radius: 22px;
+            box-shadow: 0 4px 24px #e9953d33;
+            padding: 40px 42px 32px 42px;
+            min-width: 340px;
+            max-width: 430px;
+            width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
+            animation: fadeIn 0.6s;
         }
-        .card-icon {
-            font-size: 32px;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(40px);}
+            to { opacity: 1; transform: none;}
+        }
+        .form-card h2 {
             color: #e9953d;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: 1px;
         }
-        .card-title {
-            font-size: 17px;
-            font-weight: 600;
-            color: #444;
-            margin-bottom: 4px;
+        .steps-indicator {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 24px;
+            gap: 10px;
         }
-        .card-value {
-            font-size: 22px;
-            color: #e9953d;
+        .step-dot {
+            width: 22px;
+            height: 22px;
+            background: #f8bb6e;
+            border-radius: 50%;
+            border: 2px solid #e9953d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-weight: 700;
+            color: #fff;
+            font-size: 13px;
+            transition: background 0.2s, border-color 0.2s;
+        }
+        .step-dot.active {
+            background: #e9953d;
+            border-color: #f8bb6e;
+            color: #fff;
+        }
+        .step-dot.completed {
+            background: #56c08e;
+            border-color: #56c08e;
+        }
+        .step-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #e9953d;
+            margin-left: 4px;
+        }
+        .step-form {
+            width: 100%;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+        .step-form.active {
+            display: flex;
+            animation: fadeIn 0.4s;
+        }
+        .form-group {
+            width: 100%;
+            margin-bottom: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .form-group label {
+            font-size: 15px;
+            font-weight: 600;
+            color: #e9953d;
+            margin-bottom: 5px;
+            display: block;
+        }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px 13px;
+            border-radius: 10px;
+            border: 1.5px solid #f8bb6e;
+            font-size: 15px;
+            background: #fffdfa;
+            transition: border 0.18s;
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            border: 2px solid #e9953d;
+            outline: none;
+        }
+        .btn-step, .btn-add {
+            background: linear-gradient(90deg,#e9953d 0%,#f8bb6e 100%);
+            color: #fff;
+            font-size: 17px;
+            font-weight: 700;
+            border: none;
+            border-radius: 9px;
+            padding: 11px 28px;
+            box-shadow: 0 2px 8px #e9953d55;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: background 0.21s, transform 0.13s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-step:hover, .btn-add:hover {
+            background: linear-gradient(90deg,#f8bb6e 0%, #e9953d 100%);
+            transform: scale(1.04);
+        }
+        .btn-back {
+            background: #fff;
+            color: #e9953d;
+            border: 1.5px solid #e9953d;
+            font-size: 16px;
+            border-radius: 8px;
+            padding: 8px 20px;
+            margin-right: 10px;
+            cursor: pointer;
+            transition: background 0.19s, color 0.19s, border 0.19s;
+        }
+        .btn-back:hover {
+            background: #ffe5c2;
+        }
+        .step-footer {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
         }
         @media (max-width: 900px) {
-            .dashboard-cards { flex-direction: column; gap: 18px; }
+            .main-content { padding: 20px 0; }
+            .form-card { min-width: 240px; padding: 18px 10px; }
+            .steps-indicator { gap: 6px; }
+            .step-dot { width: 18px; height: 18px; font-size: 11px;}
+            .step-label { font-size: 11px; }
         }
     </style>
 </head>
@@ -177,13 +279,21 @@
         <div class="sidebar-header">
             <img src="/img/modepbg.png" alt="Logo MODEP" class="sidebar-logo">
         </div>
-       <nav>
-    <a href="#" class="sidebar-link active"><i class="fa fa-tachometer-alt"></i> <span> Tableau de bord</span></a>
-<a th:href="@{/personnel/ajouter}" class="sidebar-link"><i class="fa fa-users"></i> <span> Gestion du personnel</span></a>
-    <a href="#" class="sidebar-link"><i class="fa fa-wallet"></i> <span> Soldes congés</span></a>
-    <a href="#" class="sidebar-link"><i class="fa fa-history"></i> <span> Historique validations</span></a>
-</nav>
+        <nav>
+            <a th:href="@{/dashboard-rh}" th:classappend="${activePage == 'dashboard'} ? ' active'" class="sidebar-link">
+                <i class="fa fa-tachometer-alt"></i> <span>Tableau de bord</span>
+            </a>
+           <a th:href="@{/personnel/ajouter}" th:classappend="${activePage == 'personnel'} ? ' active'" class="sidebar-link">
+    <i class="fa fa-users"></i> <span>Gestion du personnel</span>
+</a>
 
+            <a href="#" th:classappend="${activePage == 'conges'} ? ' active'" class="sidebar-link">
+                <i class="fa fa-wallet"></i> <span>Soldes congés</span>
+            </a>
+            <a href="#" th:classappend="${activePage == 'historique'} ? ' active'" class="sidebar-link">
+                <i class="fa fa-history"></i> <span>Historique validations</span>
+            </a>
+        </nav>
     </div>
     <div class="sidebar-footer">
         <a href="/login" class="sidebar-link"><i class="fa fa-sign-out-alt"></i> <span>Déconnexion</span></a>
@@ -197,31 +307,148 @@
             <span th:text="${rh.role}">RH</span>
         </a>
     </div>
-    <div class="main-content">
-      <h2>Ajouter un nouveau personnel</h2>
+   <div class="main-content">
+        <div class="form-card">
+            <h2>Ajouter un nouveau personnel</h2>
+<!-- Message d'erreur -->
+<div th:if="${error}" class="alert alert-danger" role="alert">
+    <span th:text="${error}"></span>
+</div>
 
-<form th:action="@{/personnel/ajouter}" method="post">
-    <label>Nom :</label><br>
-    <input type="text" name="nom" required /><br><br>
+<!-- Message de succès -->
+<div th:if="${success}" class="alert alert-success" role="alert">
+    Personnel ajouté avec succès.
+</div>
 
-    <label>Prénom :</label><br>
-    <input type="text" name="prenom" required /><br><br>
 
-    <label>Email :</label><br>
-    <input type="email" name="email" required /><br><br>
+            <div class="steps-indicator">
+                <div class="step-dot active" id="stepDot1">1</div>
+                <div class="step-dot" id="stepDot2">2</div>
+                <div class="step-dot" id="stepDot3">3</div>
+                <div class="step-dot" id="stepDot4">4</div>
+            </div>
 
-    <label>Rôle :</label><br>
-    <select name="role" required>
-        <option value="PERSONNEL">Personnel</option>
-        <option value="RESPONSABLE">Responsable</option>
-<span th:if="${rh != null}" th:text="${rh.role}">RH</span>
-        <option value="DIRECTEUR">Directeur</option>
-    </select><br><br>
+<form th:action="@{/personnel/ajouter}" method="post" th:object="${personnel}">
+                <!-- Étape 1 -->
+                <div class="step-form active" id="step1">
+                    <div class="form-group">
+                        <label for="matricule">Matricule</label>
+                        <input type="text" id="matricule" name="matricule" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="nom">Nom</label>
+                        <input type="text" id="nom" name="nom" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="prenom">Prénom</label>
+                        <input type="text" id="prenom" name="prenom" required />
+                    </div>
+                    <div class="step-footer">
+                        <span></span>
+                        <button type="button" class="btn-step" onclick="nextStep(1)">Suivant <i class="fa fa-arrow-right"></i></button>
+                    </div>
+                </div>
 
-    <button type="submit">Ajouter</button>
-</form>
+                <!-- Étape 2 -->
+                <div class="step-form" id="step2">
+                    <div class="form-group">
+                        <label for="numero">Numéro de téléphone</label>
+                        <input type="text" id="numero" name="numero" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="motDePasse">Mot de passe</label>
+                        <input type="password" id="motDePasse" name="motDePasse" required />
+                    </div>
+                    <div class="step-footer">
+                        <button type="button" class="btn-back" onclick="prevStep(2)"><i class="fa fa-arrow-left"></i> Retour</button>
+                        <button type="button" class="btn-step" onclick="nextStep(2)">Suivant <i class="fa fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- Étape 3 -->
+                <div class="step-form" id="step3">
+                    <div class="form-group">
+                        <label for="cin">CIN</label>
+                        <input type="text" id="cin" name="cin" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="role">Rôle :</label>
+    <input type="text" name="role" id="role" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="departement">Département</label>
+                      <select th:field="*{departementId}" class="form-control">
+    <option value="informatique">Informatique</option>
+    <option value="finance">Finance</option>
+    <option value="rh">Ressources Humaines</option>
+</select>
+
+
+
+                    </div>
+                    <div class="step-footer">
+                        <button type="button" class="btn-back" onclick="prevStep(3)"><i class="fa fa-arrow-left"></i> Retour</button>
+                        <button type="button" class="btn-step" onclick="nextStep(3)">Suivant <i class="fa fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- Étape 4 -->
+                <div class="step-form" id="step4">
+                    <div class="form-group">
+                        <label for="soldeConge">Solde de congé</label>
+                        <input type="number" id="soldeConge" name="soldeConge" min="0" required />
+                    </div>
+                    <div class="step-footer">
+                        <button type="button" class="btn-back" onclick="prevStep(4)"><i class="fa fa-arrow-left"></i> Retour</button>
+                        <button type="submit" class="btn-add"><i class="fa fa-check"></i> Valider</button>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
+
+<script>
+    function nextStep(current) {
+        // Valide les champs de l'étape actuelle avant de passer à la suivante
+        const step = document.getElementById('step' + current);
+        const inputs = step.querySelectorAll('input, select');
+        for (let input of inputs) {
+            if (!input.checkValidity()) {
+                input.reportValidity();
+                return; // stoppe si invalid
+            }
+        }
+
+        document.getElementById('step' + current).classList.remove('active');
+        document.getElementById('stepDot' + current).classList.remove('active');
+        document.getElementById('stepDot' + current).classList.add('completed');
+
+        const next = current + 1;
+        const nextStepElement = document.getElementById('step' + next);
+        if (nextStepElement) {
+            nextStepElement.classList.add('active');
+            document.getElementById('stepDot' + next).classList.add('active');
+        }
+    }
+
+    function prevStep(current) {
+        document.getElementById('step' + current).classList.remove('active');
+        document.getElementById('stepDot' + current).classList.remove('active');
+
+        const prev = current - 1;
+        const prevStepElement = document.getElementById('step' + prev);
+        if (prevStepElement) {
+            prevStepElement.classList.add('active');
+            document.getElementById('stepDot' + prev).classList.add('active');
+            document.getElementById('stepDot' + prev).classList.remove('completed');
+        }
+    }
+</script>
 
 </body>
 </html>

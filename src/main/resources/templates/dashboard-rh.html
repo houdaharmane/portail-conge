@@ -13,7 +13,6 @@
             height: 100vh;
             background: #f6f6f6;
         }
-        /* Sidebar - professionnel, orange */
         .sidebar {
             width: 240px;
             background-color: #e9953d;
@@ -116,7 +115,6 @@
             margin-right: 8px;
             font-size: 24px;
         }
-        /* Main content - exemple dashboard */
         .main-content {
             flex: 1;
             display: flex;
@@ -178,10 +176,22 @@
             <img src="/img/modepbg.png" alt="Logo MODEP" class="sidebar-logo">
         </div>
        <nav>
-    <a href="#" class="sidebar-link active"><i class="fa fa-tachometer-alt"></i> <span> Tableau de bord</span></a>
-<a th:href="@{/personnel/ajouter}" class="sidebar-link"><i class="fa fa-users"></i> <span> Gestion du personnel</span></a>
-    <a href="#" class="sidebar-link"><i class="fa fa-wallet"></i> <span> Soldes congés</span></a>
-    <a href="#" class="sidebar-link"><i class="fa fa-history"></i> <span> Historique validations</span></a>
+   <a th:href="@{/dashboard-rh}" th:classappend="${activePage == 'dashboard'} ? ' active'" class="sidebar-link">
+    <i class="fa fa-tachometer-alt"></i> <span>Tableau de bord</span>
+</a>
+
+<a th:href="@{/personnel/ajouter}" th:classappend="${activePage == 'personnel'} ? ' active'" class="sidebar-link">
+    <i class="fa fa-users"></i> <span>Gestion du personnel</span>
+</a>
+
+<a href="#" th:classappend="${activePage == 'conges'} ? ' active'" class="sidebar-link">
+    <i class="fa fa-wallet"></i> <span>Soldes congés</span>
+</a>
+
+<a href="#" th:classappend="${activePage == 'historique'} ? ' active'" class="sidebar-link">
+    <i class="fa fa-history"></i> <span>Historique validations</span>
+</a>
+
 </nav>
 
     </div>

@@ -18,13 +18,14 @@ public class RhController {
     public String rhDashboard(HttpSession session, Model model) {
         Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
 
-        if (rh == null || rh.getRole() != Utilisateur.Role.RH) {
+        if (rh == null || !"RH".equals(rh.getRole())) {
             return "redirect:/login";
         }
 
         model.addAttribute("rh", rh);
         model.addAttribute("email", rh.getEmail());
-        model.addAttribute("role", rh.getRole().name());
+        model.addAttribute("role", rh.getRole());
+        model.addAttribute("activePage", "dashboard");
         return "dashboard-rh";
     }
 
@@ -33,43 +34,52 @@ public class RhController {
             @RequestParam(required = false) Boolean modification) {
         Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
 
-        if (rh == null || rh.getRole() != Utilisateur.Role.RH) {
+        if (rh == null || !"RH".equals(rh.getRole())) {
             return "redirect:/login";
         }
 
         model.addAttribute("rh", rh);
         model.addAttribute("modification", modification != null && modification);
-
+        model.addAttribute("activePage", "profil");
         return "profil";
     }
 
     @GetMapping("/profil/modifier")
     public String afficherFormulaireModificationProfil(HttpSession session, Model model) {
-        Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
+        Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
 
-        if (utilisateur == null || utilisateur.getRole() != Utilisateur.Role.RH) {
+        if (rh == null || !"RH".equals(rh.getRole())) {
             return "redirect:/login";
         }
 
-        model.addAttribute("utilisateur", utilisateur);
-        model.addAttribute("modification", true);
+        model.addAttribute("utilisateur", rh);
+        model.addAttribute("activePage", "profil");
         return "modifier_profil";
     }
 
     @PostMapping("/profil/save")
-    public String enregistrerProfil(@ModelAttribute Utilisateur utilisateurModifie, HttpSession session) {
-        Utilisateur utilisateurSession = (Utilisateur) session.getAttribute("utilisateur");
+    public String enregistrerProfil(@ModelAttribute("utilisateur") Utilisateur utilisateurModifie,
+            HttpSession session, Model model) {
+        Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
 
-        if (utilisateurSession == null || utilisateurSession.getRole() != Utilisateur.Role.RH) {
+        if (rh == null || !"RH".equals(rh.getRole())) {
             return "redirect:/login";
         }
 
-        utilisateurSession.setEmail(utilisateurModifie.getEmail());
-        utilisateurSession.setMotDePasse(utilisateurModifie.getMotDePasse());
+        try {
+            rh.setEmail(utilisateurModifie.getEmail());
+            rh.setMotDePasse(utilisateurModifie.getMotDePasse());
 
-        utilisateurRepository.save(utilisateurSession);
-        session.setAttribute("utilisateur", utilisateurSession);
+            utilisateurRepository.save(rh);
+            session.setAttribute("utilisateur", rh);
 
-        return "redirect:/profil";
+            return "redirect:/profil?modification=true";
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("error", "Erreur lors de la mise à jour du profil.");
+            model.addAttribute("utilisateur", rh);
+            model.addAttribute("activePage", "profil");
+            return "modifier_profil";
+        }
     }
 }

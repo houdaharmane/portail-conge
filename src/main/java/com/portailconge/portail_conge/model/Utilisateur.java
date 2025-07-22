@@ -10,6 +10,8 @@ public class Utilisateur {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    private String matricule;
+
     private String nom;
 
     private String prenom;
@@ -17,11 +19,19 @@ public class Utilisateur {
     @Column(unique = true)
     private String email;
 
+    private String telephone;
+
     @Column(name = "mot_de_passe")
     private String motDePasse;
 
-    @Enumerated(EnumType.STRING)
-    private Role role;
+    private String cin;
+
+    private Integer soldeConge;
+
+    @Column(name = "departement_id")
+    private Integer departementId;
+
+    private String role;
 
     // Getters et setters
 
@@ -31,6 +41,14 @@ public class Utilisateur {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getMatricule() {
+        return matricule;
+    }
+
+    public void setMatricule(String matricule) {
+        this.matricule = matricule;
     }
 
     public String getNom() {
@@ -57,6 +75,14 @@ public class Utilisateur {
         this.email = email;
     }
 
+    public String getTelephone() {
+        return telephone;
+    }
+
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
+    }
+
     public String getMotDePasse() {
         return motDePasse;
     }
@@ -65,11 +91,35 @@ public class Utilisateur {
         this.motDePasse = motDePasse;
     }
 
-    public Role getRole() {
+    public String getCin() {
+        return cin;
+    }
+
+    public void setCin(String cin) {
+        this.cin = cin;
+    }
+
+    public Integer getSoldeConge() {
+        return soldeConge;
+    }
+
+    public void setSoldeConge(Integer soldeConge) {
+        this.soldeConge = soldeConge;
+    }
+
+    public Integer getDepartementId() {
+        return departementId;
+    }
+
+    public void setDepartementId(Integer departementId) {
+        this.departementId = departementId;
+    }
+
+    public String getRole() {
         return role;
     }
 
-    public void setRole(Role role) {
+    public void setRole(String role) {
         this.role = role;
     }
 

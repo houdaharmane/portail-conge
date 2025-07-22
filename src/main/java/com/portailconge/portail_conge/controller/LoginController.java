@@ -30,15 +30,15 @@ public class LoginController {
             session.setAttribute("utilisateur", utilisateur);
 
             switch (utilisateur.getRole()) {
-                case PERSONNEL:
+                case "PERSONNEL":
                     return "redirect:/dashboard-personnel";
-                case RH:
+                case "RH":
                     return "redirect:/dashboard-rh";
-                case RESPONSABLE:
+                case "RESPONSABLE":
                     return "redirect:/dashboard-responsable";
-                case ADMISSION:
+                case "ADMISSION":
                     return "redirect:/dashboard-admission";
-                case DIRECTEUR:
+                case "DIRECTEUR":
                     return "redirect:/dashboard-directeur";
                 default:
                     model.addAttribute("error", "Rôle inconnu !");
@@ -49,4 +49,5 @@ public class LoginController {
             return "login";
         }
     }
+
 }
