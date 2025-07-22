@@ -19,7 +19,6 @@ public class PersonnelController {
     @Autowired
     private AuthService authService;
 
-    // Affiche le formulaire Thymeleaf pour ajouter un personnel
     @GetMapping("/ajouter")
     public String afficherFormulaireAjout(Model model, HttpSession session) {
         Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
@@ -28,10 +27,12 @@ public class PersonnelController {
         }
 
         model.addAttribute("rh", rh);
+
+        model.addAttribute("personnel", new Personnel());
+
         return "ajouter-personnel";
     }
 
-    // Traite le formulaire d’ajout
     @PostMapping("/ajouter")
     public String ajouterPersonnel(
             @RequestParam String matricule,
