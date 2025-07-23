@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <title>RH Dashboard - Demande de congé avancée</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Styles sidebar, header, etc. */
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+            background: #f6f6f6;
+        }
+        .sidebar {
+            width: 240px;
+            background-color: #0074C7;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: stretch;
+            min-height: 100vh;
+            box-shadow: 2px 0 12px #e9953d22;
+            padding: 0;
+        }
+        .sidebar-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 32px 0 18px 0;
+        }
+        .sidebar-logo {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #fff;
+            box-shadow: 0 2px 8px #fff2;
+            margin-bottom: 10px;
+        }
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            text-decoration: none;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 13px 30px;
+            border-left: 4px solid transparent;
+            transition: background 0.18s, border-left-color 0.18s;
+        }
+        .sidebar-link i {
+            font-size: 20px;
+            min-width: 20px;
+        }
+        .sidebar-link:hover, .sidebar-link.active {
+            background: #fff2;
+            color: #fff;
+            border-left: 4px solid #fff;
+        }
+        .sidebar-footer {
+            margin-bottom: 30px;
+        }
+        .sidebar-footer .sidebar-link {
+            color: #fff;
+            opacity: 0.85;
+            border-left: 4px solid transparent;
+        }
+        .sidebar-footer .sidebar-link:hover {
+            opacity: 1;
+            border-left: 4px solid #fff;
+            background: #fff2;
+        }
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            height: 60px;
+            background-color: #f3f3f3;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 20px;
+            border-bottom: 1px solid #ccc;
+            box-shadow: 0 2px 8px #e9953d11;
+        }
+        .header a {
+            text-decoration: none;
+            color:  #0074C7;
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            font-size: 17px;
+        }
+        .header a i {
+            margin-right: 8px;
+            font-size: 24px;
+        }
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 40px 20px;
+            background-color: #f6f6f6;
+            overflow-y: auto;
+        }
+        .form-container {
+            background: white;
+            padding: 30px 40px 40px 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px #00000010;
+            width: 100%;
+            max-width: 900px;
+        }
+        .form-container h2 {
+            text-align: center;
+            color: #0074C7;
+            font-weight: 700;
+            margin-bottom: 30px;
+        }
+
+        /* --- CALENDAR STYLE --- */
+        .calendar {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px #00000015;
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto 20px auto;
+        }
+        .month {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+        .month-name {
+            width: 100%;
+            font-weight: bold;
+            margin-top: 20px;
+            color: #0074C7;
+            font-size: 18px;
+        }
+        .day {
+            width: 28px;
+            height: 28px;
+            line-height: 28px;
+            text-align: center;
+            border-radius: 6px;
+            cursor: pointer;
+            user-select: none;
+            transition: background-color 0.3s;
+        }
+        .day:hover:not(.disabled):not(.taken):not(.selected) {
+            background-color: #cce0ff;
+        }
+        /* Couleurs d’exemple */
+        .weekend { background: #bbc9f7; color: white; }
+        .taken { background: #ffcc66; cursor: not-allowed; }
+        .today { border: 2px solid #0074C7; }
+        .selected { background: #0074C7; color: white; }
+        .disabled { color: #ccc; cursor: not-allowed; }
+        .half-day-select {
+            margin-top: 20px;
+            background: #f3f3f3;
+            padding: 12px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-around;
+        }
+        .half-day-select div {
+            text-align: center;
+        }
+        .half-day-select label {
+            cursor: pointer;
+            margin-left: 8px;
+            font-weight: 600;
+            user-select: none;
+        }
+        .summary {
+            margin-top: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            text-align: center;
+        }
+        button {
+            margin-top: 30px;
+            background-color: #0074C7;
+            border: none;
+            padding: 12px 40px;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            display: block;
+            margin-left: auto;
+            color: white;
+            font-size: 16px;
+            transition: background-color 0.25s;
+        }
+        button:hover {
+            background-color: #005fa3;
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div>
+        <div class="sidebar-header">
+            <img src="/img/modepbg.png" alt="Logo MODEP" class="sidebar-logo">
+        </div>
+        <nav>
+            <a th:href="@{/dashboard-rh}" th:classappend="${activePage == 'dashboard'} ? ' active'" class="sidebar-link">
+                <i class="fa fa-tachometer-alt"></i> <span>Tableau de bord</span>
+            </a>
+            <a th:href="@{/personnel/ajouter}" th:classappend="${activePage == 'personnel'} ? ' active'" class="sidebar-link">
+                <i class="fa fa-users"></i> <span>Gestion du personnel</span>
+            </a>
+            <a href="#" th:classappend="${activePage == 'conges'} ? ' active'" class="sidebar-link">
+                <i class="fa fa-wallet"></i> <span>Soldes congés</span>
+            </a>
+            <a href="#" th:classappend="${activePage == 'historique'} ? ' active'" class="sidebar-link">
+                <i class="fa fa-history"></i> <span>Historique validations</span>
+            </a>
+            <a th:href="@{/conge/demande}" th:classappend="${activePage == 'demandeConge'} ? ' active'" class="sidebar-link">
+                <i class="fa fa-plane-departure"></i> <span>Demande de congé</span>
+            </a>
+        </nav>
+    </div>
+    <div class="sidebar-footer">
+        <a href="/login" class="sidebar-link"><i class="fa fa-sign-out-alt"></i> <span>Déconnexion</span></a>
+    </div>
+</div>
+
+<div class="main-container">
+    <div class="header">
+        <a th:href="@{/profil}">
+            <i class="fa fa-user-circle fa-lg"></i>
+            <span th:text="${rh.role}">RH</span>
+        </a>
+    </div>
+    <div class="main-content">
+        <div class="form-container">
+            <h2>Faire une demande</h2>
+            <form th:action="@{/conge/etape-suivante}" method="post" id="congeForm">
+                <div class="calendar" id="calendar-container">
+                    <!-- Calendrier généré ici -->
+                </div>
+
+                <div class="half-day-select">
+                    <div>
+                        <div>du <span id="startDateDisplay">--/--/----</span></div>
+                        <label><input type="radio" name="startHalf" value="matin" checked> Matin</label>
+                        <label><input type="radio" name="startHalf" value="apres-midi"> Après-midi</label>
+                    </div>
+                    <div>
+                        <div>au <span id="endDateDisplay">--/--/----</span></div>
+                        <label><input type="radio" name="endHalf" value="matin"> Matin</label>
+                        <label><input type="radio" name="endHalf" value="apres-midi" checked> Après-midi</label>
+                    </div>
+                </div>
+
+                <div class="summary">
+                    <span id="workdaysCount">0 jours ouvrés</span>
+                </div>
+
+                <!-- Champs cachés pour envoi -->
+                <input type="hidden" id="dateDebut" name="dateDebut">
+                <input type="hidden" id="dateFin" name="dateFin">
+                <input type="hidden" id="startHalfHidden" name="startHalf">
+                <input type="hidden" id="endHalfHidden" name="endHalf">
+
+                <button type="submit">Continuer</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+  // Date actuelle et informations dynamiques
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth(); // 0=janvier
+
+  // Jours fériés (exemple pour 2025 France, adapter selon pays/année)
+  const holidays = [
+    "2025-01-01", "2025-04-18", "2025-05-01", "2025-05-08", "2025-05-29",
+    "2025-07-14", "2025-08-15", "2025-11-01", "2025-11-11", "2025-12-25"
+  ];
+
+  // Jours déjà pris (exemple, au format "yyyy-mm-dd")
+  const takenDays = [
+    // Ex: "2025-07-07", "2025-07-15", "2025-07-23"
+  ];
+
+  let selectedStart = null;
+  let selectedEnd = null;
+
+  function isWeekend(dayIndex) {
+    return dayIndex === 0 || dayIndex === 6; // dimanche=0, samedi=6
+  }
+
+  function formatDate(date) {
+    const y = date.getFullYear();
+    const m = (date.getMonth() + 1).toString().padStart(2,'0');
+    const d = date.getDate().toString().padStart(2,'0');
+    return `${y}-${m}-${d}`;
+  }
+
+  // Création dynamique du calendrier pour le mois courant
+  function createCalendar() {
+    const container = document.getElementById('calendar-container');
+    container.innerHTML = '';
+
+    const year = currentYear;
+    const month = currentMonth;
+
+    // 1er jour du mois
+    const firstDayOfMonth = new Date(year, month, 1);
+    const firstWeekDay = firstDayOfMonth.getDay(); // 0=Dim
+
+    // Nombre de jours dans le mois
+    const daysInMonth = new Date(year, month+1, 0).getDate();
+
+    const monthDiv = document.createElement('div');
+    monthDiv.classList.add('month');
+
+    const monthName = new Date(year, month).toLocaleString('fr-FR', { month: 'long', year: 'numeric' });
+    const monthNameDiv = document.createElement('div');
+    monthNameDiv.textContent = monthName.charAt(0).toUpperCase() + monthName.slice(1);
+    monthNameDiv.classList.add('month-name');
+    monthDiv.appendChild(monthNameDiv);
+
+    // Jours semaine abrégés
+    ['D','L','Ma','Me','J','V','S'].forEach(d => {
+      const dayHeader = document.createElement('div');
+      dayHeader.classList.add('day');
+      dayHeader.style.fontWeight = 'bold';
+      dayHeader.style.color = '#444';
+      dayHeader.style.width = '28px';
+      dayHeader.style.height = '18px';
+      dayHeader.style.lineHeight = '18px';
+      dayHeader.style.marginBottom = '4px';
+      dayHeader.style.userSelect = 'none';
+      dayHeader.textContent = d;
+      monthDiv.appendChild(dayHeader);
+    });
+
+    // Cases vides avant 1er jour
+    for(let i=0; i<firstWeekDay; i++){
+      const emptyDay = document.createElement('div');
+      emptyDay.classList.add('day', 'disabled');
+      monthDiv.appendChild(emptyDay);
+    }
+
+    // Crée les jours du mois
+    for(let day=1; day<=daysInMonth; day++){
+      const dayDiv = document.createElement('div');
+      dayDiv.classList.add('day');
+
+      const dateObj = new Date(year, month, day);
+      const dayOfWeek = dateObj.getDay();
+
+      // Marque weekend
+      if(isWeekend(dayOfWeek)) dayDiv.classList.add('weekend');
+
+      // Jour pris ?
+      const dayStr = formatDate(dateObj);
+      if(takenDays.includes(dayStr)) dayDiv.classList.add('taken');
+
+      // Aujourd'hui
+      const today = new Date();
+      if(dateObj.toDateString() === today.toDateString()) dayDiv.classList.add('today');
+
+      dayDiv.textContent = day;
+
+      // Cliquer sur jour valide sélection
+      dayDiv.onclick = () => {
+        if(dayDiv.classList.contains('disabled') || dayDiv.classList.contains('taken')) return;
+        selectDate(day);
+      };
+
+      // Marquer sélection
+      if(selectedStart === day || selectedEnd === day) {
+        dayDiv.classList.add('selected');
+      }
+
+      monthDiv.appendChild(dayDiv);
+    }
+
+    container.appendChild(monthDiv);
+  }
+
+  // Gestion sélection des dates début/fin
+  function selectDate(day) {
+    if(selectedStart === null || (selectedStart !== null && selectedEnd !== null)) {
+      selectedStart = day;
+      selectedEnd = null;
+    } else if(day >= selectedStart){
+      selectedEnd = day;
+    } else {
+      selectedStart = day;
+      selectedEnd = null;
+    }
+    updateDisplay();
+    createCalendar();
+  }
+
+  /*
+    Calcul jours ouvrés personnalisé selon ta règle :
+
+    - Semaine du début : week-ends comptent (inclus)
+    - Semaines suivantes : week-ends exclus
+    - Tous les jours fériés comptent toujours comme ouvrés
+  */
+  function countWorkdaysCustom(startDay, endDay, year, month) {
+    if(startDay === null || endDay === null || endDay < startDay) return 0;
+
+    const startDate = new Date(year, month, startDay);
+    const endDate = new Date(year, month, endDay);
+
+    // Trouve lundi de la semaine de début
+    const startWeekDay = startDate.getDay(); // 0=dimanche
+    const diffToMonday = (startWeekDay === 0) ? -6 : 1 - startWeekDay;
+    const startWeekMonday = new Date(startDate);
+    startWeekMonday.setDate(startDate.getDate() + diffToMonday);
+
+    let count = 0;
+    for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate()+1)) {
+      const dayOfWeek = d.getDay();
+      const dateStr = formatDate(d);
+
+      // Les jours fériés comptent toujours
+      if(holidays.includes(dateStr)) {
+        count++;
+        continue;
+      }
+
+      // Semaine de début : on compte tout
+      if(d >= startWeekMonday && d <= new Date(startWeekMonday.getFullYear(), startWeekMonday.getMonth(), startWeekMonday.getDate()+6)) {
+        count++;
+      } else {
+        // Semaines suivantes : exclut samedi et dimanche
+        if(dayOfWeek !== 0 && dayOfWeek !== 6) {
+          count++;
+        }
+      }
+    }
+
+    return count;
+  }
+
+  function updateDisplay() {
+    const startDateSpan = document.getElementById('startDateDisplay');
+    const endDateSpan = document.getElementById('endDateDisplay');
+    const workdaysSpan = document.getElementById('workdaysCount');
+
+    if(selectedStart !== null){
+      startDateSpan.textContent = `${selectedStart}/${currentMonth+1}/${currentYear}`;
+      document.getElementById('dateDebut').value = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${String(selectedStart).padStart(2,'0')}`;
+    } else {
+      startDateSpan.textContent = "--/--/----";
+      document.getElementById('dateDebut').value = "";
+    }
+    if(selectedEnd !== null){
+      endDateSpan.textContent = `${selectedEnd}/${currentMonth+1}/${currentYear}`;
+      document.getElementById('dateFin').value = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${String(selectedEnd).padStart(2,'0')}`;
+    } else {
+      endDateSpan.textContent = "--/--/----";
+      document.getElementById('dateFin').value = "";
+    }
+
+    let count = 0;
+    if(selectedStart !== null && selectedEnd !== null){
+      count = countWorkdaysCustom(selectedStart, selectedEnd, currentYear, currentMonth);
+    }
+    workdaysSpan.textContent = count + " jour" + (count > 1 ? "s" : "") + " ouvré" + (count > 1 ? "s" : "");
+
+    // Synchroniser radios hidden pour envoi
+    const startHalf = document.querySelector('input[name="startHalf"]:checked').value;
+    const endHalf = document.querySelector('input[name="endHalf"]:checked').value;
+    document.getElementById('startHalfHidden').value = startHalf;
+    document.getElementById('endHalfHidden').value = endHalf;
+  }
+
+  // Initialisation
+  createCalendar();
+  updateDisplay();
+
+  // Validation formulaire
+  document.getElementById('congeForm').onsubmit = function(e) {
+    if(selectedStart === null || selectedEnd === null) {
+      e.preventDefault();
+      alert("Veuillez sélectionner une période complète.");
+      return false;
+    }
+    if(selectedEnd < selectedStart) {
+      e.preventDefault();
+      alert("La date de fin doit être égale ou postérieure à la date de début.");
+      return false;
+    }
+    // Optionnel : valider que la période ne contient pas des jours pris (takenDays)
+    const year = currentYear;
+    const month = currentMonth;
+    for(let d=selectedStart; d<=selectedEnd; d++) {
+      const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      if(takenDays.includes(dateStr)) {
+        e.preventDefault();
+        alert("La période contient des jours déjà pris. Veuillez choisir une autre période.");
+        return false;
+      }
+    }
+  };
+</script>
+
+</body>
+</html>
