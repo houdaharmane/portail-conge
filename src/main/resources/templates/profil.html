@@ -237,6 +237,9 @@
             <a href="#" class="sidebar-link">
                 <i class="fa fa-history"></i> <span>Historique validations</span>
             </a>
+             <a th:href="@{/conge/demande}" th:classappend="${activePage == 'demandeConge'} ? ' active'" class="sidebar-link">
+                <i class="fa fa-plane-departure"></i> <span>Demande de congé</span>
+            </a>
         </nav>
     </div>
     <div class="sidebar-footer">
