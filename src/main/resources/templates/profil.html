@@ -325,6 +325,38 @@
             border-color: var(--primary-color);
             outline: none;
         }
+        .edit-form select {
+    flex: 1;
+    padding: 6px 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    color: var(--text-color);
+    background-color: var(--card-bg);
+    transition: border-color 0.3s;
+}
+
+.edit-form select:focus {
+    border-color: var(--primary-color);
+    outline: none;
+}
+
+.edit-form input[type="number"] {
+    flex: 1;
+    padding: 6px 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    color: var(--text-color);
+    background-color: var(--card-bg);
+    transition: border-color 0.3s;
+}
+
+.edit-form input[type="number"]:focus {
+    border-color: var(--primary-color);
+    outline: none;
+}
+
     </style>
 </head>
 <body>
@@ -377,7 +409,7 @@
 
         <!-- PROFIL DROITE -->
         <div class="profile-right">
-            <a href="#" id="btn-edit" class="btn-modify">Modifier</a>
+    <a href="#" id="btn-edit" class="btn-modify" style="margin-top: -24px;margin-left:10px ;display: inline-block;">Modifier</a>
 
             <!-- Section affichage normale -->
             <div class="info-section" id="display-section">
