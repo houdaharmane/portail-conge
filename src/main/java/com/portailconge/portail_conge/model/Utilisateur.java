@@ -27,13 +27,27 @@ public class Utilisateur {
     private String cin;
 
     private Integer soldeConge;
+    
 
     @Column(name = "departement_id")
     private Integer departementId;
+    
 
     private String role;
+    @ManyToOne
+@JoinColumn(name = "departement_id", insertable = false, updatable = false)
+private Departement departement;
+
 
     // Getters et setters
+    public Departement getDepartement() {
+    return departement;
+}
+
+public void setDepartement(Departement departement) {
+    this.departement = departement;
+}
+
 
     public int getId() {
         return id;
