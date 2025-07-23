@@ -1,30 +1,55 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
 <head>
     <meta charset="UTF-8">
     <title>Profil RH - Portail Congé</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --bg-color: #f6f6f6;
+            --text-color: #000;
+            --text-muted: #666666;
+            --header-bg: #f3f3f3;
+            --card-bg: #fff;
+            --card-shadow: #e9953d22;
+            --sidebar-bg: #0074C7;
+            --link-color: #fff;
+            --primary-color: #0074C7;
+            --tab-bg: #f3f3f3;
+        }
+
+        .dark-theme {
+            --bg-color: #1e1e1e;
+            --text-color: #f0f0f0;
+            --text-muted: #bbbbbb;
+            --header-bg: #2c2c2c;
+            --card-bg: #2a2a2a;
+            --card-shadow: #00000044;
+            --sidebar-bg: #0074C7;
+            --link-color: #fff;
+            --primary-color: #0074C7;
+            --tab-bg: #2c2c3e;
+        }
+
         body {
             margin: 0;
             font-family: 'Segoe UI', Arial, sans-serif;
             display: flex;
             height: 100vh;
-            background: #f6f6f6;
+            background: var(--bg-color);
+            color: var(--text-color);
         }
 
         .sidebar {
             width: 240px;
-            background-color: #0074C4;
-            color: #fff;
+            background-color: var(--sidebar-bg);
+            color: var(--link-color);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            align-items: stretch;
             min-height: 100vh;
-            box-shadow: 2px 0 12px #e9953d22;
-            padding: 0;
+            box-shadow: 2px 0 12px var(--card-shadow);
         }
 
         .sidebar-header {
@@ -41,7 +66,6 @@
             object-fit: cover;
             background: #fff;
             box-shadow: 0 2px 8px #fff2;
-            margin-bottom: 0;
         }
 
         .sidebar-menu {
@@ -56,7 +80,7 @@
             align-items: center;
             gap: 14px;
             text-decoration: none;
-            color: #fff;
+            color: var(--link-color);
             font-size: 16px;
             font-weight: 600;
             padding: 13px 30px;
@@ -64,12 +88,8 @@
             transition: background 0.18s, border-left-color 0.18s;
         }
 
-        .sidebar-link i {
-            font-size: 20px;
-            min-width: 20px;
-        }
-
-        .sidebar-link:hover, .sidebar-link.active {
+        .sidebar-link:hover,
+        .sidebar-link.active {
             background: #fff2;
             color: #fff;
             border-left: 4px solid #fff;
@@ -87,12 +107,38 @@
 
         .header {
             height: 60px;
-            background-color: #f3f3f3;
+            background-color: var(--header-bg);
             display: flex;
             align-items: center;
-            justify-content: flex-end;
+            justify-content: space-between;
             padding: 0 20px;
             border-bottom: 1px solid #ccc;
+            box-shadow: 0 2px 8px var(--card-shadow);
+        }
+
+        .header a {
+            text-decoration: none;
+            color: var(--primary-color);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .header a i {
+            margin-right: 8px;
+            font-size: 20px;
+        }
+
+        .theme-toggle-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            color: var(--primary-color);
+        }
+
+        .dark-theme .theme-toggle-btn {
+            color: var(--text-color);
         }
 
         .main-content {
@@ -100,18 +146,29 @@
             gap: 30px;
             padding: 30px;
             align-items: flex-start;
-            background-color: #f5f7fb;
+            background-color: var(--bg-color);
             flex: 1;
         }
 
-        .profile-left {
-            background: white;
+        .profile-left,
+        .profile-right {
+            background: var(--card-bg);
+            color: var(--text-color);
             border-radius: 20px;
             box-shadow: 0 0 8px rgba(0,0,0,0.1);
-            width: 350px;
             padding: 30px;
+        }
+
+        .profile-left {
+            width: 280px;
+            flex-shrink: 0;
             text-align: center;
-            border: 1.5px solid #0074C4;
+            border: 1.5px solid var(--primary-color);
+        }
+
+        .profile-right {
+            flex: 1;
+            min-width: 500px;
         }
 
         .profile-left img {
@@ -119,47 +176,42 @@
             height: 100px;
             border-radius: 50%;
             margin-bottom: 15px;
-            border: 3px solid #0074C4;
+            border: 3px solid var(--primary-color);
         }
 
         .profile-left h2 {
             font-size: 20px;
             font-weight: bold;
-            color: #0074C4;
-            margin-bottom: 4px;
+            color: var(--primary-color);
         }
 
         .profile-left p {
             font-size: 14px;
-            color: #666;
-            margin-bottom: 20px;
+            color: var(--text-muted);
         }
 
-        .btn-edit {
-            background: linear-gradient(90deg,#0074C4 0%,#0074C4 100%);
+        .btn-edit,
+        .btn-modify {
+            background: var(--primary-color);
             color: #fff;
-            font-size: 15px;
             font-weight: 700;
-            border: none;
-            border-radius: 9px;
             padding: 10px 16px;
-            box-shadow: 0 1px 8px #e9953d55;
-            cursor: pointer;
+            border-radius: 9px;
             text-decoration: none;
             display: block;
-            margin: 8px 0;
+            cursor: pointer;
+            transition: background 0.3s;
+            border: none;
         }
 
-        .btn-edit:hover {
-            background: linear-gradient(90deg,#5F4B8B 0%, #060453 100%);
+        .btn-modify {
+            float: right;
+            margin-top: -10px;
         }
 
-        .profile-right {
-            flex: 1;
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 0 8px rgba(0,0,0,0.1);
+        .btn-edit:hover,
+        .btn-modify:hover {
+            background-color: #005fa3;
         }
 
         .tabs {
@@ -169,17 +221,23 @@
             margin-bottom: 20px;
         }
 
+        .dark-theme .tabs {
+            border-bottom-color: #444;
+        }
+
         .tab {
             padding: 10px 20px;
             cursor: pointer;
             font-weight: 600;
-            color: #0074C4;
+            color: var(--primary-color);
             border-bottom: 3px solid transparent;
+            background-color: transparent;
+            border-radius: 0;
         }
 
         .tab.active {
-            border-color: #0074C4;
-            background-color: #f0f8ff;
+            border-color: var(--primary-color);
+            background-color: var(--tab-bg);
             border-radius: 8px 8px 0 0;
         }
 
@@ -190,30 +248,30 @@
             border-bottom: 1px solid #eee;
         }
 
+        .dark-theme .info-row {
+            border-bottom-color: #444;
+        }
+
         .info-label {
             font-weight: 600;
-            color: #555;
+            color: var(--text-muted);
         }
 
         .info-value {
-            color: #222;
+            color: var(--text-color);
         }
-        .btn-modify {
-    background-color: #e74c3c; /* rouge */
-    color: white;
-    font-weight: 700;
-    padding: 8px 14px;
-    border-radius: 6px;
-    text-decoration: none;
-    float: right;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
 
-.btn-modify:hover {
-    background-color: #c0392b;
-}
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
 
+            .profile-left,
+            .profile-right {
+                width: 100% !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -225,107 +283,86 @@
             <img src="/img/modepbg.png" alt="Logo MODEP" class="sidebar-logo">
         </div>
         <nav class="sidebar-menu">
-            <a th:href="@{/dashboard-rh}" class="sidebar-link">
-                <i class="fa fa-tachometer-alt"></i> <span>Tableau de bord</span>
-            </a>
-            <a th:href="@{/personnel/ajouter}" class="sidebar-link">
-                <i class="fa fa-users"></i> <span>Gestion du personnel</span>
-            </a>
-            <a href="#" class="sidebar-link">
-                <i class="fa fa-wallet"></i> <span>Soldes congés</span>
-            </a>
-            <a href="#" class="sidebar-link">
-                <i class="fa fa-history"></i> <span>Historique validations</span>
-            </a>
-             <a th:href="@{/conge/demande}" th:classappend="${activePage == 'demandeConge'} ? ' active'" class="sidebar-link">
-                <i class="fa fa-plane-departure"></i> <span>Demande de congé</span>
+            <a th:href="@{/dashboard-rh}" class="sidebar-link"><i class="fa fa-tachometer-alt"></i> Tableau de bord</a>
+            <a th:href="@{/personnel/ajouter}" class="sidebar-link"><i class="fa fa-users"></i> Gestion du personnel</a>
+            <a href="#" class="sidebar-link"><i class="fa fa-wallet"></i> Soldes congés</a>
+            <a href="#" class="sidebar-link"><i class="fa fa-history"></i> Historique validations</a>
+            <a th:href="@{/conge/demande}" th:classappend="${activePage == 'demandeConge'} ? ' active'" class="sidebar-link">
+                <i class="fa fa-plane-departure"></i> Demande de congé
             </a>
         </nav>
     </div>
     <div class="sidebar-footer">
-        <a href="/login" class="sidebar-link"><i class="fa fa-sign-out-alt"></i> <span>Déconnexion</span></a>
+        <a href="/login" class="sidebar-link"><i class="fa fa-sign-out-alt"></i> Déconnexion</a>
     </div>
 </div>
 
-<!-- CONTENU PRINCIPAL -->
+<!-- CONTENU -->
 <div class="main-container">
     <div class="header">
         <a th:href="@{/profil}">
-            <i class="fa fa-user-circle fa-lg"></i>
+            <i class="fa fa-user-circle"></i>
             <span th:text="${rh.role}">RH</span>
         </a>
+        <button id="theme-toggle" class="theme-toggle-btn" title="Activer/désactiver mode sombre">
+            <i class="fa fa-moon"></i>
+        </button>
     </div>
 
     <div class="main-content">
-
         <!-- PROFIL GAUCHE -->
         <div class="profile-left">
-            <h2 th:text="${rh.nom} + ' ' + ${rh.prenom}">John Doe</h2>
+            <h2 th:text="${rh.nom} + ' ' + ${rh.prenom}"></h2>
             <p>
-    <span th:text="${rh.role}">Responsable RH</span><br>
-    <small>
-        <span th:if="${rh.departement != null}" th:text="${rh.departement.nom}">Département RH</span>
-        <span th:if="${rh.departement == null}">Aucun département</span>
-    </small>
-</p>
-
+                <span th:text="${rh.role}">Responsable RH</span><br>
+                <small>
+                    <span th:if="${rh.departement != null}" th:text="${rh.departement.nom}">Département RH</span>
+                    <span th:if="${rh.departement == null}">Aucun département</span>
+                </small>
+            </p>
         </div>
 
         <!-- PROFIL DROITE -->
         <div class="profile-right">
             <a href="#" class="btn-modify">Modifier</a>
-
             <div class="tabs">
                 <div class="tab active">Profil</div>
             </div>
 
             <div class="info-section">
-                <div class="info-row">
-                    <span class="info-label">Nom :</span>
-                    <span class="info-value" th:text="${rh.nom}">Doe</span>
+                <div class="info-row"><span class="info-label">Nom :</span><span class="info-value" th:text="${rh.nom}">Doe</span></div>
+                <div class="info-row"><span class="info-label">Prénom :</span><span class="info-value" th:text="${rh.prenom}">John</span></div>
+                <div class="info-row"><span class="info-label">Téléphone :</span><span class="info-value" th:text="${rh.telephone}">0600000000</span></div>
+                <div class="info-row"><span class="info-label">Email :</span><span class="info-value" th:text="${rh.email}">john@exemple.com</span></div>
+                <div class="info-row"><span class="info-label">Mot de passe :</span><span class="info-value">••••••••</span></div>
+                <div class="info-row"><span class="info-label">Rôle :</span><span class="info-value" th:text="${role}">RH</span></div>
+                <div class="info-row"><span class="info-label">Département :</span>
+                    <span th:if="${rh.departement != null}" th:text="${rh.departement.nom}"></span>
+                    <span th:if="${rh.departement == null}">Aucun département</span>
                 </div>
-
-                <div class="info-row">
-                    <span class="info-label">Prénom :</span>
-                    <span class="info-value" th:text="${rh.prenom}">John</span>
-                </div>
-
-                <div class="info-row">
-                    <span class="info-label">Téléphone :</span>
-                    <span class="info-value" th:text="${rh.telephone}">0600000000</span>
-                </div>
-
-                <div class="info-row">
-                    <span class="info-label">Email :</span>
-                    <span class="info-value" th:text="${rh.email}">john@exemple.com</span>
-                </div>
-
-                <div class="info-row">
-                    <span class="info-label">Mot de passe :</span>
-                    <span class="info-value">••••••••</span> 
-                </div>
-
-                <div class="info-row">
-                    <span class="info-label">Rôle :</span>
-                    <span class="info-value" th:text="${role}">RH</span>
-                </div>
-
-                <div class="info-row">
-                    <span class="info-label">Département :</span>
-<span th:if="${rh.departement != null}" th:text="${rh.departement.nom}"></span>
-<span th:if="${rh.departement == null}">Aucun département</span>
-
-                </div>
-
-                <div class="info-row">
-                    <span class="info-label">Solde de congé :</span>
-                    <span class="info-value" th:text="${rh.soldeConge + ' jours'}">20 jours</span>
-                </div>
+                <div class="info-row"><span class="info-label">Solde de congé :</span><span class="info-value" th:text="${rh.soldeConge + ' jours'}">20 jours</span></div>
             </div>
         </div>
     </div>
 </div>
 
+<script>
+    const toggleBtn = document.getElementById('theme-toggle');
+    const body = document.body;
+
+    // On load, check localStorage
+    if(localStorage.getItem('theme') === 'dark') {
+        body.classList.add('dark-theme');
+        toggleBtn.innerHTML = '<i class="fa fa-sun"></i>';
+    }
+
+    toggleBtn.addEventListener('click', () => {
+        body.classList.toggle('dark-theme');
+        const isDark = body.classList.contains('dark-theme');
+        toggleBtn.innerHTML = isDark ? '<i class="fa fa-sun"></i>' : '<i class="fa fa-moon"></i>';
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    });
+</script>
 
 </body>
 </html>
