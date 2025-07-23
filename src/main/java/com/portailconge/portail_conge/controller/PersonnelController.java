@@ -1,5 +1,6 @@
 package com.portailconge.portail_conge.controller;
 
+import com.portailconge.portail_conge.model.Departement;
 import com.portailconge.portail_conge.model.Personnel;
 import com.portailconge.portail_conge.model.Utilisateur;
 import com.portailconge.portail_conge.service.AuthService;
@@ -41,7 +42,7 @@ public class PersonnelController {
             @RequestParam("numero") String telephone,
             @RequestParam String email,
             @RequestParam String role,
-            @RequestParam Integer departement,
+            @RequestParam Integer departement, // c'est l'id du département
             @RequestParam String cin,
             @RequestParam String motDePasse,
             @RequestParam Integer soldeConge,
@@ -62,7 +63,11 @@ public class PersonnelController {
             utilisateur.setTelephone(telephone);
             utilisateur.setEmail(email);
             utilisateur.setRole(role);
-            utilisateur.setDepartementId(departement);
+
+            Departement dept = new Departement();
+            dept.setId(departement.longValue());
+            utilisateur.setDepartement(dept);
+
             utilisateur.setCin(cin);
             utilisateur.setMotDePasse(motDePasse);
             utilisateur.setSoldeConge(soldeConge);
@@ -75,7 +80,10 @@ public class PersonnelController {
             personnel.setTelephone(telephone);
             personnel.setEmail(email);
             personnel.setCin(cin);
+
+            // Ici tu peux garder departementId comme Integer dans Personnel
             personnel.setDepartementId(departement);
+
             personnel.setUtilisateur(utilisateur); // liaison
 
             authService.creerUtilisateurEtPersonnel(utilisateur, personnel);

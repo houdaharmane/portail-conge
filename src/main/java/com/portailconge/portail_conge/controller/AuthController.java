@@ -2,6 +2,7 @@ package com.portailconge.portail_conge.controller;
 
 import com.portailconge.portail_conge.DTO.UtilisateurDTO;
 import com.portailconge.portail_conge.model.Utilisateur;
+import com.portailconge.portail_conge.model.Departement;
 import com.portailconge.portail_conge.model.Personnel;
 import com.portailconge.portail_conge.service.AuthService;
 
@@ -26,17 +27,17 @@ public class AuthController {
         utilisateur.setTelephone(dto.getTelephone());
         utilisateur.setEmail(dto.getEmail());
         utilisateur.setRole(dto.getRole());
-        utilisateur.setDepartementId(dto.getDepartement());
+        Departement dept = new Departement();
+        dept.setId(dto.getDepartement().longValue());
+        utilisateur.setDepartement(dept);
         utilisateur.setCin(dto.getCin());
         utilisateur.setMotDePasse(dto.getMotDePasse());
         utilisateur.setSoldeConge(dto.getSoldeConge());
 
-        // Création de l'objet Personnel (si lié)
         Personnel personnel = new Personnel();
         personnel.setNom(dto.getNom());
         personnel.setPrenom(dto.getPrenom());
 
-        // Appel au service pour persister les deux entités
         authService.creerUtilisateurEtPersonnel(utilisateur, personnel);
 
         return ResponseEntity.ok("Utilisateur et personnel créés avec succès");
