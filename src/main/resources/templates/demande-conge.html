@@ -6,7 +6,6 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Styles sidebar, header, etc. */
         body {
             margin: 0;
             font-family: 'Segoe UI', Arial, sans-serif;
@@ -134,13 +133,17 @@
 
         /* --- CALENDAR STYLE --- */
         .calendar {
-            background: white;
             padding: 20px;
             border-radius: 12px;
             box-shadow: 0 4px 12px #00000015;
-            max-width: 900px;
+            max-width: 880px;
             width: 100%;
             margin: 0 auto 20px auto;
+              background: var(--card-bg);
+               color: var(--text-color); 
+                box-shadow: 0 4px 12px var(--card-shadow);
+                margin: 0 auto 20px 0;
+                align-self: flex-start;
         }
         .month {
             display: flex;
@@ -155,6 +158,7 @@
             margin-top: 20px;
             color: #0074C7;
             font-size: 18px;
+            color: var(--text-color);
         }
         .day {
             width: 28px;
@@ -165,6 +169,7 @@
             cursor: pointer;
             user-select: none;
             transition: background-color 0.3s;
+            color: var(--text-color);
         }
         .day:hover:not(.disabled):not(.taken):not(.selected) {
             background-color: #cce0ff;
@@ -177,7 +182,7 @@
         .disabled { color: #ccc; cursor: not-allowed; }
         .half-day-select {
             margin-top: 20px;
-            background: #f3f3f3;
+ color: var(--text-color);              background: var(--header-bg);
             padding: 12px;
             border-radius: 10px;
             display: flex;
@@ -191,12 +196,14 @@
             margin-left: 8px;
             font-weight: 600;
             user-select: none;
+             color: var(--text-color);
         }
         .summary {
             margin-top: 20px;
             font-weight: 600;
             font-size: 14px;
             text-align: center;
+            color: var(--text-color);
         }
         button {
             margin-top: 30px;
@@ -215,6 +222,126 @@
         button:hover {
             background-color: #005fa3;
         }
+           :root {
+        --bg-color: #f6f6f6;
+        --text-color: #000;
+        --header-bg: #f3f3f3;
+        --card-bg: #fff;
+        --card-shadow: #e9953d22;
+        --sidebar-bg: #0074C7;
+        --link-color: #fff;
+        --button-bg: #0074C7;
+        --button-hover: #005fa3;
+    }
+
+    .dark-theme {
+        --bg-color: #1e1e1e;
+        --text-color: #f0f0f0;
+        --header-bg: #2c2c2c;
+        --card-bg: #2a2a2a;
+        --card-shadow: #00000044;
+        --sidebar-bg: #0074C7;
+        --link-color: #fff;
+        --button-bg: #005fa3;
+        --button-hover: #0074C7;
+    }
+
+    body {
+        margin: 0;
+        font-family: 'Segoe UI', Arial, sans-serif;
+        display: flex;
+        height: 100vh;
+        background: var(--bg-color);
+        color: var(--text-color);
+    }
+
+    .sidebar {
+        width: 240px;
+        background-color: var(--sidebar-bg);
+        color: var(--link-color);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: stretch;
+        min-height: 100vh;
+        box-shadow: 2px 0 12px var(--card-shadow);
+        padding: 0;
+    }
+
+    .sidebar-link,
+    .sidebar-footer .sidebar-link {
+        color: var(--link-color);
+    }
+
+    .header {
+        height: 60px;
+        background-color: var(--header-bg);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+        border-bottom: 1px solid #ccc;
+        box-shadow: 0 2px 8px var(--card-shadow);
+    }
+
+    .main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        padding: 40px 20px;
+        background-color: var(--bg-color);
+        overflow-y: auto;
+    }
+
+    .form-container {
+        background: var(--card-bg);
+        color: var(--text-color);
+        padding: 30px 40px 40px 40px;
+        border-radius: 16px;
+        box-shadow: 0 4px 12px var(--card-shadow);
+        width: 100%;
+        max-width: 900px;
+    }
+
+    button {
+        margin-top: 30px;
+        background-color: var(--button-bg);
+        border: none;
+        padding: 12px 40px;
+        font-weight: 700;
+        border-radius: 8px;
+        cursor: pointer;
+        display: block;
+        margin-left: auto;
+        color: white;
+        font-size: 16px;
+        transition: background-color 0.25s;
+    }
+
+    button:hover {
+        background-color: var(--button-hover);
+    }
+
+    .theme-toggle-btn {
+        background: none;
+        border: none;
+        font-size: 20px;
+        color: #0074C7;
+        cursor: pointer;
+        margin-top: -2px;
+        margin-right: -20px;
+    }
+    .theme-toggle-btn:hover {
+    color: #0074C7 !important;
+    background: none !important;
+    box-shadow: none !important;
+}
+
+    .dark-theme .theme-toggle-btn {
+        color: #f0f0f0;
+    }
     </style>
 </head>
 <body>
@@ -253,6 +380,9 @@
             <i class="fa fa-user-circle fa-lg"></i>
             <span th:text="${rh.role}">RH</span>
         </a>
+         <button id="theme-toggle" class="theme-toggle-btn" title="Changer de thème">
+        <i class="fa fa-moon"></i>
+    </button>
     </div>
     <div class="main-content">
         <div class="form-container">
@@ -526,6 +656,20 @@
       }
     }
   };
+   const toggleBtn = document.getElementById('theme-toggle');
+    const body = document.body;
+
+    if (localStorage.getItem('theme') === 'dark') {
+        body.classList.add('dark-theme');
+        toggleBtn.innerHTML = '<i class="fa fa-sun"></i>';
+    }
+
+    toggleBtn.addEventListener('click', () => {
+        body.classList.toggle('dark-theme');
+        const isDark = body.classList.contains('dark-theme');
+        toggleBtn.innerHTML = isDark ? '<i class="fa fa-sun"></i>' : '<i class="fa fa-moon"></i>';
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    });
 </script>
 
 </body>
