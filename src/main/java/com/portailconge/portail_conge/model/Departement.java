@@ -10,9 +10,27 @@ public class Departement {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     private String nom;
 
-    // getters et setters
+    // Getter pour id
+    public Long getId() {
+        return id;
+    }
+
+    // Setter pour id
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    // Getter pour nom
+    public String getNom() {
+        return nom;
+    }
+
+    // Setter pour nom
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
 }

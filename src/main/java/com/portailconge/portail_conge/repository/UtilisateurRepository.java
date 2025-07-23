@@ -6,4 +6,5 @@ import com.portailconge.portail_conge.model.Utilisateur;
 
 public interface UtilisateurRepository extends JpaRepository<Utilisateur, Integer> {
     Optional<Utilisateur> findByEmail(String email);
+
 }

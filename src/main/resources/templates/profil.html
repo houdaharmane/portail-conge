@@ -207,6 +207,7 @@
         .btn-modify {
             float: right;
             margin-top: -10px;
+            width: max-content;
         }
 
         .btn-edit:hover,
@@ -255,10 +256,46 @@
         .info-label {
             font-weight: 600;
             color: var(--text-muted);
+            width: 150px;
         }
 
         .info-value {
             color: var(--text-color);
+            flex: 1;
+            text-align: right;
+        }
+
+        /* Styles pour le formulaire d'édition */
+        .edit-form .info-row {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .edit-form label.info-label {
+            width: 150px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .edit-form input[type="text"],
+        .edit-form input[type="email"] {
+            flex: 1;
+            padding: 6px 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            color: var(--text-color);
+            background-color: var(--card-bg);
+            transition: border-color 0.3s;
+        }
+
+        .edit-form input[type="text"]:focus,
+        .edit-form input[type="email"]:focus {
+            border-color: var(--primary-color);
+            outline: none;
         }
 
         /* Responsive */
@@ -271,6 +308,22 @@
             .profile-right {
                 width: 100% !important;
             }
+        }
+        /* Ajout du style pour input type password */
+        .edit-form input[type="password"] {
+            flex: 1;
+            padding: 6px 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            color: var(--text-color);
+            background-color: var(--card-bg);
+            transition: border-color 0.3s;
+        }
+
+        .edit-form input[type="password"]:focus {
+            border-color: var(--primary-color);
+            outline: none;
         }
     </style>
 </head>
@@ -324,44 +377,127 @@
 
         <!-- PROFIL DROITE -->
         <div class="profile-right">
-            <a href="#" class="btn-modify">Modifier</a>
-            <div class="tabs">
-                <div class="tab active">Profil</div>
-            </div>
+            <a href="#" id="btn-edit" class="btn-modify">Modifier</a>
 
-            <div class="info-section">
+            <!-- Section affichage normale -->
+            <div class="info-section" id="display-section">
                 <div class="info-row"><span class="info-label">Nom :</span><span class="info-value" th:text="${rh.nom}">Doe</span></div>
                 <div class="info-row"><span class="info-label">Prénom :</span><span class="info-value" th:text="${rh.prenom}">John</span></div>
                 <div class="info-row"><span class="info-label">Téléphone :</span><span class="info-value" th:text="${rh.telephone}">0600000000</span></div>
                 <div class="info-row"><span class="info-label">Email :</span><span class="info-value" th:text="${rh.email}">john@exemple.com</span></div>
                 <div class="info-row"><span class="info-label">Mot de passe :</span><span class="info-value">••••••••</span></div>
-                <div class="info-row"><span class="info-label">Rôle :</span><span class="info-value" th:text="${role}">RH</span></div>
-                <div class="info-row"><span class="info-label">Département :</span>
-                    <span th:if="${rh.departement != null}" th:text="${rh.departement.nom}"></span>
-                    <span th:if="${rh.departement == null}">Aucun département</span>
-                </div>
+<div class="info-row"><span class="info-label">CIN :</span><span class="info-value" th:text="${rh.cin}">RH</span></div>
+               <div class="info-row"><span class="info-label">Département :</span>
+  <span th:if="${rh.departement != null}" th:text="${rh.departement.nom}"></span>
+  <span th:if="${rh.departement == null}">Aucun département</span>
+</div>
+
                 <div class="info-row"><span class="info-label">Solde de congé :</span><span class="info-value" th:text="${rh.soldeConge + ' jours'}">20 jours</span></div>
             </div>
+
+            <!-- Formulaire de modification (caché par défaut) -->
+            <form id="edit-form" class="edit-form" style="display:none;" method="post" th:action="@{/profil/save}" th:object="${rh}">
+                <input type="hidden" th:field="*{id}" />
+
+                <div class="info-row">
+                    <label class="info-label" for="nom">Nom :</label>
+                    <input type="text" id="nom" th:field="*{nom}" required />
+                </div>
+                <div class="info-row">
+                    <label class="info-label" for="prenom">Prénom :</label>
+                    <input type="text" id="prenom" th:field="*{prenom}" required />
+                </div>
+                <div class="info-row">
+                    <label class="info-label" for="telephone">Téléphone :</label>
+                    <input type="text" id="telephone" th:field="*{telephone}" required />
+                </div>
+                <div class="info-row">
+                    <label class="info-label" for="email">Email :</label>
+                    <input type="email" id="email" th:field="*{email}" required />
+                </div>
+                <div class="info-row">
+                    <label class="info-label" for="cin">CIN :</label>
+                    <input type="text" id="cin" th:field="*{cin}" required />
+                </div>
+                <!-- Champ solde de congé -->
+                <div class="info-row">
+                    <label class="info-label" for="soldeConge">Solde de congé (jours) :</label>
+                    <input type="number" id="soldeConge" th:field="*{soldeConge}" min="0" required />
+                </div>
+
+                <!-- Champ département -->
+                <div class="info-row">
+                    <label class="info-label" for="departementId">Département :</label>
+                  <select th:field="*{departement.id}">
+    <option th:each="dept : ${departements}" 
+            th:value="${dept.id}" 
+            th:text="${dept.nom}"></option>
+</select>
+
+
+                </div>
+
+                <div class="info-row">
+                    <label class="info-label" for="motDePasse">Mot de passe :</label>
+                    <input type="password" id="motDePasse" th:field="*{motDePasse}" placeholder="Laisser vide pour ne pas changer" />
+                </div>
+                <div class="info-row">
+                    <label class="info-label" for="confirm_password">Confirmer mot de passe :</label>
+                    <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirmez le mot de passe" />
+                </div>
+
+                <div style="margin-top: 15px;">
+                    <button type="submit" class="btn-modify">Enregistrer</button>
+                    <button type="button" id="btn-cancel" class="btn-modify" style="background:#999; margin-left: 10px;">Annuler</button>
+                </div>
+            </form>
+
         </div>
     </div>
 </div>
 
 <script>
+document.addEventListener('DOMContentLoaded', () => {
     const toggleBtn = document.getElementById('theme-toggle');
     const body = document.body;
 
-    // On load, check localStorage
+    // Chargement du thème depuis localStorage
     if(localStorage.getItem('theme') === 'dark') {
         body.classList.add('dark-theme');
-        toggleBtn.innerHTML = '<i class="fa fa-sun"></i>';
+        if(toggleBtn) toggleBtn.innerHTML = '<i class="fa fa-sun"></i>';
     }
 
-    toggleBtn.addEventListener('click', () => {
-        body.classList.toggle('dark-theme');
-        const isDark = body.classList.contains('dark-theme');
-        toggleBtn.innerHTML = isDark ? '<i class="fa fa-sun"></i>' : '<i class="fa fa-moon"></i>';
-        localStorage.setItem('theme', isDark ? 'dark' : 'light');
-    });
+    if(toggleBtn) {
+        toggleBtn.addEventListener('click', () => {
+            body.classList.toggle('dark-theme');
+            const isDark = body.classList.contains('dark-theme');
+            toggleBtn.innerHTML = isDark ? '<i class="fa fa-sun"></i>' : '<i class="fa fa-moon"></i>';
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        });
+    }
+
+    // Gestion affichage formulaire modification
+    const btnEdit = document.getElementById('btn-edit');
+    const btnCancel = document.getElementById('btn-cancel');
+    const displaySection = document.getElementById('display-section');
+    const editForm = document.getElementById('edit-form');
+
+    if(btnEdit && btnCancel && displaySection && editForm) {
+        btnEdit.addEventListener('click', (e) => {
+            e.preventDefault();
+            displaySection.style.display = 'none';
+            editForm.style.display = 'block';
+            btnEdit.style.display = 'none';
+        });
+
+        btnCancel.addEventListener('click', (e) => {
+            e.preventDefault();
+            editForm.style.display = 'none';
+            displaySection.style.display = 'block';
+            btnEdit.style.display = 'inline-block';
+        });
+    }
+});
 </script>
 
 </body>

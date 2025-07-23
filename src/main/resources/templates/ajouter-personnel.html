@@ -6,13 +6,40 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --bg-color: #f6f6f6;
+            --text-color: #000000;
+            --primary-color: #0074C7;
+            --header-bg: #f3f3f3;
+            --form-bg: #ffffff;
+            --input-bg: #fffdfa;
+            --input-border: #0074C7;
+            --btn-bg: linear-gradient(90deg, #0074C7 0%, #0074C7 100%);
+            --btn-hover-bg: linear-gradient(90deg, #5AAEFF 0%, #5AAEFF 100%);
+        }
+
+        .dark-theme {
+            --bg-color: #1e1e1e;
+            --text-color: #f0f0f0;
+            --primary-color: #5AAEFF;
+            --header-bg: #2c2c2c;
+            --form-bg: #2a2a2a;
+            --input-bg: #3a3a3a;
+            --input-border: #5AAEFF;
+            --btn-bg: linear-gradient(90deg, #5AAEFF 0%, #5AAEFF 100%);
+            --btn-hover-bg: linear-gradient(90deg, #0074C7 0%, #0074C7 100%);
+        }
+
         body {
             margin: 0;
             font-family: 'Segoe UI', Arial, sans-serif;
             display: flex;
             height: 100vh;
-            background: #f6f6f6;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
         }
+
         .sidebar {
             width: 240px;
             background-color: #0074C7;
@@ -25,12 +52,14 @@
             box-shadow: 2px 0 12px #e9953d22;
             padding: 0;
         }
+
         .sidebar-header {
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 32px 0 18px 0;
         }
+
         .sidebar-logo {
             width: 90px;
             height: 90px;
@@ -40,6 +69,7 @@
             box-shadow: 0 2px 8px #fff2;
             margin-bottom: 10px;
         }
+
         .sidebar-title {
             margin: 0;
             font-size: 22px;
@@ -47,11 +77,13 @@
             letter-spacing: 1px;
             color: #fff;
         }
+
         .sidebar-menu {
             display: flex;
             flex-direction: column;
             gap: 2px;
         }
+
         .sidebar-link {
             display: flex;
             align-items: center;
@@ -64,57 +96,69 @@
             border-left: 4px solid transparent;
             transition: background 0.18s, border-left-color 0.18s;
         }
+
         .sidebar-link i {
             font-size: 20px;
             min-width: 20px;
         }
+
         .sidebar-link:hover, .sidebar-link.active {
             background: #fff2;
             color: #fff;
             border-left: 4px solid #fff;
         }
+
         .sidebar-footer {
             margin-bottom: 30px;
         }
+
         .sidebar-footer .sidebar-link {
             color: #fff;
             opacity: 0.85;
             border-left: 4px solid transparent;
         }
+
         .sidebar-footer .sidebar-link:hover {
             opacity: 1;
             border-left: 4px solid #fff;
             background: #fff2;
         }
+
         /* Main container */
         .main-container {
             flex: 1;
             display: flex;
             flex-direction: column;
         }
+
         /* Header */
         .header {
-            height: 60px;
-            background-color: #f3f3f3;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            padding: 0 20px;
-            border-bottom: 1px solid #ccc;
-            box-shadow: 0 2px 8px #e9953d11;
-        }
+    height: 60px;
+    background-color: var(--header-bg);
+    display: flex;
+    align-items: center;
+    justify-content: space-between; 
+    padding: 0 20px;
+    border-bottom: 1px solid #ccc;
+    box-shadow: 0 2px 8px rgba(0, 116, 199, 0.15); 
+    transition: background-color 0.3s;
+}
+
+
         .header a {
             text-decoration: none;
-            color: #0074C7;
+            color: var(--primary-color);
             display: flex;
             align-items: center;
             font-weight: 600;
             font-size: 17px;
         }
+
         .header a i {
             margin-right: 8px;
             font-size: 24px;
         }
+
         .main-content {
             flex: 1;
             display: flex;
@@ -122,11 +166,14 @@
             justify-content: center;
             align-items: center;
             padding: 40px 0;
+            background-color: var(--bg-color);
+            transition: background-color 0.3s;
         }
+
         .form-card {
-            background: #fff;
+            background-color: var(--form-bg);
             border-radius: 22px;
-            box-shadow: 0 4px 24px #e9953d33;
+box-shadow: 0 4px 24px rgba(0, 116, 199, 0.9);
             padding: 40px 42px 32px 42px;
             min-width: 340px;
             max-width: 430px;
@@ -135,18 +182,22 @@
             flex-direction: column;
             align-items: center;
             animation: fadeIn 0.6s;
+            transition: background-color 0.3s, box-shadow 0.3s;
         }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(40px);}
             to { opacity: 1; transform: none;}
         }
+
         .form-card h2 {
-            color: #0074C7;
+            color: var(--primary-color);
             margin-bottom: 20px;
             font-size: 26px;
             font-weight: 800;
             letter-spacing: 1px;
         }
+
         .steps-indicator {
             display: flex;
             justify-content: center;
@@ -154,12 +205,13 @@
             margin-bottom: 24px;
             gap: 10px;
         }
+
         .step-dot {
             width: 22px;
             height: 22px;
-            background: #0074C7;
+            background: var(--primary-color);
             border-radius: 50%;
-            border: 2px solid #0074C7;
+            border: 2px solid var(--primary-color);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -168,31 +220,37 @@
             font-size: 13px;
             transition: background 0.2s, border-color 0.2s;
         }
+
         .step-dot.active {
-            background: #0074C7;
-            border-color: #0074C7;
+            background: var(--primary-color);
+            border-color: var(--primary-color);
             color: #fff;
         }
+
         .step-dot.completed {
             background: #56c08e;
             border-color: #56c08e;
         }
+
         .step-label {
             font-size: 13px;
             font-weight: 600;
-            color: #0074C7;
+            color: var(--primary-color);
             margin-left: 4px;
         }
+
         .step-form {
             width: 100%;
             display: none;
             flex-direction: column;
             align-items: center;
         }
+
         .step-form.active {
             display: flex;
             animation: fadeIn 0.4s;
         }
+
         .form-group {
             width: 100%;
             margin-bottom: 18px;
@@ -200,30 +258,35 @@
             flex-direction: column;
             align-items: flex-start;
         }
+
         .form-group label {
             font-size: 15px;
             font-weight: 600;
-            color: #0074C7;
+            color: var(--primary-color);
             margin-bottom: 5px;
             display: block;
         }
+
         .form-group input,
         .form-group select {
             width: 100%;
             padding: 10px 13px;
             border-radius: 10px;
-            border: 1.5px solid #0074C7;
+            border: 1.5px solid var(--input-border);
             font-size: 15px;
-            background: #fffdfa;
-            transition: border 0.18s;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            transition: border-color 0.18s, background-color 0.3s, color 0.3s;
         }
+
         .form-group input:focus,
         .form-group select:focus {
-            border: 2px solid #0074C7;
+            border: 2px solid var(--primary-color);
             outline: none;
         }
+
         .btn-step, .btn-add {
-            background: linear-gradient(90deg,#0074C7 0%,#0074C7 100%);
+            background: var(--btn-bg);
             color: #fff;
             font-size: 17px;
             font-weight: 700;
@@ -238,14 +301,16 @@
             align-items: center;
             gap: 8px;
         }
+
         .btn-step:hover, .btn-add:hover {
-            background: linear-gradient(90deg,#5AAEFF 0%, #5AAEFF 100%);
+            background: var(--btn-hover-bg);
             transform: scale(1.04);
         }
+
         .btn-back {
             background: #fff;
-            color: #0074C7;
-            border: 1.5px solid #0074C7;
+            color: var(--primary-color);
+            border: 1.5px solid var(--primary-color);
             font-size: 16px;
             border-radius: 8px;
             padding: 8px 20px;
@@ -253,9 +318,11 @@
             cursor: pointer;
             transition: background 0.19s, color 0.19s, border 0.19s;
         }
+
         .btn-back:hover {
             background: #E0E6F0;
         }
+
         .step-footer {
             width: 100%;
             display: flex;
@@ -263,6 +330,22 @@
             align-items: center;
             margin-top: 8px;
         }
+
+        /* Style du bouton toggle mode sombre */
+        .theme-toggle-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 22px;
+            color: var(--primary-color);
+            margin-left: 15px;
+            transition: color 0.3s;
+        }
+
+        .dark-theme .theme-toggle-btn {
+            color: var(--text-color);
+        }
+
         @media (max-width: 900px) {
             .main-content { padding: 20px 0; }
             .form-card { min-width: 240px; padding: 18px 10px; }
@@ -283,17 +366,16 @@
             <a th:href="@{/dashboard-rh}" th:classappend="${activePage == 'dashboard'} ? ' active'" class="sidebar-link">
                 <i class="fa fa-tachometer-alt"></i> <span>Tableau de bord</span>
             </a>
-           <a th:href="@{/personnel/ajouter}" th:classappend="${activePage == 'personnel'} ? ' active'" class="sidebar-link">
-    <i class="fa fa-users"></i> <span>Gestion du personnel</span>
-</a>
-
+            <a th:href="@{/personnel/ajouter}" th:classappend="${activePage == 'personnel'} ? ' active'" class="sidebar-link">
+                <i class="fa fa-users"></i> <span>Gestion du personnel</span>
+            </a>
             <a href="#" th:classappend="${activePage == 'conges'} ? ' active'" class="sidebar-link">
                 <i class="fa fa-wallet"></i> <span>Soldes congés</span>
             </a>
             <a href="#" th:classappend="${activePage == 'historique'} ? ' active'" class="sidebar-link">
                 <i class="fa fa-history"></i> <span>Historique validations</span>
             </a>
-             <a th:href="@{/conge/demande}" th:classappend="${activePage == 'demandeConge'} ? ' active'" class="sidebar-link">
+            <a th:href="@{/conge/demande}" th:classappend="${activePage == 'demandeConge'} ? ' active'" class="sidebar-link">
                 <i class="fa fa-plane-departure"></i> <span>Demande de congé</span>
             </a>
         </nav>
@@ -309,20 +391,22 @@
             <i class="fa fa-user-circle fa-lg"></i>
             <span th:text="${rh.role}">RH</span>
         </a>
+        <button id="theme-toggle" class="theme-toggle-btn" title="Activer/désactiver mode sombre">
+            <i class="fa fa-moon"></i>
+        </button>
     </div>
-   <div class="main-content">
+    <div class="main-content">
         <div class="form-card">
             <h2>Ajouter un nouveau personnel</h2>
-<!-- Message d'erreur -->
-<div th:if="${error}" class="alert alert-danger" role="alert">
-    <span th:text="${error}"></span>
-</div>
+            <!-- Message d'erreur -->
+            <div th:if="${error}" class="alert alert-danger" role="alert">
+                <span th:text="${error}"></span>
+            </div>
 
-<!-- Message de succès -->
-<div th:if="${success}" class="alert alert-success" role="alert">
-    Personnel ajouté avec succès.
-</div>
-
+            <!-- Message de succès -->
+            <div th:if="${success}" class="alert alert-success" role="alert">
+                Personnel ajouté avec succès.
+            </div>
 
             <div class="steps-indicator">
                 <div class="step-dot active" id="stepDot1">1</div>
@@ -331,7 +415,7 @@
                 <div class="step-dot" id="stepDot4">4</div>
             </div>
 
-<form th:action="@{/ajouter}" method="post" th:object="${personnel}">
+            <form th:action="@{/ajouter}" method="post" th:object="${personnel}">
                 <!-- Étape 1 -->
                 <div class="step-form active" id="step1">
                     <div class="form-group">
@@ -380,18 +464,15 @@
                     </div>
                     <div class="form-group">
                         <label for="role">Rôle :</label>
-    <input type="text" name="role" id="role" required>
+                        <input type="text" name="role" id="role" required>
                     </div>
                     <div class="form-group">
                         <label for="departement">Département</label>
-                      <select th:field="*{departementId}" class="form-control">
-    <option value="informatique">Informatique</option>
-    <option value="finance">Finance</option>
-    <option value="rh">Ressources Humaines</option>
-</select>
-
-
-
+                        <select th:field="*{departementId}" class="form-control" name="departementId" id="departement">
+                            <option value="informatique">Informatique</option>
+                            <option value="finance">Finance</option>
+                            <option value="rh">Ressources Humaines</option>
+                        </select>
                     </div>
                     <div class="step-footer">
                         <button type="button" class="btn-back" onclick="prevStep(3)"><i class="fa fa-arrow-left"></i> Retour</button>
@@ -451,6 +532,23 @@
             document.getElementById('stepDot' + prev).classList.remove('completed');
         }
     }
+
+    // Gestion du mode sombre
+    const toggleBtn = document.getElementById('theme-toggle');
+    const body = document.body;
+
+    // Charger thème depuis localStorage
+    if (localStorage.getItem('theme') === 'dark') {
+        body.classList.add('dark-theme');
+        toggleBtn.innerHTML = '<i class="fa fa-sun"></i>';
+    }
+
+    toggleBtn.addEventListener('click', () => {
+        body.classList.toggle('dark-theme');
+        const isDark = body.classList.contains('dark-theme');
+        toggleBtn.innerHTML = isDark ? '<i class="fa fa-sun"></i>' : '<i class="fa fa-moon"></i>';
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    });
 </script>
 
 </body>

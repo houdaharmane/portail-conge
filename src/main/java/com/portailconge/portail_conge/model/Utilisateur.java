@@ -11,9 +11,7 @@ public class Utilisateur {
     private int id;
 
     private String matricule;
-
     private String nom;
-
     private String prenom;
 
     @Column(unique = true)
@@ -27,27 +25,14 @@ public class Utilisateur {
     private String cin;
 
     private Integer soldeConge;
-    
 
-    @Column(name = "departement_id")
-    private Integer departementId;
-    
+    @ManyToOne
+    @JoinColumn(name = "departement_id")
+    private Departement departement;
 
     private String role;
-    @ManyToOne
-@JoinColumn(name = "departement_id", insertable = false, updatable = false)
-private Departement departement;
-
 
     // Getters et setters
-    public Departement getDepartement() {
-    return departement;
-}
-
-public void setDepartement(Departement departement) {
-    this.departement = departement;
-}
-
 
     public int getId() {
         return id;
@@ -121,12 +106,12 @@ public void setDepartement(Departement departement) {
         this.soldeConge = soldeConge;
     }
 
-    public Integer getDepartementId() {
-        return departementId;
+    public Departement getDepartement() {
+        return departement;
     }
 
-    public void setDepartementId(Integer departementId) {
-        this.departementId = departementId;
+    public void setDepartement(Departement departement) {
+        this.departement = departement;
     }
 
     public String getRole() {
