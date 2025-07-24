@@ -3,6 +3,7 @@ package com.portailconge.portail_conge.controller;
 import com.portailconge.portail_conge.model.Departement;
 import com.portailconge.portail_conge.model.Personnel;
 import com.portailconge.portail_conge.model.Utilisateur;
+import com.portailconge.portail_conge.repository.DepartementRepository;
 import com.portailconge.portail_conge.service.AuthService;
 
 import jakarta.servlet.http.HttpSession;
@@ -18,6 +19,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class PersonnelController {
 
     @Autowired
+    private DepartementRepository departementRepository;
+
+    @Autowired
     private AuthService authService;
 
     @GetMapping("/ajouter")
@@ -28,6 +32,7 @@ public class PersonnelController {
         }
 
         model.addAttribute("rh", rh);
+        model.addAttribute("departements", departementRepository.findAll());
 
         model.addAttribute("personnel", new Personnel());
 
@@ -42,7 +47,7 @@ public class PersonnelController {
             @RequestParam("numero") String telephone,
             @RequestParam String email,
             @RequestParam String role,
-            @RequestParam Integer departement, // c'est l'id du département
+            @RequestParam Integer departement,
             @RequestParam String cin,
             @RequestParam String motDePasse,
             @RequestParam Integer soldeConge,
@@ -95,6 +100,7 @@ public class PersonnelController {
         }
 
         return "redirect:/personnel/ajouter";
+
     }
 
 }
