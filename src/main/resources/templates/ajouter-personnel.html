@@ -353,6 +353,52 @@ box-shadow: 0 4px 24px rgba(0, 116, 199, 0.9);
             .step-dot { width: 18px; height: 18px; font-size: 11px;}
             .step-label { font-size: 11px; }
         }
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1.5px solid #c3e6cb;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    text-align: center;
+    box-shadow: 0 0 10px #a8d5a2;
+    margin-bottom: 20px;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1.5px solid #f5c6cb;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    text-align: center;
+    box-shadow: 0 0 10px #e5a1a8;
+    margin-bottom: 20px;
+}
+#message-container .alert {
+    padding: 15px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    opacity: 0.95;
+    margin-bottom: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+.alert-success {
+    background-color: #4caf50; 
+    color: white;
+}
+
+.alert-danger {
+    background-color: #f44336; 
+    color: white;
+}
+
+
     </style>
 </head>
 <body>
@@ -398,15 +444,7 @@ box-shadow: 0 4px 24px rgba(0, 116, 199, 0.9);
     <div class="main-content">
         <div class="form-card">
             <h2>Ajouter un nouveau personnel</h2>
-            <!-- Message d'erreur -->
-            <div th:if="${error}" class="alert alert-danger" role="alert">
-                <span th:text="${error}"></span>
-            </div>
-
-            <!-- Message de succès -->
-            <div th:if="${success}" class="alert alert-success" role="alert">
-                Personnel ajouté avec succès.
-            </div>
+           
 
             <div class="steps-indicator">
                 <div class="step-dot active" id="stepDot1">1</div>
@@ -414,8 +452,18 @@ box-shadow: 0 4px 24px rgba(0, 116, 199, 0.9);
                 <div class="step-dot" id="stepDot3">3</div>
                 <div class="step-dot" id="stepDot4">4</div>
             </div>
+<!-- Conteneur des messages -->
+<div id="message-container" style="position: fixed; top: 20px; right: 20px; width: 320px; z-index: 9999;">
+    <div th:if="${error}" class="alert alert-danger" role="alert" id="error-message" style="display: none;">
+        <span th:text="${error}"></span>
+    </div>
 
-<form th:action="@{/personnel/ajouter}" method="post" th:object="${personnel}">
+    <div th:if="${success}" class="alert alert-success" role="alert" id="success-message" style="display: none;">
+        Personnel ajouté avec succès.
+    </div>
+</div>
+
+<form th:action="@{/personnel/ajouter}" method="post" th:object="${personnel}"  autocomplete="off">
                 <!-- Étape 1 -->
                 <div class="step-form active" id="step1">
                     <div class="form-group">
@@ -426,10 +474,11 @@ box-shadow: 0 4px 24px rgba(0, 116, 199, 0.9);
                         <label for="nom">Nom</label>
                         <input type="text" id="nom" name="nom" required />
                     </div>
-                    <div class="form-group">
-                        <label for="prenom">Prénom</label>
-                        <input type="text" id="prenom" name="prenom" required />
-                    </div>
+                      <div class="form-group">
+        <label for="prenom">Prénom</label>
+<input type="text" class="form-control" id="prenom" name="prenom"
+       placeholder="Entrez le prénom" autocomplete="off" />
+    </div>
                     <div class="step-footer">
                         <span></span>
                         <button type="button" class="btn-step" onclick="nextStep(1)">Suivant <i class="fa fa-arrow-right"></i></button>
@@ -463,8 +512,18 @@ box-shadow: 0 4px 24px rgba(0, 116, 199, 0.9);
                         <input type="text" id="cin" name="cin" required />
                     </div>
                     <div class="form-group">
-                        <label for="role">Rôle :</label>
-                        <input type="text" name="role" id="role" required>
+                       <div class="form-group">
+  <label for="role">Rôle :</label>
+  <select id="role" name="role" required>
+    <option value="">-- Choisir un rôle --</option>
+    <option value="PERSONNEL">Personnel</option>
+    <option value="RH">RH</option>
+    <option value="RESPONSABLE">Responsable</option>
+    <option value="ADMISSION">Admission</option>
+    <option value="DIRECTEUR">Directeur</option>
+  </select>
+</div>
+
                     </div>
                     <div class="form-group">
                         <label for="departement">Département</label>
@@ -499,6 +558,38 @@ box-shadow: 0 4px 24px rgba(0, 116, 199, 0.9);
 </div>
 
 <script>
+     document.querySelectorAll('input').forEach(input => {
+      input.addEventListener('input', () => {
+        input.classList.toggle('filled', input.value.trim() !== '');
+      });
+    });
+    document.addEventListener('DOMContentLoaded', () => {
+    const errorMsg = document.getElementById('error-message');
+    const successMsg = document.getElementById('success-message');
+
+    function showMessage(msgElement) {
+        if (msgElement) {
+            msgElement.style.display = 'block';
+            setTimeout(() => {
+                // Animation de disparition en fondu
+                msgElement.style.opacity = '0';
+                setTimeout(() => {
+                    msgElement.style.display = 'none';
+                    msgElement.style.opacity = '1'; 
+                }, 600);
+            }, 5000);
+            
+            // Cacher le message au clic aussi
+            msgElement.addEventListener('click', () => {
+                msgElement.style.display = 'none';
+            });
+        }
+    }
+
+    showMessage(errorMsg);
+    showMessage(successMsg);
+});
+
     function nextStep(current) {
         // Valide les champs de l'étape actuelle avant de passer à la suivante
         const step = document.getElementById('step' + current);

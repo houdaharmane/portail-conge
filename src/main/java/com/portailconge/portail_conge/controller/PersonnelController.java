@@ -86,7 +86,6 @@ public class PersonnelController {
             personnel.setEmail(email);
             personnel.setCin(cin);
 
-            // Ici tu peux garder departementId comme Integer dans Personnel
             personnel.setDepartementId(departement);
 
             personnel.setUtilisateur(utilisateur); // liaison
