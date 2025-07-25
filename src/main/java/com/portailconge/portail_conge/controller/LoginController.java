@@ -25,6 +25,12 @@ public class LoginController {
     @PostMapping("/login")
     public String login(@RequestParam String email, @RequestParam String password, HttpSession session, Model model) {
         Utilisateur utilisateur = utilisateurRepository.findByEmail(email).orElse(null);
+        String role = utilisateur.getRole();
+
+        if (role == null) {
+            model.addAttribute("error", "Le rôle de l'utilisateur n'est pas défini, contactez l'administrateur.");
+            return "login";
+        }
 
         if (utilisateur != null && utilisateur.getMotDePasse().equals(password)) {
             session.setAttribute("utilisateur", utilisateur);
@@ -61,6 +67,17 @@ public class LoginController {
 
         model.addAttribute("utilisateur", utilisateur);
         return "dashboard-personnel";
+    }
+
+    @GetMapping("/profil-personnel")
+    public String afficherProfil(HttpSession session, Model model) {
+        Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
+        if (utilisateur == null) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("utilisateur", utilisateur);
+        return "profil-personnel";
     }
 
 }

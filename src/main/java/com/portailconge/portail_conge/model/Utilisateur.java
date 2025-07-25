@@ -9,7 +9,7 @@ public class Utilisateur {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
+    private String photoUrl;
     private String matricule;
     private String nom;
     private String prenom;
@@ -33,6 +33,13 @@ public class Utilisateur {
     private String role;
 
     // Getters et setters
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
+    }
 
     public int getId() {
         return id;

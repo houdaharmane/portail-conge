@@ -102,4 +102,37 @@ public class PersonnelController {
 
     }
 
+    // Interface personnel : tableau de bord
+    @GetMapping("/dashboard")
+    public String showDashboard(Model model) {
+        model.addAttribute("activePage", "dashboard");
+        return "dashboard-personnel";
+    }
+
+    // Interface personnel : profil
+    @GetMapping("/profil")
+    public String showProfil(HttpSession session, Model model) {
+        Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
+        System.out.println("Session utilisateur : " + utilisateur);
+
+        if (utilisateur == null) {
+            System.out.println("Utilisateur null, redirection vers login");
+
+            return "redirect:/login";
+        }
+        model.addAttribute("activePage", "profil");
+
+        session.setAttribute("utilisateur", utilisateur);
+        model.addAttribute("utilisateur", utilisateur);
+        model.addAttribute("personnelrole", utilisateur.getRole());
+        return "profil-personnel";
+    }
+
+    @GetMapping("/test-session")
+    @ResponseBody
+    public String testSession(HttpSession session) {
+        Object utilisateur = session.getAttribute("utilisateur");
+        return utilisateur != null ? "Session OK: " + utilisateur.toString() : "Session vide";
+    }
+
 }

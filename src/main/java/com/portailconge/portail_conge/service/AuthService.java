@@ -25,4 +25,5 @@ public class AuthService {
         personnel.setMatricule(utilisateur.getMatricule());
         personnelRepository.save(personnel);
     }
+
 }

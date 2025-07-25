@@ -175,6 +175,21 @@
                 gap: 18px;
             }
         }
+        .sidebar-logo {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #fff; 
+    box-shadow: 0 2px 8px #fff2;
+    margin-bottom: 10px;
+}
+
+.dark-theme .sidebar-logo {
+    background: #2a2a2a; 
+    box-shadow: 0 2px 8px #0005;
+}
+
     </style>
 </head>
 <body>
@@ -185,16 +200,18 @@
             <img src="/img/modepbg.png" alt="Logo MODEP" class="sidebar-logo">
         </div>
        <nav>
-    <a th:href="@{/dashboard-rh}" th:classappend="${activePage == 'dashboard'} ? ' active'" class="sidebar-link">
-        <i class="fa fa-home"></i> <span>Tableau de bord</span>
-    </a>
+   <a th:href="@{/personnel/dashboard}" th:classappend="${activePage == 'dashboard'} ? ' active'" class="sidebar-link">
+    <i class="fa fa-home"></i> <span>Tableau de bord</span>
+</a>
+
+
     
     <a th:href="@{/conges/demande}" th:classappend="${activePage == 'conges'} ? ' active'" class="sidebar-link">
         <i class="fa fa-calendar-plus"></i> <span>Mes demandes</span>
     </a>
-    <a th:href="@{/profil}" th:classappend="${activePage == 'historique'} ? ' active'" class="sidebar-link">
-        <i class="fa fa-user"></i> <span>Mon profil</span>
-    </a>
+ <a th:href="@{/personnel/profil}" th:classappend="${activePage == 'profil'} ? ' active'" class="sidebar-link">
+    <i class="fa fa-user"></i> <span>Mon profil</span>
+</a>
      <a th:href="@{/conge/demande}" th:classappend="${activePage == 'demandeConge'} ? ' active'" class="sidebar-link">
                 <i class="fa fa-plane-departure"></i> <span>Demande de congé</span>
             </a>
