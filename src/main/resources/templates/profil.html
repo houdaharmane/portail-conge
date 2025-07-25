@@ -420,7 +420,8 @@
         <!-- PROFIL GAUCHE -->
         <div class="profile-left">
              <!-- Image de profil -->
-<img th:src="${rh.photoUrl != null} ? @{${rh.photoUrl}} : @{/img/profile.png}" alt="Photo de profil">
+<img th:src="@{/profil/photo/{id}(id=${rh.id})}" alt="Photo de profil" />
+
             <h2 th:text="${rh.nom} + ' ' + ${rh.prenom}"></h2>
             <p>
                 <span th:text="${rh.role}">Responsable RH</span><br>
@@ -452,7 +453,7 @@
             </div>
 
             <!-- Formulaire de modification (caché par défaut) -->
-            <form id="edit-form" class="edit-form" style="display:none;" method="post" th:action="@{/profil/save}" th:object="${rh}">
+            <form id="edit-form" class="edit-form" style="display:none;" method="post" th:action="@{/profil/save}" th:object="${rh}" enctype="multipart/form-data">
                 <input type="hidden" th:field="*{id}" />
 
                 <div class="info-row">
@@ -501,6 +502,10 @@
                     <label class="info-label" for="confirm_password">Confirmer mot de passe :</label>
                     <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirmez le mot de passe" />
                 </div>
+                <div class="info-row">
+        <label class="info-label" for="imageFile">Photo de profil :</label>
+        <input type="file" id="imageFile" name="imageFile" accept="image/*" />
+    </div>
 
                 <div style="margin-top: 15px;">
                     <button type="submit" class="btn-modify">Enregistrer</button>

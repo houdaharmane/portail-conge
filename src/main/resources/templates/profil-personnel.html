@@ -240,15 +240,14 @@
             gap: 40px;
             flex-wrap: wrap;
         }
-.left-side {
-    flex: none;
-    width: 500px; 
-    background: var(--card-bg);
-    padding: 24px;
-    border-radius: 12px;
-    box-shadow: 0 2px 12px var(--card-shadow);
-}
-
+        .left-side {
+            flex: none;
+            width: 500px; 
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px var(--card-shadow);
+        }
 
         .right-side {
             flex: 2 1 600px;
@@ -336,8 +335,6 @@
             margin-bottom: 12px;
         }
 
-      
-
         .no-of-user-rate {
             font-size: 14px;
             color: var(--text-color);
@@ -398,73 +395,104 @@
             }
         }
         .left-side form fieldset {
-    border: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
+            border: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
 
-.left-side form legend {
-    font-size: 20px;
-    font-weight: bold;
-    color: var(--primary-color);
-    margin-bottom: 10px;
-}
+        .left-side form legend {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
 
-.left-side form label {
-    font-weight: 600;
-    color: var(--text-color);
-}
+        .left-side form label {
+            font-weight: 600;
+            color: var(--text-color);
+        }
 
-.left-side form input[type="text"],
-.left-side form input[type="email"] {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    background-color: var(--card-bg);
-    color: var(--text-color);
-    font-size: 15px;
-    transition: border 0.2s ease-in-out;
-}
+        .left-side form input[type="text"],
+        .left-side form input[type="email"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            font-size: 15px;
+            transition: border 0.2s ease-in-out;
+        }
 
-.left-side form input:focus {
-    border-color: var(--primary-color);
-    outline: none;
-    box-shadow: 0 0 0 2px #0074c733;
-}
-.form-row {
-    display: flex;
-    align-items: center;
-    margin-bottom: 12px;
-}
+        .left-side form input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 2px #0074c733;
+        }
+        .form-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
 
-.form-row label {
-    width: 150px; /* largeur fixe du label */
-    font-weight: bold;
-    margin-right: 10px;
-    color: var(--text-color);
-}
+        .form-row label {
+            width: 150px; /* largeur fixe du label */
+            font-weight: bold;
+            margin-right: 10px;
+            color: var(--text-color);
+        }
 
-.form-row input[type="text"],
-.form-row input[type="email"] {
-    flex: 1;
-    padding: 8px 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: var(--card-bg);
-    color: var(--text-color);
-}
+        .form-row input[type="text"],
+        .form-row input[type="email"] {
+            flex: 1;
+            padding: 8px 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+        }
 
-.form-row input:focus {
-    border-color: var(--primary-color);
-    outline: none;
-    box-shadow: 0 0 0 2px #7749f822;
-}
+        .form-row input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 2px #7749f822;
+        }
 
+        .profile-img-wrapper {
+            position: relative;
+            width: 180px;
+            height: 180px;
+        }
 
+        .profile-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid var(--primary-color);
+            box-shadow: 0 0 8px var(--primary-color);
+        }
+
+        .upload-icon {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            padding: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            transition: background 0.3s ease;
+        }
+
+        .upload-icon:hover {
+            background-color: var(--btn-hover-bg);
+        }
     </style>
 </head>
 <body>
@@ -504,79 +532,129 @@
     <div class="main-content">
 
         <div class="profile-header">
-            <div class="profile-img">
-                <img src="/img/profile.png" alt="Profile Image" />
+           <div class="profile-img-wrapper">
+<img th:src="@{/personnel/photo/{id}(id=${utilisateur.id})}" alt="Profile Image" id="profileImage" />
+               
+                <input type="file" id="imageUpload" name="photo" accept="image/*" style="display: none;" />
             </div>
+
             <div class="profile-nav-info">
                <h3 class="user-name" th:text="${utilisateur.prenom} + ' ' + ${utilisateur.nom}"></h3>
-<div class="address">
-    <p id="state" class="state" th:text="${utilisateur.departement != null} ? ${utilisateur.departement.nom}"></p>
-    <span id="country" class="country"></span>
-</div>
-
+               <div class="address">
+                   <p id="state" class="state" th:text="${utilisateur.departement != null} ? ${utilisateur.departement.nom}"></p>
+                   <span id="country" class="country"></span>
+               </div>
             </div>
-           <!--<div class="profile-option" title="Notifications">
-                <i class="fa fa-bell"></i>
-                <span class="alert-message" aria-label="3 nouvelles notifications">3</span>
-            </div>
-        </div>-->
+        </div>
 
         <div class="main-bd">
-<div class="left-side profile-side">
-    <form th:action="@{/personnel/modifier}" method="post">
-        <fieldset>
-            <legend>Informations personnelles</legend>
+            <div class="left-side profile-side">
 
-            <div class="form-row">
-                <label for="prenom">Prénom :</label>
-                <input type="text" name="prenom" id="prenom" th:value="${utilisateur.prenom}" required />
+                <form id="form-view" th:action="@{/personnel/modifier}" method="post">
+                    <fieldset>
+                        <legend>Informations personnelles</legend>
+
+                        <div class="form-row">
+                            <label for="prenom-view">Prénom :</label>
+                            <input type="text" id="prenom-view" name="prenom" th:value="${utilisateur.prenom}" disabled />
+                        </div>
+
+                        <div class="form-row">
+                            <label for="nom-view">Nom :</label>
+                            <input type="text" id="nom-view" name="nom" th:value="${utilisateur.nom}" disabled />
+                        </div>
+
+                        <div class="form-row">
+                            <label for="departement-view">Département :</label>
+                            <input type="text" id="departement-view" name="departement" th:value="${utilisateur.departement.nom}" disabled />
+                        </div>
+
+                        <div class="form-row">
+                            <label for="role-view">Rôle :</label>
+                            <input type="text" id="role-view" name="role" th:value="${utilisateur.role}" disabled />
+                        </div>
+
+                        <div class="form-row">
+                            <label for="cin-view">CIN :</label>
+                            <input type="text" id="cin-view" name="cin" th:value="${utilisateur.cin}" disabled />
+                        </div>
+
+                        <div class="form-row">
+                            <label for="telephone-view">Téléphone :</label>
+                            <input type="text" id="telephone-view" name="telephone" th:value="${utilisateur.telephone}" disabled />
+                        </div>
+
+                        <div class="form-row">
+                            <label for="email-view">Email :</label>
+                            <input type="email" id="email-view" name="email" th:value="${utilisateur.email}" disabled />
+                        </div>
+
+                        <div class="form-row">
+                            <label for="solde-view">Solde de congé :</label>
+                            <input type="text" id="solde-view" name="solde" th:value="${utilisateur.soldeConge}" disabled />
+                        </div>
+
+                        <div class="profile-btn">
+                            <button type="button" id="btn-edit"><i class="fa fa-edit"></i> Modifier</button>
+                        </div>
+                    </fieldset>
+                </form>
+
+<form id="form-edit" th:action="@{/personnel/modifier}" method="post" enctype="multipart/form-data" style="display:none;">
+                    <fieldset>
+                        <legend>Modifier Informations personnelles</legend>
+ <div class="form-row">
+        <label for="imageUpload">Photo de profil :</label>
+        <input type="file" id="imageUpload" name="photo" accept="image/*" />
+    </div>
+                        <div class="form-row">
+                            <label for="prenom-edit">Prénom :</label>
+                            <input type="text" id="prenom-edit" name="prenom" th:value="${utilisateur.prenom}" required />
+                        </div>
+
+                        <div class="form-row">
+                            <label for="nom-edit">Nom :</label>
+                            <input type="text" id="nom-edit" name="nom" th:value="${utilisateur.nom}" required />
+                        </div>
+
+                        <div class="form-row">
+                            <label for="departement-edit">Département :</label>
+                            <input type="text" id="departement-edit" name="departement" th:value="${utilisateur.departement.nom}" disabled />
+                        </div>
+
+                        <div class="form-row">
+                            <label for="role-edit">Rôle :</label>
+                            <input type="text" id="role-edit" name="role" th:value="${utilisateur.role}" disabled />
+                        </div>
+
+                        <div class="form-row">
+                            <label for="cin-edit">CIN :</label>
+                            <input type="text" id="cin-edit" name="cin" th:value="${utilisateur.cin}" required />
+                        </div>
+
+                        <div class="form-row">
+                            <label for="telephone-edit">Téléphone :</label>
+                            <input type="text" id="telephone-edit" name="telephone" th:value="${utilisateur.telephone}" required />
+                        </div>
+
+                        <div class="form-row">
+                            <label for="email-edit">Email :</label>
+                            <input type="email" id="email-edit" name="email" th:value="${utilisateur.email}" required />
+                        </div>
+
+                        <div class="form-row">
+                            <label for="solde-edit">Solde de congé :</label>
+                            <input type="text" id="solde-edit" name="solde" th:value="${utilisateur.soldeConge}" disabled />
+                        </div>
+
+                        <div class="profile-btn">
+                            <button type="submit"><i class="fa fa-save"></i> Enregistrer</button>
+                            <button type="button" id="btn-cancel"><i class="fa fa-times"></i> Annuler</button>
+                        </div>
+                    </fieldset>
+                </form>
+
             </div>
-
-            <div class="form-row">
-                <label for="nom">Nom :</label>
-                <input type="text" name="nom" id="nom" th:value="${utilisateur.nom}" required />
-            </div>
-
-            <div class="form-row">
-                <label for="departement">Département :</label>
-                <input type="text" name="departement" id="departement" th:value="${utilisateur.departement.nom}" disabled />
-            </div>
-
-            <div class="form-row">
-                <label for="role">Rôle :</label>
-                <input type="text" name="role" id="role" th:value="${utilisateur.role}" disabled />
-            </div>
-
-            <div class="form-row">
-                <label for="cin">CIN :</label>
-                <input type="text" name="cin" id="cin" th:value="${utilisateur.cin}" required />
-            </div>
-
-            <div class="form-row">
-                <label for="telephone">Téléphone :</label>
-                <input type="text" name="telephone" id="telephone" th:value="${utilisateur.telephone}" required />
-            </div>
-
-            <div class="form-row">
-                <label for="email">Email :</label>
-                <input type="email" name="email" id="email" th:value="${utilisateur.email}" required />
-            </div>
-
-            <div class="form-row">
-                <label for="solde">Solde de congé :</label>
-                <input type="text" name="solde" id="solde" th:value="${utilisateur.soldeConge}" disabled />
-            </div>
-
-            <div class="profile-btn">
-                <button type="submit"><i class="fa fa-edit"></i> Modifier</button>
-            </div>
-        </fieldset>
-        
-    </form>
-</div>
-
-
-</div>
 
 
         </div>
@@ -585,65 +663,45 @@
 </div>
 
 <script>
-    // Mode sombre toggle
-    const toggleBtn = document.getElementById('theme-toggle');
-    const body = document.body;
-    if (localStorage.getItem('theme') === 'dark') {
-        body.classList.add('dark-theme');
-        if (toggleBtn) toggleBtn.innerHTML = '<i class="fa fa-sun"></i>';
-    }
-    if (toggleBtn) {
-        toggleBtn.addEventListener('click', () => {
-            body.classList.toggle('dark-theme');
-            const isDark = body.classList.contains('dark-theme');
-            toggleBtn.innerHTML = isDark ? '<i class="fa fa-sun"></i>' : '<i class="fa fa-moon"></i>';
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        });
-    }
+    // Thème sombre / clair (optionnel)
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    themeToggleBtn.addEventListener('click', () => {
+        document.body.classList.toggle('dark-theme');
+        const icon = themeToggleBtn.querySelector('i');
+        icon.classList.toggle('fa-moon');
+        icon.classList.toggle('fa-sun');
+    });
 
-   
+    // Bascule entre formulaire lecture seule et édition
+    const btnEdit = document.getElementById('btn-edit');
+    const btnCancel = document.getElementById('btn-cancel');
+    const formView = document.getElementById('form-view');
+    const formEdit = document.getElementById('form-edit');
 
-    // Bio See More / See Less
-    const bio = document.querySelector('.bio');
-    if (bio) {
-        const fullText = bio.innerText.trim();
-        const truncateLength = 100;
+    btnEdit.addEventListener('click', () => {
+        formView.style.display = 'none';
+        formEdit.style.display = 'block';
+    });
 
-        function showShortBio() {
-            bio.innerText = fullText.substring(0, truncateLength) + (fullText.length > truncateLength ? '...' : '');
-            if (fullText.length > truncateLength) {
-                const seeMore = document.createElement('span');
-                seeMore.id = 'see-more-bio';
-                seeMore.innerText = ' See More';
-                seeMore.style.color = 'var(--primary-color)';
-                seeMore.style.cursor = 'pointer';
-                seeMore.style.fontWeight = '600';
-                seeMore.addEventListener('click', showFullBio);
-                bio.appendChild(seeMore);
-            }
+    btnCancel.addEventListener('click', () => {
+        formEdit.style.display = 'none';
+        formView.style.display = 'block';
+    });
+
+    // Optionnel : prévisualisation image de profil lors de l'upload
+    const imageUpload = document.getElementById('imageUpload');
+    const profileImage = document.getElementById('profileImage');
+
+    imageUpload.addEventListener('change', () => {
+        const file = imageUpload.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                profileImage.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
         }
-
-        function showFullBio() {
-            bio.innerText = fullText;
-            const seeLess = document.createElement('span');
-            seeLess.id = 'see-less-bio';
-            seeLess.innerText = ' See Less';
-            seeLess.style.color = 'var(--primary-color)';
-            seeLess.style.cursor = 'pointer';
-            seeLess.style.fontWeight = '600';
-            seeLess.addEventListener('click', showShortBio);
-            bio.appendChild(seeLess);
-        }
-
-        showShortBio();
-    }
-
-    const alertMessage = document.querySelector('.alert-message');
-    if (alertMessage) {
-        if (parseInt(alertMessage.innerText, 10) > 9) {
-            alertMessage.style.fontSize = '.7rem';
-        }
-    }
+    });
 </script>
 
 </body>

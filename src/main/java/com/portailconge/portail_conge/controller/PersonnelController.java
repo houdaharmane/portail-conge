@@ -8,16 +8,23 @@ import com.portailconge.portail_conge.service.AuthService;
 
 import jakarta.servlet.http.HttpSession;
 
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import com.portailconge.portail_conge.service.UtilisateurService;
+import org.springframework.http.HttpHeaders;
 
 @Controller
 @RequestMapping("/personnel")
 public class PersonnelController {
-
+    @Autowired
+    private UtilisateurService utilisateurService;
     @Autowired
     private DepartementRepository departementRepository;
 
@@ -133,6 +140,62 @@ public class PersonnelController {
     public String testSession(HttpSession session) {
         Object utilisateur = session.getAttribute("utilisateur");
         return utilisateur != null ? "Session OK: " + utilisateur.toString() : "Session vide";
+    }
+
+    @PostMapping("/modifier")
+    public String modifierProfil(
+            @RequestParam String prenom,
+            @RequestParam String nom,
+            @RequestParam String cin,
+            @RequestParam String telephone,
+            @RequestParam String email,
+            @RequestParam(value = "photo", required = false) MultipartFile imageFile,
+            Model model,
+            HttpSession session) {
+
+        Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
+        if (utilisateur == null) {
+            model.addAttribute("errorMessage", "Utilisateur non connecté.");
+            return "redirect:/login";
+        }
+
+        utilisateur.setPrenom(prenom);
+        utilisateur.setNom(nom);
+        utilisateur.setCin(cin);
+        utilisateur.setTelephone(telephone);
+        utilisateur.setEmail(email);
+
+        if (imageFile != null && !imageFile.isEmpty()) {
+            try {
+                utilisateur.setPhoto(imageFile.getBytes());
+            } catch (IOException e) {
+                e.printStackTrace();
+                model.addAttribute("errorMessage", "Erreur lors du chargement de l'image.");
+                model.addAttribute("utilisateur", utilisateur);
+                return "profil-personnel";
+            }
+        }
+
+        utilisateurService.save(utilisateur);
+        session.setAttribute("utilisateur", utilisateur);
+
+        model.addAttribute("utilisateur", utilisateur);
+        model.addAttribute("successMessage", "Profil modifié avec succès !");
+        return "profil-personnel";
+    }
+
+    @GetMapping("/photo/{id}")
+    @ResponseBody
+    public ResponseEntity<byte[]> getPhotoProfil(@PathVariable("id") int utilisateurId) {
+        Utilisateur utilisateur = utilisateurService.findById(utilisateurId);
+        if (utilisateur == null || utilisateur.getPhoto() == null) {
+            return ResponseEntity.notFound().build();
+        }
+        byte[] image = utilisateur.getPhoto();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_TYPE, "image/jpeg")
+                .body(image);
     }
 
 }

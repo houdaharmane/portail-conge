@@ -5,10 +5,14 @@ import com.portailconge.portail_conge.repository.UtilisateurRepository;
 import com.portailconge.portail_conge.repository.DepartementRepository;
 
 import jakarta.servlet.http.HttpSession;
+
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 public class RhController {
@@ -45,7 +49,7 @@ public class RhController {
 
         model.addAttribute("rh", rh);
         model.addAttribute("modification", modification != null && modification);
-        model.addAttribute("departements", departementRepository.findAll()); // liste des départements
+        model.addAttribute("departements", departementRepository.findAll());
 
         model.addAttribute("activePage", "profil");
         return "profil";
@@ -66,6 +70,7 @@ public class RhController {
 
     @PostMapping("/profil/save")
     public String enregistrerProfil(@ModelAttribute("utilisateur") Utilisateur utilisateurModifie,
+            @RequestParam("imageFile") MultipartFile imageFile,
             HttpSession session, Model model) {
         Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
 
@@ -84,8 +89,6 @@ public class RhController {
             rh.setCin(utilisateurModifie.getCin());
             rh.setSoldeConge(utilisateurModifie.getSoldeConge());
 
-            // Récupération du département sélectionné (en supposant que ton formulaire
-            // envoie departement.id)
             if (utilisateurModifie.getDepartement() != null && utilisateurModifie.getDepartement().getId() != null) {
                 departementRepository.findById(utilisateurModifie.getDepartement().getId())
                         .ifPresent(rh::setDepartement);
@@ -93,17 +96,42 @@ public class RhController {
                 rh.setDepartement(null);
             }
 
+            if (imageFile != null && !imageFile.isEmpty()) {
+                try {
+                    byte[] bytes = imageFile.getBytes();
+                    rh.setPhoto(bytes);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    model.addAttribute("error", "Erreur lors de la lecture de l'image.");
+                    model.addAttribute("utilisateur", rh);
+                    model.addAttribute("activePage", "profil");
+                    return "profil";
+                }
+            }
+
             utilisateurRepository.save(rh);
             session.setAttribute("utilisateur", rh);
 
             return "redirect:/profil?modification=true";
+
         } catch (Exception e) {
             e.printStackTrace();
             model.addAttribute("error", "Erreur lors de la mise à jour du profil.");
             model.addAttribute("utilisateur", rh);
             model.addAttribute("activePage", "profil");
-            return "modifier_profil";
+            return "profil";
         }
+    }
+
+    // Nouvelle méthode pour servir la photo
+    @GetMapping("/profil/photo/{id}")
+    @ResponseBody
+    public byte[] getPhoto(@PathVariable("id") Integer id) {
+        Utilisateur utilisateur = utilisateurRepository.findById(id).orElse(null);
+        if (utilisateur != null && utilisateur.getPhoto() != null) {
+            return utilisateur.getPhoto();
+        }
+        return new byte[0];
     }
 
 }
