@@ -5,6 +5,8 @@
     <title>RH Dashboard</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+
     <style>
         :root {
             --bg-color: #f6f6f6;
@@ -189,6 +191,119 @@
     background: #2a2a2a; 
     box-shadow: 0 2px 8px #0005;
 }
+/* SLIDER CSS */
+.blog-slider {
+  width: 95%;
+  max-width: 900px;
+  margin: 30px auto;
+  background: var(--card-bg);
+  box-shadow: 0px 14px 80px rgba(34, 35, 58, 0.2);
+  padding: 25px;
+  border-radius: 25px;
+  height: 420px;
+  position: relative;
+  transition: all .3s;
+  overflow: visible;
+  margin-bottom: 20px;
+}
+
+.blog-slider__wrp {
+  display: flex;
+}
+
+.blog-slider__item {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.blog-slider__img {
+  width: 300px;
+  height: 300px;
+  border-radius: 20px;
+  overflow: hidden;
+  transform: translateX(-30px);
+  position: relative;
+  margin-left: -50px;
+}
+
+.blog-slider__img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 20px;
+}
+
+.blog-slider__content {
+  flex: 1;
+  color: var(--text-color);
+}
+
+.blog-slider__code {
+  font-weight: 500;
+  color: #7b7992;
+  margin-bottom: 15px;
+  display: block;
+}
+
+.blog-slider__title {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: var(--text-color);
+}
+
+.blog-slider__text {
+  font-size: 16px;
+  line-height: 1.5;
+  margin-bottom: 25px;
+  color: var(--text-color);
+}
+
+.blog-slider__button {
+  display: inline-block;
+  padding: 12px 30px;
+  background: linear-gradient(147deg, #0074C7 0%, #364cc9 74%);
+  border-radius: 30px;
+  color: white;
+  font-weight: 500;
+  text-decoration: none;
+  box-shadow: 0px 14px 80px rgba(5, 22, 99, 0.3);
+  transition: background 0.3s;
+}
+
+.blog-slider__button:hover {
+  background: linear-gradient(147deg, #5387e9 0%, #050a47 74%);
+}
+
+
+
+
+@media screen and (max-width: 768px) {
+  .blog-slider {
+    height: auto;
+    padding: 20px;
+  }
+
+  .blog-slider__item {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .blog-slider__img {
+    width: 90%;
+    height: 220px;
+    transform: translateX(0);
+    margin-bottom: 20px;
+  }
+
+  .blog-slider__content {
+    text-align: center;
+    padding: 0 20px;
+  }
+
+ 
+}
 
     </style>
 </head>
@@ -201,15 +316,12 @@
         </div>
        <nav>
    <a th:href="@{/personnel/dashboard}" th:classappend="${activePage == 'dashboard'} ? ' active'" class="sidebar-link">
-    <i class="fa fa-home"></i> <span>Tableau de bord</span>
-</a>
-
-
-    
+    <i class="fa fa-tachometer-alt"></i> <span>Tableau de bord</span>
+</a> 
     <a th:href="@{/conges/demande}" th:classappend="${activePage == 'conges'} ? ' active'" class="sidebar-link">
         <i class="fa fa-calendar-plus"></i> <span>Mes demandes</span>
     </a>
- <a th:href="@{/personnel/profil}" th:classappend="${activePage == 'profil'} ? ' active'" class="sidebar-link">
+ <a th:href="@{/personnel/profil-personnel}" th:classappend="${activePage == 'profil'} ? ' active'" class="sidebar-link">
     <i class="fa fa-user"></i> <span>Mon profil</span>
 </a>
      <a th:href="@{/conge/demande}" th:classappend="${activePage == 'demandeConge'} ? ' active'" class="sidebar-link">
@@ -231,9 +343,21 @@
     </div>
 
     <div class="main-content">
-        <div class="dashboard-title">Bienvenue sur votre espace PERSONNEL</div>
-        
-        </div>
+        <div class="blog-slider swiper">
+  <div class="blog-slider__wrp swiper-wrapper">
+    <div class="blog-slider__item swiper-slide">
+          <div class="blog-slider__img">
+        <img src="https://res.cloudinary.com/muhammederdem/image/upload/q_60/v1535759872/kuldar-kalvik-799168-unsplash.webp" alt="">
+      </div>
+      <div class="blog-slider__content">
+        <span class="blog-slider__code">25 juillet 2025</span>
+        <div class="blog-slider__title">Bienvenue sur le Portail de congee</div>
+        <div class="blog-slider__text">Gérez vos congés, vos demandes et votre profil en toute simplicité.</div>
+        <a th:href="@{/personnel/demande-conge-personnel
+}" class="blog-slider__button">Demander un congé</a>
+      </div>
+    </div>
+    </div>
 </div>
 
 <script>
@@ -251,6 +375,25 @@
         toggleBtn.innerHTML = isDark ? '<i class="fa fa-sun"></i>' : '<i class="fa fa-moon"></i>';
         localStorage.setItem('theme', isDark ? 'dark' : 'light');
     });
+</script>
+<script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+<script>
+    var swiper = new Swiper('.blog-slider', {
+        spaceBetween: 30,
+        effect: 'fade',
+        loop: true,
+        mousewheel: {
+            invert: false,
+        },
+        pagination: {
+            el: '.blog-slider__pagination',
+            clickable: true,
+        }
+    });
+  
+
+
+
 </script>
 
 </body>

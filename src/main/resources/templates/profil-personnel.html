@@ -512,9 +512,11 @@
             <a th:href="@{/personnel/profil}" th:classappend="${activePage == 'profil'} ? ' active'" class="sidebar-link">
                 <i class="fa fa-user"></i> <span>Mon profil</span>
             </a>
-            <a th:href="@{/conge/demande}" th:classappend="${activePage == 'demandeConge'} ? ' active'" class="sidebar-link">
-                <i class="fa fa-plane-departure"></i> <span>Demande de congé</span>
-            </a>
+         <a th:href="@{/personnel/demande-conge-personnel}" th:classappend="${activePage == 'demandeConge'} ? ' active'" class="sidebar-link">
+    <i class="fa fa-plane-departure"></i> <span>Demande de congé</span>
+</a>
+
+
         </nav>
     </div>
     <div class="sidebar-footer">
@@ -553,6 +555,10 @@
                 <form id="form-view" th:action="@{/personnel/modifier}" method="post">
                     <fieldset>
                         <legend>Informations personnelles</legend>
+<div class="form-row">
+    <label for="matricule-view">Matricule :</label>
+    <input type="text" id="matricule-view" name="matricule" th:value="${utilisateur.matricule}" disabled />
+</div>
 
                         <div class="form-row">
                             <label for="prenom-view">Prénom :</label>
@@ -607,6 +613,11 @@
         <label for="imageUpload">Photo de profil :</label>
         <input type="file" id="imageUpload" name="photo" accept="image/*" />
     </div>
+    <div class="form-row">
+    <label for="matricule-edit">Matricule :</label>
+    <input type="text" id="matricule-edit" name="matricule" th:value="${utilisateur.matricule}" required />
+</div>
+
                         <div class="form-row">
                             <label for="prenom-edit">Prénom :</label>
                             <input type="text" id="prenom-edit" name="prenom" th:value="${utilisateur.prenom}" required />

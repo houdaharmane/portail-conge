@@ -10,17 +10,17 @@ public class Departement {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     private String nom;
 
     // Getter pour id
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
     // Setter pour id
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

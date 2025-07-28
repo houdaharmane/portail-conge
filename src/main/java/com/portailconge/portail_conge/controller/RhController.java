@@ -63,7 +63,7 @@ public class RhController {
             return "redirect:/login";
         }
 
-        model.addAttribute("utilisateur", rh);
+        model.addAttribute("utilisateur", new Utilisateur());
         model.addAttribute("activePage", "profil");
         return "modifier_profil";
     }
@@ -121,6 +121,30 @@ public class RhController {
             model.addAttribute("activePage", "profil");
             return "profil";
         }
+    }
+
+    @PostMapping("/rh/personnel/ajouter")
+    public String ajouterUtilisateur(
+            @RequestParam String nom,
+            @RequestParam String prenom,
+            @RequestParam String email,
+            @RequestParam String motDePasse,
+            @RequestParam String role,
+            @RequestParam Integer departementId,
+            Model model) {
+
+        Utilisateur utilisateur = new Utilisateur();
+        utilisateur.setNom(nom);
+        utilisateur.setPrenom(prenom);
+        utilisateur.setEmail(email);
+        utilisateur.setMotDePasse(motDePasse);
+        utilisateur.setRole(role); // Ici on affecte bien le rôle choisi
+
+        departementRepository.findById(departementId).ifPresent(utilisateur::setDepartement);
+
+        utilisateurRepository.save(utilisateur);
+
+        return "redirect:/personnel/liste";
     }
 
     // Nouvelle méthode pour servir la photo

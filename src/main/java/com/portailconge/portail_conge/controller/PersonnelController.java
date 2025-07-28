@@ -77,7 +77,7 @@ public class PersonnelController {
             utilisateur.setRole(role);
 
             Departement dept = new Departement();
-            dept.setId(departement.longValue());
+            dept.setId(departement);
             utilisateur.setDepartement(dept);
 
             utilisateur.setCin(cin);
@@ -117,7 +117,7 @@ public class PersonnelController {
     }
 
     // Interface personnel : profil
-    @GetMapping("/profil")
+    @GetMapping("/profil-personnel")
     public String showProfil(HttpSession session, Model model) {
         Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
         System.out.println("Session utilisateur : " + utilisateur);
@@ -133,13 +133,6 @@ public class PersonnelController {
         model.addAttribute("utilisateur", utilisateur);
         model.addAttribute("personnelrole", utilisateur.getRole());
         return "profil-personnel";
-    }
-
-    @GetMapping("/test-session")
-    @ResponseBody
-    public String testSession(HttpSession session) {
-        Object utilisateur = session.getAttribute("utilisateur");
-        return utilisateur != null ? "Session OK: " + utilisateur.toString() : "Session vide";
     }
 
     @PostMapping("/modifier")
@@ -196,6 +189,21 @@ public class PersonnelController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_TYPE, "image/jpeg")
                 .body(image);
+    }
+
+    @GetMapping("/demande-conge-personnel")
+    public String afficherFormulaireCongePersonnel(Model model, HttpSession session) {
+        Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
+        if (utilisateur == null) {
+            return "redirect:/login";
+        }
+        // Crée le nom complet
+        String nomPrenom = utilisateur.getNom() + " " + utilisateur.getPrenom();
+
+        model.addAttribute("matricule", utilisateur.getMatricule());
+        model.addAttribute("nomPrenom", nomPrenom);
+
+        return "demande-conge-personnel";
     }
 
 }

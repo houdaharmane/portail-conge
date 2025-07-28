@@ -28,8 +28,9 @@ public class AuthController {
         utilisateur.setEmail(dto.getEmail());
         utilisateur.setRole(dto.getRole());
         Departement dept = new Departement();
-        dept.setId(dto.getDepartement().longValue());
+        dept.setId(dto.getDepartement());
         utilisateur.setDepartement(dept);
+
         utilisateur.setCin(dto.getCin());
         utilisateur.setMotDePasse(dto.getMotDePasse());
         utilisateur.setSoldeConge(dto.getSoldeConge());
