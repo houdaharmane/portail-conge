@@ -22,4 +22,9 @@ public class UtilisateurService {
         utilisateurRepository.save(utilisateur);
     }
 
+    // Méthode pour trouver un utilisateur par matricule (ou username)
+    public Utilisateur findByUsername(String username) {
+        // Supposons que le matricule est unique et sert de username
+        return utilisateurRepository.findByMatricule(username);
+    }
 }

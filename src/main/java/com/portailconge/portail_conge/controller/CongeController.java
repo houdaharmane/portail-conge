@@ -26,7 +26,7 @@ public class CongeController {
         return "demande-conge";
     }
 
-    @PostMapping("/conge/etape-suivante")
+    @PostMapping("/etape-suivante")
     public String traiterDemandeConge(@RequestParam("dateDebut") String dateDebut,
             @RequestParam("dateFin") String dateFin,
             Model model) {

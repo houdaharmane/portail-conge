@@ -1,14 +1,18 @@
 package com.portailconge.portail_conge.controller;
 
+import com.portailconge.portail_conge.model.DemandeConge;
 import com.portailconge.portail_conge.model.Departement;
 import com.portailconge.portail_conge.model.Personnel;
+import com.portailconge.portail_conge.model.StatutDemande;
 import com.portailconge.portail_conge.model.Utilisateur;
 import com.portailconge.portail_conge.repository.DepartementRepository;
 import com.portailconge.portail_conge.service.AuthService;
+import com.portailconge.portail_conge.service.DemandeService;
 
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.security.Principal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +31,8 @@ public class PersonnelController {
     private UtilisateurService utilisateurService;
     @Autowired
     private DepartementRepository departementRepository;
+    @Autowired
+    private DemandeService demandeService;
 
     @Autowired
     private AuthService authService;
@@ -204,6 +210,47 @@ public class PersonnelController {
         model.addAttribute("nomPrenom", nomPrenom);
 
         return "demande-conge-personnel";
+    }
+
+    @PostMapping("/conges/demande")
+    public String soumettreDemande(@ModelAttribute DemandeConge demande, Principal principal) {
+        // Trouver l'utilisateur connecté par son username (principal.getName())
+        Utilisateur user = utilisateurService.findByUsername(principal.getName());
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        // Affecter le demandeur
+        demande.setDemandeur(user);
+
+        // Affecter le département (on suppose que Departement a une méthode getNom())
+        if (user.getDepartement() == null) {
+            // Gestion du cas où le département n'est pas défini
+            // Soit rediriger vers une page d'erreur, soit vers dashboard
+            return "redirect:/personnel/dashboard";
+        }
+        demande.setDepartement(user.getDepartement());
+
+        // Initialiser le statut de la demande (optionnel, à adapter)
+        demande.setStatut(StatutDemande.EN_ATTENTE); // Exemple : statut en attente
+
+        // Sauvegarder la demande
+        demandeService.save(demande);
+
+        // Récupérer le nom du département en minuscules
+        String departementNom = user.getDepartement().getNom().toLowerCase();
+
+        // Redirection selon le département
+        switch (departementNom) {
+            case "rh":
+                return "redirect:/responsable/rh/demandes-a-traiter";
+            case "finance":
+                return "redirect:/responsable/finance/demandes-a-traiter";
+            // ajouter d'autres cas si nécessaire
+            default:
+                return "redirect:/responsable/demandes-a-traiter";
+        }
     }
 
 }
