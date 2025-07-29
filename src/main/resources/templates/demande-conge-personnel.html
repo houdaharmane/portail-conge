@@ -433,21 +433,19 @@ select.form-control {
             <img src="/img/modepbg.png" alt="Logo MODEP" class="sidebar-logo">
         </div>
        <nav>
-            <a th:href="@{/personnel/dashboard}" th:classappend="${activePage == 'dashboard'} ? ' active'" class="sidebar-link">
-                <i class="fa fa-home"></i> <span>Tableau de bord</span>
-            </a>
-            <a th:href="@{/conges/demande}" th:classappend="${activePage == 'conges'} ? ' active'" class="sidebar-link">
-                <i class="fa fa-calendar-plus"></i> <span>Mes demandes</span>
-            </a>
-            <a th:href="@{/personnel/profil}" th:classappend="${activePage == 'profil'} ? ' active'" class="sidebar-link">
-                <i class="fa fa-user"></i> <span>Mon profil</span>
-            </a>
+   <a th:href="@{/personnel/dashboard}" th:classappend="${activePage == 'dashboard'} ? ' active'" class="sidebar-link">
+    <i class="fa fa-home"></i> <span>Tableau de bord</span>
+</a> 
+    <a th:href="@{/conges/demande}" th:classappend="${activePage == 'conges'} ? ' active'" class="sidebar-link">
+        <i class="fa fa-calendar-plus"></i> <span>Mes demandes</span>
+    </a>
+ <a th:href="@{/personnel/profil-personnel}" th:classappend="${activePage == 'profil'} ? ' active'" class="sidebar-link">
+    <i class="fa fa-user"></i> <span>Mon profil</span>
+</a>
          <a th:href="@{/personnel/demande-conge-personnel}" th:classappend="${activePage == 'demandeConge'} ? ' active'" class="sidebar-link">
     <i class="fa fa-plane-departure"></i> <span>Demande de congé</span>
 </a>
-
-
-        </nav>
+</nav>
     </div>
     <div class="sidebar-footer">
         <a href="/login" class="sidebar-link"><i class="fa fa-sign-out-alt"></i> <span>Déconnexion</span></a>
@@ -464,7 +462,9 @@ select.form-control {
         <div class="form-container">
             <h2>Faire une demande</h2>
             <form th:action="@{/personnel/demande-conge-personnel}" method="post" id="congeForm">
+                
                 <div class="calendar" id="calendar-container">
+                    
                 </div>
 
                 <div class="half-day-select">
@@ -515,17 +515,18 @@ select.form-control {
       <div class="form-group">
     <label>Département :</label>
     <select name="departement" class="form-control" required>
-        <option value="">-- Sélectionnez un département --</option>
-        <option value="RH">Ressources Humaines</option>
-        <option value="Informatique" selected>Informatique</option>
-        <option value="Ambulation">Ambulation</option>
-        <option value="Comptabilite">Comptabilite</option>
-        <option value="Affiliation">Affiliation</option>
-    </select>
+  <option value="">-- Sélectionnez un département --</option>
+  <option value="1">Ressources Humaines</option>
+  <option value="2" selected>Informatique</option>
+  <option value="3">Ambulation</option>
+  <option value="4">Comptabilité</option>
+  <option value="5">Affiliation</option>
+</select>
+
 </div>
         <div class="form-group">
             <label>Durée demandée :</label>
-            <input type="text" name="duree" id="dureeDemande" class="form-control" readonly />
+<input type="text" name="duree" id="dureeDemande" class="form-control" readonly />
         </div>
         <div class="form-group">
             <label>Du :</label>
@@ -535,16 +536,30 @@ select.form-control {
             <label>Au :</label>
             <input type="text" name="dateAu" id="dateAuField" class="form-control" readonly />
         </div>
+ <button type="button" id="btnToRecap">Voir récapitulatif</button>
+</form>
+<!--
+<div id="recapitulatif" style="display:none; margin-top:30px;">
+    <h2>Récapitulatif de la demande</h2>
+    <p><strong>Matricule :</strong> <span id="recap-matricule"></span></p>
+    <p><strong>Nom et Prénom :</strong> <span id="recap-nomPrenom"></span></p>
+    <p><strong>Fonction :</strong> <span id="recap-fonction"></span></p>
+    <p><strong>Département :</strong> <span id="recap-departement"></span></p>
+    <p><strong>Durée demandée :</strong> <span id="recap-duree"></span></p>
+    <p><strong>Du :</strong> <span id="recap-dateDu"></span></p>
+    <p><strong>Au :</strong> <span id="recap-dateAu"></span></p>
 
-        <button type="submit">Soumettre la demande</button>
-    </form>
+    <button id="btnConfirm">Confirmer</button>
+    <button id="btnBackToForm">Retour</button>
 </div>
-
-        </div>
-    </div>
+-->
 </div>
-
+</div>
+        
+</div>
+    
 <script>
+
  // Date actuelle et informations dynamiques
 const now = new Date();
 const currentYear = now.getFullYear();
@@ -575,26 +590,48 @@ function formatDate(date) {
   return `${y}-${m}-${d}`;
 }
 
-function createCalendar() {
+function createCalendar(monthIndex = currentMonth) {
   const container = document.getElementById('calendar-container');
   container.innerHTML = '';
 
   const year = currentYear;
-  const month = currentMonth;
+const month = monthIndex;
 
   const firstDayOfMonth = new Date(year, month, 1);
-  const firstWeekDay = firstDayOfMonth.getDay(); // 0=Dimanche
+  const firstWeekDay = firstDayOfMonth.getDay();
 
-  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
 
   const monthDiv = document.createElement('div');
   monthDiv.classList.add('month');
 
-  const monthName = new Date(year, month).toLocaleString('fr-FR', { month: 'long', year: 'numeric' });
   const monthNameDiv = document.createElement('div');
-  monthNameDiv.textContent = monthName.charAt(0).toUpperCase() + monthName.slice(1);
-  monthNameDiv.classList.add('month-name');
-  monthDiv.appendChild(monthNameDiv);
+monthNameDiv.classList.add('month-name');
+
+// Select de mois
+const monthSelect = document.createElement('select');
+monthSelect.style.fontSize = "1rem";
+monthSelect.style.padding = "4px";
+monthSelect.style.marginBottom = "10px";
+
+for (let i = 0; i < 12; i++) {
+    const option = document.createElement("option");
+    const label = new Date(currentYear, i).toLocaleString("fr-FR", { month: "long" });
+    option.value = i;
+    option.textContent = label.charAt(0).toUpperCase() + label.slice(1);
+    if (i === month) option.selected = true;
+    monthSelect.appendChild(option);
+}
+
+monthSelect.addEventListener("change", (e) => {
+    const selectedMonth = parseInt(e.target.value, 10);
+    createCalendar(selectedMonth); 
+});
+
+
+monthNameDiv.appendChild(monthSelect);
+monthDiv.appendChild(monthNameDiv);
+
 
   // Jours de la semaine abrégés
   ['D','L','Ma','Me','J','V','S'].forEach(d => {
@@ -611,6 +648,9 @@ function createCalendar() {
     monthDiv.appendChild(dayHeader);
   });
 
+  const today = new Date();
+  today.setHours(0,0,0,0); // On ne prend que la date sans l'heure
+
   // Cases vides avant le 1er jour
   for(let i=0; i<firstWeekDay; i++){
     const emptyDay = document.createElement('div');
@@ -626,12 +666,16 @@ function createCalendar() {
     const dateObj = new Date(year, month, day);
     const dayOfWeek = dateObj.getDay();
 
+    // Désactive les jours avant aujourd'hui
+    if(dateObj < today){
+      dayDiv.classList.add('disabled');
+    }
+
     if(isWeekend(dayOfWeek)) dayDiv.classList.add('weekend');
 
     const dayStr = formatDate(dateObj);
     if(takenDays.includes(dayStr)) dayDiv.classList.add('taken');
 
-    const today = new Date();
     if(dateObj.toDateString() === today.toDateString()) dayDiv.classList.add('today');
 
     dayDiv.textContent = day;
@@ -728,7 +772,11 @@ function updateDisplay() {
   if(selectedStart !== null && selectedEnd !== null){
     count = countWorkdaysCustom(selectedStart, selectedEnd, currentYear, currentMonth);
   }
-  workdaysSpan.textContent = count + " jour" + (count > 1 ? "s" : "") + " ouvré" + (count > 1 ? "s" : "");
+  // Affichage pour l'utilisateur
+  workdaysSpan.textContent = count + (count > 1 ? " jours ouvrés" : " jour ouvré");
+
+  // Valeur numérique à envoyer côté serveur (uniquement le nombre)
+  document.getElementById('dureeDemande').value = count;
 
   // Synchroniser radios hidden pour envoi
   const startHalfRadio = document.querySelector('input[name="startHalf"]:checked');
@@ -737,6 +785,7 @@ function updateDisplay() {
   if(startHalfRadio) document.getElementById('startHalfHidden').value = startHalfRadio.value;
   if(endHalfRadio) document.getElementById('endHalfHidden').value = endHalfRadio.value;
 }
+
 
 // Initialisation
 createCalendar();
@@ -770,7 +819,12 @@ document.getElementById('congeForm').onsubmit = function(e) {
     // Remplit le formulaire intéressé avec les dates et durée calculées
     document.getElementById('dateDuField').value = document.getElementById('startDateDisplay').textContent;
     document.getElementById('dateAuField').value = document.getElementById('endDateDisplay').textContent;
-    document.getElementById('dureeDemande').value = document.getElementById('workdaysCount').textContent;
+
+    // Ici on récupère le nombre uniquement depuis workdaysCount (ex: "4 jours ouvrés") et on extrait le nombre entier
+    const workdaysText = document.getElementById('workdaysCount').textContent; // ex: "4 jours ouvrés"
+    const workdaysNumber = parseInt(workdaysText, 10) || 0; // extraire le nombre entier
+
+    document.getElementById('dureeDemande').value = workdaysNumber;
 
     // Cache calendrier + sélecteurs + résumé + bouton Continuer
     document.getElementById('calendar-container').style.display = 'none';
@@ -799,6 +853,64 @@ document.getElementById('back-to-calendar').addEventListener('click', () => {
     if(submitBtn) submitBtn.style.display = 'inline-block';
 });
 
+
+// Bouton Continuer après sélection calendrier
+document.getElementById('btnToInteresse').addEventListener('click', () => {
+    // Vérifier que dates sont valides
+    const dateDebut = document.getElementById('dateDebut').value;
+    const dateFin = document.getElementById('dateFin').value;
+    if (!dateDebut || !dateFin || dateFin < dateDebut) {
+        alert("Veuillez sélectionner une période valide.");
+        return;
+    }
+
+    // Remplir formulaire intéressé avec dates et durée du formulaire calendrier
+    const duree = document.getElementById('dureeDemande').value;
+    const startHalf = document.querySelector('input[name="startHalf"]:checked').value;
+    const endHalf = document.querySelector('input[name="endHalf"]:checked').value;
+
+    document.getElementById('dureeInteresse').value = duree;
+    document.getElementById('dateDuInteresse').value = dateDebut;
+    document.getElementById('dateAuInteresse').value = dateFin;
+
+    // Cacher formulaire calendrier, afficher formulaire intéressé
+    document.getElementById('congeForm').style.display = 'none';
+    document.getElementById('interesseForm').style.display = 'block';
+});
+
+//boutton recap
+document.getElementById('btnToRecap').addEventListener('click', () => {
+    const form = document.getElementById('interesseForm');
+    if (!form) {
+        alert("Formulaire non trouvé !");
+        return;
+    }
+
+    const matricule = form.matricule ? form.matricule.value.trim() : '';
+    const nomPrenom = form.nomPrenom ? form.nomPrenom.value.trim() : '';
+    const fonction = form.fonction ? form.fonction.value.trim() : '';
+    const departementSelect = form.departement;
+    const departement = departementSelect ? departementSelect.options[departementSelect.selectedIndex].text : '';
+    const duree = form.duree ? form.duree.value.trim() : '';
+    const dateDu = form.dateDu ? form.dateDu.value.trim() : '';
+    const dateAu = form.dateAu ? form.dateAu.value.trim() : '';
+
+    if(!matricule || !nomPrenom || !fonction || !departement || departementSelect.value === '') {
+        alert("Veuillez remplir tous les champs.");
+        return;
+    }
+
+    document.getElementById('recap-matricule').textContent = matricule;
+    document.getElementById('recap-nomPrenom').textContent = nomPrenom;
+    document.getElementById('recap-fonction').textContent = fonction;
+    document.getElementById('recap-departement').textContent = departement;
+    document.getElementById('recap-duree').textContent = duree + (duree > 1 ? " jours" : " jour");
+    document.getElementById('recap-dateDu').textContent = dateDu;
+    document.getElementById('recap-dateAu').textContent = dateAu;
+
+    form.style.display = 'none';
+    document.getElementById('recapitulatif').style.display = 'block';
+});
 
 
 </script>
