@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Demandes à traiter</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+  <style>
+    :root {
+      --sidebar-bg: #0074C7;
+      --link-color: #fff;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      min-height: 100vh;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+    }
+
+    /* Thème clair (par défaut) */
+    body {
+      --bg-color: #f6f6f6;
+      --text-color: #000;
+    }
+
+    /* Thème sombre */
+    .dark-theme {
+      --bg-color: #1e1e1e;
+      --text-color: #f0f0f0;
+    }
+
+    .sidebar {
+      width: 240px;
+      background-color: var(--sidebar-bg);
+      color: var(--link-color);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 100vh;
+    }
+
+    .sidebar-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 32px 0 18px 0;
+    }
+
+    .sidebar-logo {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: #fff;
+      object-fit: cover;
+      margin-bottom: 10px;
+    }
+
+    .dark-theme .sidebar-logo {
+      background: #2a2a2a;
+    }
+
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      color: var(--link-color);
+      font-size: 16px;
+      font-weight: 600;
+      padding: 13px 30px;
+      transition: background 0.18s;
+    }
+
+    .sidebar-link:hover,
+    .sidebar-link.active {
+      background: rgba(255,255,255,0.2);
+    }
+
+    .sidebar-link i {
+      font-size: 20px;
+      min-width: 20px;
+    }
+
+    .sidebar-footer {
+      margin-bottom: 30px;
+    }
+
+    .main-content {
+      flex: 1;
+      padding: 20px;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      overflow-x: auto;
+    }
+
+    .header {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .theme-toggle-btn {
+      background: none;
+      border: none;
+      font-size: 20px;
+      color: var(--text-color);
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+
+    .theme-toggle-btn i {
+      pointer-events: none;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px 12px;
+      text-align: left;
+    }
+
+    th {
+      background-color: rgba(0, 116, 199, 0.7);
+      color: #fff;
+    }
+
+    a.action-link {
+      margin-right: 10px;
+      color: var(--sidebar-bg);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    a.action-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div>
+      <div class="sidebar-header">
+        <img src="/img/modepbg.png" alt="Logo MODEP" class="sidebar-logo" />
+      </div>
+      <nav>
+        <a th:href="@{/dashboard-responsable}" th:classappend="${activePage == 'dashboard'} ? ' active'" class="sidebar-link">
+          <i class="fa fa-home"></i> <span>Tableau de bord</span>
+        </a>
+        <a th:href="@{/demandes-a-traiter}" th:classappend="${activePage == 'demandesATraiter'} ? ' active'" class="sidebar-link">
+  <i class="fa fa-wallet"></i> <span>Demandes à traiter</span>
+</a>
+
+        <a th:href="@{/conge/demande}" th:classappend="${activePage == 'demandeConge'} ? ' active'" class="sidebar-link">
+          <i class="fa fa-plane-departure"></i> <span>Demande de congé</span>
+        </a>
+        <a th:href="@{/profil}" th:classappend="${activePage == 'profil'} ? ' active'" class="sidebar-link">
+          <i class="fa fa-user"></i> <span>Mon profil</span>
+        </a>
+        <a href="#" th:classappend="${activePage == 'historique'} ? ' active'" class="sidebar-link">
+          <i class="fa fa-history"></i> <span>Historique</span>
+        </a>
+      </nav>
+    </div>
+    <div class="sidebar-footer">
+      <a href="#" class="sidebar-link"><i class="fa fa-sign-out-alt"></i> <span>Déconnexion</span></a>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <div class="main-content">
+    <div class="header">
+      <button id="theme-toggle" class="theme-toggle-btn" title="Changer de thème">
+        <i class="fa fa-moon"></i>
+      </button>
+    </div>
+
+    <h1>Demandes à traiter</h1>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Type de congé</th>
+          <th>Date début</th>
+          <th>Date fin</th>
+          <th>Statut</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+  <tr th:each="demande : ${demandes}">
+    <td th:text="${demande.demandeur.nom}">Nom utilisateur</td>
+    <td th:text="${demande.dateDebutFormatee}">01/01/2025</td>
+    <td th:text="${demande.dateFinFormatee}">03/01/2025</td>
+    <td th:text="${demande.statut}">en_attente</td>
+    <td>
+      <a th:href="@{'/approuver/' + ${demande.id}}" class="action-link">Approuver</a>
+      <a th:href="@{'/rejeter/' + ${demande.id}}" class="action-link">Rejeter</a>
+    </td>
+  </tr>
+  <tr th:if="${#lists.isEmpty(demandes)}">
+    <td colspan="6" style="text-align:center;">Aucune demande à traiter</td>
+  </tr>
+</tbody>
+
+    </table>
+  </div>
+
+  <script>
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    themeToggleBtn.addEventListener('click', () => {
+      document.body.classList.toggle('dark-theme');
+      const icon = themeToggleBtn.querySelector('i');
+      icon.classList.toggle('fa-moon');
+      icon.classList.toggle('fa-sun');
+    });
+  </script>
+</body>
+</html>

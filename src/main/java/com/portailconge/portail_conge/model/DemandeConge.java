@@ -9,6 +9,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
 
 import java.time.LocalDate;
+import jakarta.persistence.Transient;
 
 @Entity
 public class DemandeConge {
@@ -37,6 +38,28 @@ public class DemandeConge {
 
     public void setDepartement(Departement departement) {
         this.departement = departement;
+    }
+
+    @Transient
+    private String dateDebutFormatee;
+
+    @Transient
+    private String dateFinFormatee;
+
+    public String getDateDebutFormatee() {
+        return dateDebutFormatee;
+    }
+
+    public void setDateDebutFormatee(String dateDebutFormatee) {
+        this.dateDebutFormatee = dateDebutFormatee;
+    }
+
+    public String getDateFinFormatee() {
+        return dateFinFormatee;
+    }
+
+    public void setDateFinFormatee(String dateFinFormatee) {
+        this.dateFinFormatee = dateFinFormatee;
     }
 
     // Getters et setters

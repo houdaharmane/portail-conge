@@ -237,11 +237,12 @@
         </div>
         <nav>
     <a th:href="@{/dashboard-responsable}" th:classappend="${activePage == 'dashboard'} ? ' active'" class="sidebar-link">
-        <i class="fa fa-tachometer-alt"></i> <span>Tableau de bord</span>
+        <i class="fa fa-home"></i> <span>Tableau de bord</span>
     </a>
-    <a href="#" th:classappend="${activePage == 'demandesATraiter'} ? ' active'" class="sidebar-link">
-        <i class="fa fa-wallet"></i> <span>Demandes à traiter</span>
-    </a>
+ <a th:href="@{/demandes-a-traiter}" th:classappend="${activePage == 'demandesATraiter'} ? ' active'" class="sidebar-link">
+  <i class="fa fa-wallet"></i> <span>Demandes à traiter</span>
+</a>
+
     <a th:href="@{/conge/demande}" th:classappend="${activePage == 'demandeConge'} ? ' active'" class="sidebar-link">
         <i class="fa fa-plane-departure"></i> <span>Demande de congé</span>
     </a>
