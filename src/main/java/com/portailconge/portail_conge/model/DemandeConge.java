@@ -16,10 +16,9 @@ public class DemandeConge {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    private LocalDate dateFin;
     private LocalDate dateDebut;
     private int duree; // durée en jours
-    private String motif;
 
     @ManyToOne
     private Utilisateur demandeur; // le personnel qui fait la demande
@@ -65,14 +64,6 @@ public class DemandeConge {
         this.duree = duree;
     }
 
-    public String getMotif() {
-        return motif;
-    }
-
-    public void setMotif(String motif) {
-        this.motif = motif;
-    }
-
     public Utilisateur getDemandeur() {
         return demandeur;
     }
@@ -87,5 +78,13 @@ public class DemandeConge {
 
     public void setStatut(StatutDemande statut) {
         this.statut = statut;
+    }
+
+    public LocalDate getDateFin() {
+        return dateFin;
+    }
+
+    public void setDateFin(LocalDate dateFin) {
+        this.dateFin = dateFin;
     }
 }

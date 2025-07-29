@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Confirmation de la demande</title>
+    <style>
+      /* Variables couleurs */
+      :root {
+        --white: #FCFCFC;
+        --gray: #CBCDD3;
+        --dark: #777777;
+        --success: #B0DB7D;
+        --secondary: #99DBB4;
+      }
+
+      @import url('https://fonts.googleapis.com/css?family=Lato:400,700');
+
+      body {
+        font-family: 'Lato', sans-serif;
+        text-transform: uppercase;
+        text-align: center;
+        background: #f5f5f5;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin-left: 170px;
+      }
+
+      #container {
+        position: relative;
+        width: 900px;
+        height: 350px;
+      }
+
+      h1 {
+        font-size: 0.9em;
+        font-weight: 100;
+        letter-spacing: 3px;
+        padding-top: 5px;
+        color: var(--white);
+        padding-bottom: 5px;
+        text-transform: uppercase;
+      }
+
+      .alert {
+        font-weight: 700;
+        letter-spacing: 5px;
+      }
+
+      p {
+        margin-top: -5px;
+        font-size: 0.5em;
+        font-weight: 100;
+        color: #4c4c4c;
+        letter-spacing: 1px;
+      }
+
+      #success-box {
+        position: absolute;
+        width: 50%;
+        height: 100%;
+        left: 12%;
+        background: linear-gradient(to bottom right, var(--success) 40%, var(--secondary) 100%);
+        border-radius: 20px;
+        box-shadow: 5px 5px 20px rgba(203, 205, 211, 0.1);
+        perspective: 40px;
+        padding: 20px 0;
+      }
+
+      .dot {
+        width: 8px;
+        height: 8px;
+        background: var(--white);
+        border-radius: 50%;
+        position: absolute;
+        top: 4%;
+        right: 6%;
+        cursor: pointer;
+      }
+
+      .dot.two {
+        right: 12%;
+        opacity: 0.5;
+      }
+
+      .face {
+        position: absolute;
+        width: 22%;
+        height: 22%;
+        background: var(--white);
+        border-radius: 50%;
+        border: 1px solid var(--dark);
+        top: 21%;
+        left: 37.5%;
+        z-index: 2;
+        animation: bounce 1s ease-in infinite;
+      }
+
+      .eye {
+        position: absolute;
+        width: 5px;
+        height: 5px;
+        background: var(--dark);
+        border-radius: 50%;
+        top: 40%;
+        left: 20%;
+      }
+
+      .eye.right {
+        left: 68%;
+      }
+
+      .mouth.happy {
+        position: absolute;
+        top: 43%;
+        left: 41%;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        border: 2px solid;
+        border-color: transparent var(--dark) var(--dark) transparent;
+        transform: rotate(45deg);
+      }
+
+      .shadow {
+        position: absolute;
+        width: 21%;
+        height: 3%;
+        opacity: 0.5;
+        background: var(--dark);
+        left: 40%;
+        top: 43%;
+        border-radius: 50%;
+        z-index: 1;
+      }
+
+      .shadow.scale {
+        animation: scale 1s ease-in infinite;
+      }
+
+      .message {
+        position: absolute;
+        width: 100%;
+        text-align: center;
+        height: 40%;
+        top: 47%;
+        color: var(--white);
+      }
+
+      .button-box {
+        position: absolute;
+        background: var(--white);
+        width: 50%;
+        height: 15%;
+        border-radius: 20px;
+        top: 67%;
+        left: 25%;
+        outline: 0;
+        border: none;
+        box-shadow: 2px 2px 10px rgba(119, 119, 119, 0.5);
+        cursor: pointer;
+        transition: all 0.5s ease-in-out;
+        text-decoration: none;
+      }
+
+      .button-box:hover {
+        background: #ededed;
+        transform: scale(1.05);
+        transition: all 0.3s ease-in-out;
+      }
+
+      .button-box h1 {
+        margin: 0;
+        font-size: 1.2em;
+        color: #3a6e3a; 
+      }
+
+      /* Animations */
+      @keyframes bounce {
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+
+      @keyframes scale {
+        50% {
+          transform: scale(0.9);
+        }
+      }
+    </style>
+</head>
+<body>
+    <div id="container">
+      <div id="success-box">
+        <div class="dot"></div>
+        <div class="dot two"></div>
+        <div class="face">
+          <div class="eye"></div>
+          <div class="eye right"></div>
+          <div class="mouth happy"></div>
+        </div>
+        <div class="shadow scale"></div>
+        <div class="message">
+          <h1 class="alert">Success!</h1>
+          <p>Merci, votre demande de congé a bien été prise en compte.</p>
+
+        </div>
+<a 
+  th:href="@{/personnel/dashboard}" 
+  th:classappend="${activePage == 'dashboard'} ? ' active'" 
+  class="button-box sidebar-link"
+>
+  <h1>Retour à l'accueil</h1>
+</a>
+
+      </div>
+    </div>
+    
+</body>
+</html>

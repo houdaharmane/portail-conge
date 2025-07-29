@@ -514,7 +514,7 @@ select.form-control {
         </div>
       <div class="form-group">
     <label>Département :</label>
-    <select name="departement" class="form-control" required>
+    <select name="departementId" class="form-control" required>
   <option value="">-- Sélectionnez un département --</option>
   <option value="1">Ressources Humaines</option>
   <option value="2" selected>Informatique</option>
@@ -528,15 +528,16 @@ select.form-control {
             <label>Durée demandée :</label>
 <input type="text" name="duree" id="dureeDemande" class="form-control" readonly />
         </div>
-        <div class="form-group">
-            <label>Du :</label>
-            <input type="text" name="dateDu" id="dateDuField" class="form-control" readonly />
-        </div>
-        <div class="form-group">
-            <label>Au :</label>
-            <input type="text" name="dateAu" id="dateAuField" class="form-control" readonly />
-        </div>
- <button type="button" id="btnToRecap">Voir récapitulatif</button>
+       <div class="form-group">
+  <label>Du :</label>
+  <input type="text" name="dateDebut" id="dateDuField" class="form-control" readonly />
+</div>
+<div class="form-group">
+  <label>Au :</label>
+  <input type="text" name="dateFin" id="dateAuField" class="form-control" readonly />
+</div>
+
+ <button type="submit" >Confirmer</button>
 </form>
 <!--
 <div id="recapitulatif" style="display:none; margin-top:30px;">
@@ -565,7 +566,7 @@ const now = new Date();
 const currentYear = now.getFullYear();
 const currentMonth = now.getMonth(); // 0=janvier
 
-// Jours fériés (exemple pour 2025 France)
+// Jours fériés 
 const holidays = [
   "2025-01-01", "2025-04-18", "2025-05-01", "2025-05-08", "2025-05-29",
   "2025-07-14", "2025-08-15", "2025-11-01", "2025-11-11", "2025-12-25"
@@ -578,7 +579,20 @@ const takenDays = [
 
 let selectedStart = null;
 let selectedEnd = null;
-
+function selectDate(day, month = currentMonth, year = currentYear) {
+  const clickedDate = new Date(year, month, day);
+  if(selectedStart === null || (selectedStart !== null && selectedEnd !== null)) {
+    selectedStart = clickedDate;
+    selectedEnd = null;
+  } else if(clickedDate >= selectedStart){
+    selectedEnd = clickedDate;
+  } else {
+    selectedStart = clickedDate;
+    selectedEnd = null;
+  }
+  updateDisplay();
+  createCalendar(month); // on recrée le calendrier avec le mois courant pour mise à jour
+}
 function isWeekend(dayIndex) {
   return dayIndex === 0 || dayIndex === 6; // dimanche=0, samedi=6
 }
@@ -625,9 +639,8 @@ for (let i = 0; i < 12; i++) {
 
 monthSelect.addEventListener("change", (e) => {
     const selectedMonth = parseInt(e.target.value, 10);
-    createCalendar(selectedMonth); 
+    createCalendar(selectedMonth); // relancer le calendrier avec nouveau mois
 });
-
 
 monthNameDiv.appendChild(monthSelect);
 monthDiv.appendChild(monthNameDiv);
@@ -680,10 +693,10 @@ monthDiv.appendChild(monthNameDiv);
 
     dayDiv.textContent = day;
 
-    dayDiv.onclick = () => {
-      if(dayDiv.classList.contains('disabled') || dayDiv.classList.contains('taken')) return;
-      selectDate(day);
-    };
+dayDiv.onclick = () => {
+  if(dayDiv.classList.contains('disabled') || dayDiv.classList.contains('taken')) return;
+  selectDate(day, month, year);
+};
 
     if(selectedStart === day || selectedEnd === day) {
       dayDiv.classList.add('selected');

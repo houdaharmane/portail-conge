@@ -6,28 +6,6 @@
 </head>
 <body>
     <h1>Demandes à traiter pour votre département</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Demandeur</th>
-                <th>Date début</th>
-                <th>Durée</th>
-                <th>Motif</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="demande : ${demandes}">
-                <td th:text="${demande.personnel.nom}">Nom</td>
-                <td th:text="${#dates.format(demande.dateDebut, 'dd/MM/yyyy')}">01/01/2025</td>
-                <td th:text="${demande.duree}">5</td>
-                <td th:text="${demande.motif}">Vacances</td>
-                <td>
-                    <a th:href="@{|/responsable/demande/valider/${demande.id}|}">Valider</a> |
-                    <a th:href="@{|/responsable/demande/refuser/${demande.id}|}">Refuser</a>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    
 </body>
 </html>
