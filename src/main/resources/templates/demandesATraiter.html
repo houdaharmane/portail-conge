@@ -116,33 +116,131 @@
       pointer-events: none;
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background-color: var(--bg-color);
-      color: var(--text-color);
+    .request-list {
+      flex: 1;
+      overflow-y: auto;
     }
 
-    th, td {
-      border: 1px solid #ccc;
-      padding: 8px 12px;
-      text-align: left;
+    .request-item {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 10px;
+      margin-bottom: 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      font-size: 14px;
     }
 
-    th {
-      background-color: rgba(0, 116, 199, 0.7);
-      color: #fff;
+    .request-item:hover {
+      background-color: rgba(255,255,255,0.3);
     }
 
-    a.action-link {
-      margin-right: 10px;
-      color: var(--sidebar-bg);
+    .request-item.active {
+      background-color: white;
+      color: #0074C7;
+      font-weight: bold;
+    }
+
+    .details-panel {
+      flex: 1;
+      background: white;
+      padding: 20px;
+      overflow-y: auto;
+      box-shadow: -3px 0 10px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .details-header {
+      font-size: 24px;
+      margin-bottom: 15px;
+      border-bottom: 2px solid #0074C7;
+      padding-bottom: 8px;
+    }
+
+    .details-content {
+      flex: 1;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    .actions {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .actions a {
+      padding: 10px 20px;
+      border-radius: 5px;
       text-decoration: none;
-      font-weight: 600;
+      font-weight: bold;
+      color: white;
+      cursor: pointer;
+      user-select: none;
+      text-align: center;
+      flex: 1;
     }
-    a.action-link:hover {
-      text-decoration: underline;
+
+    .actions a.approve {
+      background-color: #28a745;
     }
+    .actions a.reject {
+      background-color: #dc3545;
+    }
+
+    .actions a:hover {
+      opacity: 0.85;
+    }
+
+    /* Scrollbar stylé (optionnel) */
+    .request-list::-webkit-scrollbar {
+      width: 6px;
+    }
+    .request-list::-webkit-scrollbar-thumb {
+      background-color: rgba(0,0,0,0.2);
+      border-radius: 3px;
+    }
+    .details-panel {
+  flex: 1;
+  background: var(--bg-color);
+  color: var(--text-color);
+  padding: 20px;
+  overflow-y: auto;
+  box-shadow: -3px 0 10px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.details-header {
+  font-size: 24px;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #0074C7; /* tu peux aussi changer la couleur en thème sombre si tu veux */
+  padding-bottom: 8px;
+}
+
+.dark-theme .details-header {
+  border-color: #66aaff;
+}
+
+.actions a.approve {
+  background-color: #28a745;
+  color: white;
+}
+
+.actions a.reject {
+  background-color: #dc3545;
+  color: white;
+}
+
+.dark-theme .actions a.approve {
+  background-color: #19692c;
+}
+
+.dark-theme .actions a.reject {
+  background-color: #7a1d22;
+}
+
   </style>
 </head>
 <body>
@@ -157,9 +255,8 @@
           <i class="fa fa-home"></i> <span>Tableau de bord</span>
         </a>
         <a th:href="@{/demandes-a-traiter}" th:classappend="${activePage == 'demandesATraiter'} ? ' active'" class="sidebar-link">
-  <i class="fa fa-wallet"></i> <span>Demandes à traiter</span>
-</a>
-
+          <i class="fa fa-wallet"></i> <span>Demandes à traiter</span>
+        </a>
         <a th:href="@{/conge/demande}" th:classappend="${activePage == 'demandeConge'} ? ' active'" class="sidebar-link">
           <i class="fa fa-plane-departure"></i> <span>Demande de congé</span>
         </a>
@@ -172,7 +269,7 @@
       </nav>
     </div>
     <div class="sidebar-footer">
-      <a href="#" class="sidebar-link"><i class="fa fa-sign-out-alt"></i> <span>Déconnexion</span></a>
+        <a href="/login" class="sidebar-link"><i class="fa fa-sign-out-alt"></i> <span>Déconnexion</span></a>
     </div>
   </div>
 
@@ -183,40 +280,48 @@
         <i class="fa fa-moon"></i>
       </button>
     </div>
-
-    <h1>Demandes à traiter</h1>
-
-    <table>
-      <thead>
-        <tr>
-          <th>Nom</th>
-          <th>Type de congé</th>
-          <th>Date début</th>
-          <th>Date fin</th>
-          <th>Statut</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-  <tr th:each="demande : ${demandes}">
-    <td th:text="${demande.demandeur.nom}">Nom utilisateur</td>
-    <td th:text="${demande.dateDebutFormatee}">01/01/2025</td>
-    <td th:text="${demande.dateFinFormatee}">03/01/2025</td>
-    <td th:text="${demande.statut}">en_attente</td>
-    <td>
-      <a th:href="@{'/approuver/' + ${demande.id}}" class="action-link">Approuver</a>
-      <a th:href="@{'/rejeter/' + ${demande.id}}" class="action-link">Rejeter</a>
-    </td>
-  </tr>
-  <tr th:if="${#lists.isEmpty(demandes)}">
-    <td colspan="6" style="text-align:center;">Aucune demande à traiter</td>
-  </tr>
-</tbody>
-
-    </table>
+<h2>Demandes à traiter</h2>
+<div style="display: flex; gap: 20px; height: 500px;">
+  <div class="request-list" id="requestList" style="flex: 1; overflow-y: auto;">
+    <div 
+      th:each="demande : ${demandes}" 
+      th:id="'demande-'+${demande.id}" 
+      class="request-item"
+      th:data-id="${demande.id}"
+      th:data-nom="${demande.demandeur.nom}"
+      th:data-date-debut="${#temporals.format(demande.dateDebut, 'dd/MM/yyyy')}"
+      th:data-date-fin="${demande.dateFin != null ? #temporals.format(demande.dateFin, 'dd/MM/yyyy') : 'N/A'}"
+      th:data-statut="${demande.statut}"
+      onclick="selectRequest(this)">
+      
+      <strong th:text="${demande.demandeur.nom}">Nom</strong>
+      <br/>
+      <small th:text="|Du ${#temporals.format(demande.dateDebut, 'dd/MM/yyyy')} au ${demande.dateFin != null ? #temporals.format(demande.dateFin, 'dd/MM/yyyy') : '...'}|">
+        Dates
+      </small>
+    </div>
+    <div th:if="${#lists.isEmpty(demandes)}" style="color: white; text-align: center; margin-top: 20px;">
+      Aucune demande à traiter
+    </div>
   </div>
 
+  <div class="details-panel" id="detailsPanel" style="flex: 1; overflow-y: auto;">
+    <div class="details-header" id="detailsHeader">
+      Veuillez sélectionner une demande
+    </div>
+    <div class="details-content" id="detailsContent">
+      Les détails s'afficheront ici...
+    </div>
+    <div class="actions" id="actionsContainer" style="display:none;">
+      <a href="#" id="btnApprove" class="approve">Approuver</a>
+      <a href="#" id="btnReject" class="reject">Rejeter</a>
+    </div>
+  </div>
+</div>
+
   <script>
+
+    
     const themeToggleBtn = document.getElementById('theme-toggle');
     themeToggleBtn.addEventListener('click', () => {
       document.body.classList.toggle('dark-theme');
@@ -224,6 +329,45 @@
       icon.classList.toggle('fa-moon');
       icon.classList.toggle('fa-sun');
     });
+
+    const requestList = document.getElementById('requestList');
+    const detailsHeader = document.getElementById('detailsHeader');
+    const detailsContent = document.getElementById('detailsContent');
+    const actionsContainer = document.getElementById('actionsContainer');
+    const btnApprove = document.getElementById('btnApprove');
+    const btnReject = document.getElementById('btnReject');
+
+    let currentSelected = null;
+
+    function selectRequest(elem) {
+      if(currentSelected) {
+        currentSelected.classList.remove('active');
+      }
+      elem.classList.add('active');
+      currentSelected = elem;
+
+      const demandeId = elem.getAttribute('data-id');
+      const nom = elem.getAttribute('data-nom');
+      const dateDebut = elem.getAttribute('data-date-debut');
+      const dateFin = elem.getAttribute('data-date-fin');
+      const statut = elem.getAttribute('data-statut');
+
+      detailsHeader.textContent = "Demande de " + nom;
+      detailsContent.innerHTML = `
+        <p><strong>Date de début:</strong> ${dateDebut}</p>
+        <p><strong>Date de fin:</strong> ${dateFin}</p>
+        <p><strong>Statut:</strong> ${statut}</p>
+      `;
+      actionsContainer.style.display = "flex";
+
+      btnApprove.href = '/approuver/' + demandeId;
+      btnReject.href = '/rejeter/' + demandeId;
+    }
+
+    window.onload = function() {
+      const firstRequest = requestList.querySelector('.request-item');
+      if(firstRequest) selectRequest(firstRequest);
+    }
   </script>
 </body>
 </html>
