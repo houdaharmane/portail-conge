@@ -708,33 +708,16 @@ dayDiv.onclick = () => {
   container.appendChild(monthDiv);
 }
 
-function selectDate(day) {
-  if(selectedStart === null || (selectedStart !== null && selectedEnd !== null)) {
-    selectedStart = day;
-    selectedEnd = null;
-  } else if(day >= selectedStart){
-    selectedEnd = day;
-  } else {
-    selectedStart = day;
-    selectedEnd = null;
-  }
-  updateDisplay();
-  createCalendar();
-}
-
 /*
   Calcul des jours ouvrés selon règle personnalisée :
   - Semaine du début : week-ends inclus
   - Semaines suivantes : week-ends exclus
   - Jours fériés toujours comptés comme ouvrés
 */
-function countWorkdaysCustom(startDay, endDay, year, month) {
-  if(startDay === null || endDay === null || endDay < startDay) return 0;
+function countWorkdaysCustom(startDate, endDate) {
+  if(!startDate || !endDate || endDate < startDate) return 0;
 
-  const startDate = new Date(year, month, startDay);
-  const endDate = new Date(year, month, endDay);
-
-  const startWeekDay = startDate.getDay(); // 0=dimanche
+  const startWeekDay = startDate.getDay();
   const diffToMonday = (startWeekDay === 0) ? -6 : 1 - startWeekDay;
   const startWeekMonday = new Date(startDate);
   startWeekMonday.setDate(startDate.getDate() + diffToMonday);
@@ -761,21 +744,22 @@ function countWorkdaysCustom(startDay, endDay, year, month) {
   return count;
 }
 
+
 function updateDisplay() {
   const startDateSpan = document.getElementById('startDateDisplay');
   const endDateSpan = document.getElementById('endDateDisplay');
   const workdaysSpan = document.getElementById('workdaysCount');
 
   if(selectedStart !== null){
-    startDateSpan.textContent = `${selectedStart}/${currentMonth+1}/${currentYear}`;
-    document.getElementById('dateDebut').value = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${String(selectedStart).padStart(2,'0')}`;
+    startDateSpan.textContent = selectedStart.toLocaleDateString('fr-FR');
+    document.getElementById('dateDebut').value = formatDate(selectedStart);
   } else {
     startDateSpan.textContent = "--/--/----";
     document.getElementById('dateDebut').value = "";
   }
   if(selectedEnd !== null){
-    endDateSpan.textContent = `${selectedEnd}/${currentMonth+1}/${currentYear}`;
-    document.getElementById('dateFin').value = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${String(selectedEnd).padStart(2,'0')}`;
+    endDateSpan.textContent = selectedEnd.toLocaleDateString('fr-FR');
+    document.getElementById('dateFin').value = formatDate(selectedEnd);
   } else {
     endDateSpan.textContent = "--/--/----";
     document.getElementById('dateFin').value = "";
@@ -783,21 +767,17 @@ function updateDisplay() {
 
   let count = 0;
   if(selectedStart !== null && selectedEnd !== null){
-    count = countWorkdaysCustom(selectedStart, selectedEnd, currentYear, currentMonth);
+    count = countWorkdaysCustom(selectedStart, selectedEnd);
   }
-  // Affichage pour l'utilisateur
   workdaysSpan.textContent = count + (count > 1 ? " jours ouvrés" : " jour ouvré");
-
-  // Valeur numérique à envoyer côté serveur (uniquement le nombre)
   document.getElementById('dureeDemande').value = count;
 
-  // Synchroniser radios hidden pour envoi
   const startHalfRadio = document.querySelector('input[name="startHalf"]:checked');
   const endHalfRadio = document.querySelector('input[name="endHalf"]:checked');
-
   if(startHalfRadio) document.getElementById('startHalfHidden').value = startHalfRadio.value;
   if(endHalfRadio) document.getElementById('endHalfHidden').value = endHalfRadio.value;
 }
+
 
 
 // Initialisation
