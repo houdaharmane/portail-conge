@@ -8,15 +8,18 @@ import com.portailconge.portail_conge.repository.DemandeCongeRepository;
 import com.portailconge.portail_conge.repository.DepartementRepository;
 import com.portailconge.portail_conge.repository.UtilisateurRepository;
 
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import java.util.Optional;
 
+import java.security.Principal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Controller
 @RequestMapping("/personnel/conges")
@@ -40,19 +43,31 @@ public class DemandeCongeController {
             @RequestParam(required = false) String motif,
             Model model) {
 
+        // Vérification utilisateur par matricule
         Utilisateur demandeur = utilisateurRepository.findByMatricule(matricule);
         if (demandeur == null) {
             model.addAttribute("error", "Utilisateur non trouvé");
-            return "demande-conge-personnel"; // retourner le formulaire avec erreur
+            return "demande-conge-personnel";
         }
 
-        Departement departement = departementRepository.findById(departementId)
-                .orElse(null);
+        // Vérification département
+        Departement departement = departementRepository.findById(departementId).orElse(null);
         if (departement == null) {
             model.addAttribute("error", "Département invalide");
-            return "demande-conge-personnel"; // retourner le formulaire avec erreur
+            return "demande-conge-personnel";
         }
 
+        if (duree <= 0) {
+            model.addAttribute("error", "La durée doit être supérieure à zéro");
+            return "demande-conge-personnel";
+        }
+
+        if (dateDebut == null) {
+            model.addAttribute("error", "La date de début est obligatoire");
+            return "demande-conge-personnel";
+        }
+
+        // Création et enregistrement de la demande
         DemandeConge demande = new DemandeConge();
         demande.setDemandeur(demandeur);
         demande.setDuree(duree);
@@ -60,14 +75,27 @@ public class DemandeCongeController {
         demande.setDepartement(departement);
         demande.setStatut(StatutDemande.EN_ATTENTE);
 
-        // Calculer dateFin = dateDebut + duree jours (durée en jours)
-        LocalDate dateFin = dateDebut.plusDays(duree);
+        // Calcul date fin (inclus le jour de début)
+        LocalDate dateFin = dateDebut.plusDays(duree - 1);
         demande.setDateFin(dateFin);
 
         demandeCongeRepository.save(demande);
 
         model.addAttribute("message", "Demande enregistrée avec succès.");
-        return "confirmationDemande"; // page de confirmation
+        return "confirmationDemande";
     }
 
+    @GetMapping("/mes-demandes")
+    public String afficherMesDemandes(Model model, HttpSession session) {
+        Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
+        if (utilisateur == null) {
+            model.addAttribute("error", "Vous devez être connecté pour voir vos demandes.");
+            return "login";
+        }
+
+        List<DemandeConge> mesDemandes = demandeCongeRepository.findByDemandeur(utilisateur);
+        model.addAttribute("mesDemandes", mesDemandes);
+
+        return "Demandes-personnel";
+    }
 }

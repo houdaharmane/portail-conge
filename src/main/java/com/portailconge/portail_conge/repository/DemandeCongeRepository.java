@@ -3,6 +3,7 @@ package com.portailconge.portail_conge.repository;
 import com.portailconge.portail_conge.model.DemandeConge;
 import com.portailconge.portail_conge.model.Departement;
 import com.portailconge.portail_conge.model.StatutDemande;
+import com.portailconge.portail_conge.model.Utilisateur;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,5 +18,7 @@ public interface DemandeCongeRepository extends JpaRepository<DemandeConge, Long
     @Query("SELECT d FROM DemandeConge d WHERE d.demandeur.departement = :departement AND d.statut = :statut")
     List<DemandeConge> findDemandesEnAttenteByDepartement(@Param("departement") Departement departement,
             @Param("statut") StatutDemande statut);
+
+    List<DemandeConge> findByDemandeur(Utilisateur demandeur);
 
 }
