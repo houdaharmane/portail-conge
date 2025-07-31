@@ -129,6 +129,7 @@ public class ResponsableController {
         model.addAttribute("matricule", utilisateur.getMatricule());
         model.addAttribute("nomPrenom", utilisateur.getNom() + " " + utilisateur.getPrenom());
         model.addAttribute("departementId", utilisateur.getDepartement().getId());
+        model.addAttribute("fonction", "RESPONSABLE");
 
         return "demandeConge-responsable";
     }
