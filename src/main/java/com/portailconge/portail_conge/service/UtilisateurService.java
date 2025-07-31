@@ -27,4 +27,8 @@ public class UtilisateurService {
         // Supposons que le matricule est unique et sert de username
         return utilisateurRepository.findByMatricule(username);
     }
+
+    public int getNombrePersonnels() {
+        return utilisateurRepository.countByRole("PERSONNEL");
+    }
 }

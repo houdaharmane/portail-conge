@@ -46,6 +46,7 @@ public class Utilisateur {
     private String role;
 
     // Getters et setters
+
     public String getPhotoUrl() {
         return photoUrl;
     }

@@ -5,6 +5,10 @@ import com.portailconge.portail_conge.model.Departement;
 import com.portailconge.portail_conge.model.StatutDemande;
 import com.portailconge.portail_conge.model.Utilisateur;
 import com.portailconge.portail_conge.repository.DemandeCongeRepository;
+import com.portailconge.portail_conge.service.CongeService;
+import com.portailconge.portail_conge.service.UtilisateurService;
+
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import jakarta.servlet.http.HttpSession;
@@ -17,6 +21,12 @@ import java.util.List;
 
 @Controller
 public class ResponsableController {
+
+    @Autowired
+    private CongeService congeService;
+
+    @Autowired
+    private UtilisateurService utilisateurService;
 
     @Autowired
     private DemandeCongeRepository demandeCongeRepository;
@@ -33,15 +43,19 @@ public class ResponsableController {
             return "redirect:/login";
         }
 
-        model.addAttribute("totalPersonnel", 120);
-        model.addAttribute("congesEnAttente", 8);
-        model.addAttribute("congesValides", 52);
+        int nombrePersonnels = utilisateurService.getNombrePersonnels();
+        int congesEnAttente = congeService.getCongesEnAttente();
+        int congesValides = congeService.getCongesValides();
+
+        model.addAttribute("totalPersonnel", nombrePersonnels);
+        model.addAttribute("congesEnAttente", congesEnAttente);
+        model.addAttribute("congesValides", congesValides);
         model.addAttribute("utilisateur", utilisateur);
 
         return "dashboard-responsable";
     }
 
-    // Soumission demande
+    // Soumission demande (personnel)
     @PostMapping("/conge/demande/soumettre")
     public String soumettreDemande(@ModelAttribute DemandeConge demandeConge, HttpSession session) {
         Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
@@ -103,4 +117,36 @@ public class ResponsableController {
         }
         return "redirect:/demandes-a-traiter";
     }
+
+    // Affichage formulaire demande congé responsable
+    @GetMapping("/responsable/conge/demande")
+    public String afficherFormulaireDemande(Model model, HttpSession session) {
+        Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
+        if (utilisateur == null || !"RESPONSABLE".equals(utilisateur.getRole())) {
+            return "redirect:/login";
+        }
+        // Ajouter les attributs nécessaires au formulaire, ex:
+        model.addAttribute("matricule", utilisateur.getMatricule());
+        model.addAttribute("nomPrenom", utilisateur.getNom() + " " + utilisateur.getPrenom());
+        model.addAttribute("departementId", utilisateur.getDepartement().getId());
+
+        return "demandeConge-responsable";
+    }
+
+    // Soumission demande congé responsable
+    @PostMapping("/responsable/conge/demande/soumettre")
+    public String soumettreDemandeCongeResponsable(@ModelAttribute DemandeConge demandeConge, HttpSession session) {
+        Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
+        if (utilisateur == null || !"RESPONSABLE".equals(utilisateur.getRole())) {
+            return "redirect:/login";
+        }
+        demandeConge.setDemandeur(utilisateur);
+        demandeConge.setStatut(StatutDemande.EN_ATTENTE);
+        demandeConge.setDateSoumission(LocalDate.now());
+
+        demandeCongeRepository.save(demandeConge);
+
+        return "redirect:/dashboard-responsable";
+    }
+
 }

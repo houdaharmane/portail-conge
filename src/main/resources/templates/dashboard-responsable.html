@@ -242,10 +242,10 @@
  <a th:href="@{/demandes-a-traiter}" th:classappend="${activePage == 'demandesATraiter'} ? ' active'" class="sidebar-link">
   <i class="fa fa-wallet"></i> <span>Demandes à traiter</span>
 </a>
+<a th:href="@{/responsable/conge/demande}" th:classappend="${activePage == 'demandeConge'} ? ' active'" class="sidebar-link">
+    <i class="fa fa-plane-departure"></i> <span>Demande de congé</span>
+</a>
 
-    <a th:href="@{/conge/demande}" th:classappend="${activePage == 'demandeConge'} ? ' active'" class="sidebar-link">
-        <i class="fa fa-plane-departure"></i> <span>Demande de congé</span>
-    </a>
     <a th:href="@{/profil}" th:classappend="${activePage == 'profil'} ? ' active'" class="sidebar-link">
         <i class="fa fa-user"></i> <span>Mon profil</span>
     </a>
@@ -272,18 +272,18 @@
 <div class="dashboard-cards">
     <div class="card">
         <div class="card-icon"><i class="fa fa-users"></i></div>
-        <div class="card-title">Personnel actif</div>
-        <div class="card-value" th:text="${totalPersonnel}">120</div>
+        <div class="card-title">Personnel connectes</div>
+<div class="card-value" th:text="${totalPersonnelConnectes}">0</div>
     </div>
     <div class="card">
         <div class="card-icon"><i class="fa fa-plane-departure"></i></div>
         <div class="card-title">Congés en attente</div>
-        <div class="card-value" th:text="${congesEnAttente}">8</div>
+<div class="card-value" th:text="${congesEnAttente}">0</div>
     </div>
     <div class="card">
         <div class="card-icon"><i class="fa fa-check-circle"></i></div>
         <div class="card-title">Congés validés</div>
-        <div class="card-value" th:text="${congesValides}">52</div>
+<div class="card-value" th:text="${congesValides}">0</div>
     </div>
 </div>
 

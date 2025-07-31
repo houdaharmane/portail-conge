@@ -6,7 +6,9 @@ import com.portailconge.portail_conge.model.Utilisateur;
 import java.util.Optional;
 
 public interface UtilisateurRepository extends JpaRepository<Utilisateur, Integer> {
-    Optional<Utilisateur> findByEmail(String email); // ⬅️ Corrigé ici
+    Optional<Utilisateur> findByEmail(String email);
+
+    int countByRole(String role);
 
     Utilisateur findByMatricule(String matricule);
 }

@@ -63,6 +63,7 @@ public class DemandeConge {
     }
 
     // Getters et setters
+
     public Long getId() {
         return id;
     }
@@ -110,4 +111,15 @@ public class DemandeConge {
     public void setDateFin(LocalDate dateFin) {
         this.dateFin = dateFin;
     }
+
+    private LocalDate dateSoumission;
+
+    public LocalDate getDateSoumission() {
+        return dateSoumission;
+    }
+
+    public void setDateSoumission(LocalDate dateSoumission) {
+        this.dateSoumission = dateSoumission;
+    }
+
 }
