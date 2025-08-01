@@ -201,6 +201,8 @@ public class PersonnelController {
 
         model.addAttribute("matricule", utilisateur.getMatricule());
         model.addAttribute("nomPrenom", nomPrenom);
+        model.addAttribute("role", utilisateur.getRole());
+        model.addAttribute("departementId", utilisateur.getDepartement().getId());
 
         return "demande-conge-personnel";
     }

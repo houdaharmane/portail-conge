@@ -21,6 +21,15 @@ public interface DemandeCongeRepository extends JpaRepository<DemandeConge, Long
 
     List<DemandeConge> findByDemandeur(Utilisateur demandeur);
 
+    List<DemandeConge> findByStatut(StatutDemande statut);
+
+    List<DemandeConge> findDemandesByDepartementAndStatut(Departement departement, StatutDemande statut);
+
     int countByStatut(StatutDemande statut);
+
+    // Compter par liste de statuts
+    int countByStatutIn(List<StatutDemande> statuts);
+
+    List<DemandeConge> findByStatutIn(List<StatutDemande> statuts);
 
 }

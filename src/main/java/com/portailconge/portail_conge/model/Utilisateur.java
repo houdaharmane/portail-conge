@@ -26,7 +26,6 @@ public class Utilisateur {
     private String matricule;
     private String nom;
     private String prenom;
-
     @Column(unique = true)
     private String email;
 

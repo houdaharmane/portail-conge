@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Historique des demandes - RH</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #7749F8;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        h1 {
+            color: #7749F8;
+        }
+    </style>
+</head>
+<body>
+    <h1>Historique des demandes - RH</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Demandeur</th>
+                <th>Date de début</th>
+                <th>Date de fin</th>
+                <th>Durée</th>
+                <th>Statut</th>
+                <th>Date de soumission</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="demande : ${demandes}">
+                <td th:text="${demande.demandeur.nom} + ' ' + ${demande.demandeur.prenom}"></td>
+                <td th:text="${#temporals.format(demande.dateDebut, 'dd/MM/yyyy')}"></td>
+                <td th:text="${#temporals.format(demande.dateFin, 'dd/MM/yyyy')}"></td>
+                <td th:text="${demande.duree}"></td>
+                <td th:text="${demande.statut}"></td>
+                <td th:text="${#temporals.format(demande.dateSoumission, 'dd/MM/yyyy')}"></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(demandes)}">
+                <td colspan="6">Aucune demande historique disponible.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="/dashboard-rh">Retour au tableau de bord</a>
+</body>
+</html>

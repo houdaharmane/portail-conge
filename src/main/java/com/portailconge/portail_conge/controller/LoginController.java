@@ -25,18 +25,24 @@ public class LoginController {
     @PostMapping("/login")
     public String login(@RequestParam String email, @RequestParam String password, HttpSession session, Model model) {
         Utilisateur utilisateur = utilisateurRepository.findByEmail(email).orElse(null);
-        String role = utilisateur.getRole();
 
-        if (role == null) {
-            model.addAttribute("error", "Le rôle de l'utilisateur n'est pas défini, contactez l'administrateur.");
+        if (utilisateur == null) {
+            model.addAttribute("error", "Email ou mot de passe incorrect !");
             return "login";
         }
 
-        if (utilisateur != null && utilisateur.getMotDePasse().equals(password)) {
-            session.setAttribute("utilisateur", utilisateur);
-            System.out.println("Role from DB: " + utilisateur.getRole());
+        if (utilisateur.getMotDePasse().equals(password)) {
+            String role = utilisateur.getRole();
 
-            switch (utilisateur.getRole()) {
+            if (role == null) {
+                model.addAttribute("error", "Le rôle de l'utilisateur n'est pas défini, contactez l'administrateur.");
+                return "login";
+            }
+
+            session.setAttribute("utilisateur", utilisateur);
+            System.out.println("Role from DB: " + role);
+
+            switch (role) {
                 case "PERSONNEL":
                     return "redirect:/dashboard-personnel";
                 case "RH":

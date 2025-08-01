@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="fr">
 <head>
     <meta charset="UTF-8" />
-    <title>RH Dashboard - Demande de congé avancée</title>
+    <title> Demande de congé avancée</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -170,6 +170,7 @@
             user-select: none;
             transition: background-color 0.3s;
             color: var(--text-color);
+            color: #222;
         }
         .day:hover:not(.disabled):not(.taken):not(.selected) {
             background-color: #cce0ff;
@@ -422,7 +423,24 @@ select.form-control {
     background-position: right 10px center;
     background-size: 16px;
 }
+body.dark-theme .day {
+  color: #eee; /* texte clair */
+}
 
+/* Pour les jours désactivés ou pris */
+.day.disabled, .day.taken {
+  color: #999; /* gris clair mais lisible */
+}
+
+/* Thème sombre */
+body.dark-theme .day {
+  color: #eee; /* texte clair sur fond sombre */
+}
+
+body.dark-theme .day.disabled, 
+body.dark-theme .day.taken {
+  color: #f7f2f2;
+}
     </style>
 </head>
 <body>
@@ -432,22 +450,23 @@ select.form-control {
         <div class="sidebar-header">
             <img src="/img/modepbg.png" alt="Logo MODEP" class="sidebar-logo">
         </div>
-         <nav>
+      <nav>
     <a th:href="@{/dashboard-responsable}" th:classappend="${activePage == 'dashboard'} ? ' active'" class="sidebar-link">
         <i class="fa fa-home"></i> <span>Tableau de bord</span>
     </a>
  <a th:href="@{/demandes-a-traiter}" th:classappend="${activePage == 'demandesATraiter'} ? ' active'" class="sidebar-link">
   <i class="fa fa-wallet"></i> <span>Demandes à traiter</span>
 </a>
-    <a th:href="@{/conge/demande}" th:classappend="${activePage == 'demandeConge'} ? ' active'" class="sidebar-link">
-        <i class="fa fa-plane-departure"></i> <span>Demande de congé</span>
-    </a>
-    <a th:href="@{/profil}" th:classappend="${activePage == 'profil'} ? ' active'" class="sidebar-link">
-        <i class="fa fa-user"></i> <span>Mon profil</span>
-    </a>
-    <a href="#" th:classappend="${activePage == 'historique'} ? ' active'" class="sidebar-link">
-        <i class="fa fa-history"></i> <span>Historique</span>
-    </a>
+<a th:href="@{/responsable/conge/demande}" th:classappend="${activePage == 'demandeConge'} ? ' active'" class="sidebar-link">
+    <i class="fa fa-plane-departure"></i> <span>Demande de congé</span>
+</a>
+
+     <a th:href="@{/profil-responsable}" th:classappend="${activePage == 'profil'} ? ' active'" class="sidebar-link">
+                <i class="fa fa-user"></i> <span>Mon profil</span>
+            </a>
+      <a th:href="@{/responsable/historique-demandes}" th:classappend="${activePage == 'historiqueDemandesResponsable'} ? ' active'" class="sidebar-link">
+                <i class="fa fa-history"></i> <span>Historique</span>
+            </a>
 </nav>
 
     </div>
@@ -514,7 +533,7 @@ select.form-control {
         </div>
         <div class="form-group">
             <label>Fonction :</label>
-<input type="text" name="fonction" class="form-control" placeholder="Fonction" required th:value="${fonction}" />
+<input type="text" name="role" class="form-control" required th:value="${role}" readonly />
         </div>
       <div class="form-group">
     <label>Département :</label>

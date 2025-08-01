@@ -1,10 +1,14 @@
 package com.portailconge.portail_conge.controller;
 
+import com.portailconge.portail_conge.model.DemandeConge;
+import com.portailconge.portail_conge.model.StatutDemande;
 import com.portailconge.portail_conge.model.Utilisateur;
 import com.portailconge.portail_conge.repository.UtilisateurRepository;
+import com.portailconge.portail_conge.repository.DemandeCongeRepository;
 import com.portailconge.portail_conge.repository.DepartementRepository;
 
 import jakarta.servlet.http.HttpSession;
+import java.util.List;
 
 import java.io.IOException;
 
@@ -16,6 +20,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 public class RhController {
+    @Autowired
+    private DemandeCongeRepository demandeCongeRepository;
 
     @Autowired
     private DepartementRepository departementRepository;
@@ -156,6 +162,120 @@ public class RhController {
             return utilisateur.getPhoto();
         }
         return new byte[0];
+    }
+
+    @GetMapping("/rh/conge/demande")
+    public String afficherFormulaireDemande(HttpSession session, Model model) {
+        Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
+
+        if (rh == null || !"RH".equals(rh.getRole())) {
+            return "redirect:/login";
+        }
+        System.out.println("Utilisateur en session:");
+        System.out.println("Nom = " + rh.getNom());
+        System.out.println("Prénom = " + rh.getPrenom());
+        System.out.println("Matricule = " + rh.getMatricule());
+
+        model.addAttribute("rh", rh);
+        model.addAttribute("activePage", "demandeConge");
+        return "demande_conge";
+    }
+
+    @PostMapping("/rh/conge/demande")
+    public String soumettreDemandeInteresse(
+            @RequestParam("matricule") String matricule,
+            @RequestParam("nomPrenom") String nomPrenom,
+            @RequestParam("fonction") String fonction,
+            @RequestParam("departementId") Integer departementId,
+            @RequestParam("duree") String duree,
+            @RequestParam("dateDebut") String dateDebut,
+            @RequestParam("dateFin") String dateFin,
+            Model model,
+            HttpSession session) {
+        Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
+
+        if (rh == null || !"RH".equals(rh.getRole())) {
+            return "redirect:/login";
+        }
+
+        System.out.println("Demande reçue :");
+        System.out.println("Matricule : " + matricule);
+        System.out.println("Nom Prénom : " + nomPrenom);
+        System.out.println("Fonction : " + fonction);
+        System.out.println("Département ID : " + departementId);
+        System.out.println("Durée : " + duree);
+        System.out.println("Du " + dateDebut + " au " + dateFin);
+
+        return "redirect:/ConfirmationDemande";
+    }
+
+    @GetMapping("/rh/demandes-approuvees-responsable")
+    public String afficherDemandesApprouveesParResponsable(HttpSession session, Model model) {
+        Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
+
+        if (rh == null || !"RH".equals(rh.getRole())) {
+            return "redirect:/login";
+        }
+
+        List<DemandeConge> demandes = demandeCongeRepository.findByStatut(StatutDemande.APPROUVEE_RESP);
+        model.addAttribute("demandes", demandes);
+        model.addAttribute("activePage", "demandesApprouveesParResponsable");
+
+        return "demandeApprouveesRH";
+    }
+
+    @PostMapping("/rh/demande/valider")
+    public String validerDemande(@RequestParam("id") Long id, HttpSession session) {
+        Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
+
+        if (rh == null || !"RH".equals(rh.getRole())) {
+            return "redirect:/login";
+        }
+
+        demandeCongeRepository.findById(id).ifPresent(demande -> {
+            demande.setStatut(StatutDemande.APPROUVEE_RH); // ou VALIDEE selon ta logique
+            demandeCongeRepository.save(demande);
+        });
+
+        return "redirect:/rh/demandes-approuvees-responsable";
+    }
+
+    @PostMapping("/rh/demande/refuser")
+    public String refuserDemande(@RequestParam("id") Long id, HttpSession session) {
+        Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
+
+        if (rh == null || !"RH".equals(rh.getRole())) {
+            return "redirect:/login";
+        }
+
+        demandeCongeRepository.findById(id).ifPresent(demande -> {
+            demande.setStatut(StatutDemande.REFUSEE);
+            demandeCongeRepository.save(demande);
+        });
+
+        return "redirect:/rh/demandes-approuvees-responsable";
+    }
+
+    @GetMapping("/rh/historique-demandes")
+    public String afficherHistoriqueRh(HttpSession session, Model model) {
+        Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
+
+        if (rh == null || !"RH".equals(rh.getRole())) {
+            return "redirect:/login";
+        }
+
+        // Statuts pertinents pour RH (par exemple, toutes les demandes
+        // approuvées/refusées par RH)
+        List<StatutDemande> statutsHistoriqueRh = List.of(
+                StatutDemande.APPROUVEE_RH,
+                StatutDemande.REFUSEE);
+
+        List<DemandeConge> demandesHistorique = demandeCongeRepository.findByStatutIn(statutsHistoriqueRh);
+
+        model.addAttribute("demandes", demandesHistorique);
+        model.addAttribute("activePage", "historiqueDemandesRh");
+
+        return "historique-demandes-rh";
     }
 
 }

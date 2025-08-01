@@ -1,5 +1,6 @@
 package com.portailconge.portail_conge.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
@@ -62,6 +63,16 @@ public class DemandeConge {
         this.dateFinFormatee = dateFinFormatee;
     }
 
+    @Transient
+    private String dateSoumissionFormatee;
+
+    public String getDateSoumissionFormatee() {
+        return dateSoumissionFormatee;
+    }
+
+    public void setDateSoumissionFormatee(String dateSoumissionFormatee) {
+        this.dateSoumissionFormatee = dateSoumissionFormatee;
+    }
     // Getters et setters
 
     public Long getId() {
@@ -112,6 +123,7 @@ public class DemandeConge {
         this.dateFin = dateFin;
     }
 
+    @Column(name = "date_soumission")
     private LocalDate dateSoumission;
 
     public LocalDate getDateSoumission() {
