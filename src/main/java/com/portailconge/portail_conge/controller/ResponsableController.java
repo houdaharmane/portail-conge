@@ -13,10 +13,12 @@ import java.time.format.DateTimeFormatter;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 @Controller
@@ -46,11 +48,13 @@ public class ResponsableController {
         int nombrePersonnels = utilisateurService.getNombrePersonnels();
         int congesEnAttente = congeService.getCongesEnAttente();
         int congesValides = congeService.getCongesValides();
+        int congesRefuses = congeService.getCongesRefuses();
 
         model.addAttribute("totalPersonnel", nombrePersonnels);
         model.addAttribute("congesEnAttente", congesEnAttente);
         model.addAttribute("congesValides", congesValides);
         model.addAttribute("utilisateur", responsable);
+        model.addAttribute("congesRefuses", congesRefuses);
 
         return "dashboard-responsable";
     }
@@ -171,6 +175,7 @@ public class ResponsableController {
     @GetMapping("/demandes-approuvees")
     public String afficherDemandesApprouvees(HttpSession session, Model model) {
         Utilisateur responsable = (Utilisateur) session.getAttribute("utilisateur");
+
         if (responsable == null || !"RESPONSABLE".equals(responsable.getRole())) {
             return "redirect:/login";
         }
@@ -179,7 +184,6 @@ public class ResponsableController {
 
         List<DemandeConge> demandesApprouvees = demandeCongeRepository.findDemandesByDepartementAndStatut(
                 departement, StatutDemande.APPROUVEE_RESP);
-
         model.addAttribute("demandes", demandesApprouvees);
         model.addAttribute("activePage", "demandesApprouvees");
         // Vue différente de RH si tu veux : "demandesApprouveesResponsable"
@@ -198,26 +202,30 @@ public class ResponsableController {
     }
 
     @GetMapping("/responsable/historique-demandes")
-    public String afficherHistoriqueResponsable(HttpSession session, Model model) {
-        Utilisateur responsable = (Utilisateur) session.getAttribute("utilisateur");
+    public String afficherHistoriqueResponsable(
+            HttpSession session,
+            Model model,
+            @RequestParam(defaultValue = "0") int page) { // page par défaut = 0
 
+        Utilisateur responsable = (Utilisateur) session.getAttribute("utilisateur");
         if (responsable == null || !"RESPONSABLE".equals(responsable.getRole())) {
             return "redirect:/login";
         }
 
-        // Statuts pertinents pour Responsable (demandes approuvées/refusées par le
-        // responsable)
         List<StatutDemande> statutsHistoriqueResp = List.of(
                 StatutDemande.APPROUVEE_RESP,
                 StatutDemande.REFUSEE_RESP);
 
-        List<DemandeConge> demandesHistorique = demandeCongeRepository.findByStatutIn(statutsHistoriqueResp);
+        int pageSize = 3; // nombre d'éléments par page
+        Pageable pageable = PageRequest.of(page, pageSize);
+
+        Page<DemandeConge> demandesPage = demandeCongeRepository.findByStatutIn(statutsHistoriqueResp, pageable);
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        for (DemandeConge demande : demandesHistorique) {
+        for (DemandeConge demande : demandesPage.getContent()) {
             if (demande.getDateSoumission() != null) {
                 demande.setDateSoumissionFormatee(demande.getDateSoumission().format(formatter));
             }
-            // Tu peux aussi formatter dateDebut et dateFin ici si tu veux
             if (demande.getDateDebut() != null) {
                 demande.setDateDebutFormatee(demande.getDateDebut().format(formatter));
             }
@@ -226,8 +234,10 @@ public class ResponsableController {
             }
         }
 
-        model.addAttribute("demandes", demandesHistorique);
+        model.addAttribute("demandes", demandesPage.getContent());
         model.addAttribute("activePage", "historiqueDemandesResponsable");
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", demandesPage.getTotalPages());
 
         return "historique-demandes-responsable";
     }

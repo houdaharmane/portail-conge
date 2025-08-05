@@ -8,6 +8,7 @@ import com.portailconge.portail_conge.repository.DemandeCongeRepository;
 import com.portailconge.portail_conge.repository.DepartementRepository;
 
 import jakarta.servlet.http.HttpSession;
+
 import java.util.List;
 
 import java.io.IOException;
@@ -217,8 +218,17 @@ public class RhController {
             return "redirect:/login";
         }
 
-        List<DemandeConge> demandes = demandeCongeRepository.findByStatut(StatutDemande.APPROUVEE_RESP);
-        model.addAttribute("demandes", demandes);
+        // Demandes approuvées par le responsable
+        List<DemandeConge> demandesApprouvees = demandeCongeRepository.findByStatut(StatutDemande.APPROUVEE_RESP);
+
+        // Demandes réalisées par des responsables
+        List<DemandeConge> demandesRealiseesParResponsable = demandeCongeRepository.findByDemandeurRole("RESPONSABLE");
+
+        // Envoie les deux listes à la vue
+        model.addAttribute("demandesApprouvees", demandesApprouvees);
+        model.addAttribute("demandesRealisees", demandesRealiseesParResponsable);
+
+        model.addAttribute("rh", rh);
         model.addAttribute("activePage", "demandesApprouveesParResponsable");
 
         return "demandeApprouveesRH";

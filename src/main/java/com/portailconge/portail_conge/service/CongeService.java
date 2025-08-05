@@ -25,4 +25,8 @@ public class CongeService {
         return demandeCongeRepository.countByStatutIn(statutsValides);
     }
 
+    public int getCongesRefuses() {
+        return demandeCongeRepository.countByStatut(StatutDemande.REFUSEE_RESP);
+    }
+
 }

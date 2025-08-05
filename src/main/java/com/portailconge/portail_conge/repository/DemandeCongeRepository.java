@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -32,4 +34,12 @@ public interface DemandeCongeRepository extends JpaRepository<DemandeConge, Long
 
     List<DemandeConge> findByStatutIn(List<StatutDemande> statuts);
 
+    Page<DemandeConge> findByStatutIn(List<StatutDemande> statuts, Pageable pageable);
+
+    @Query("SELECT d FROM DemandeConge d WHERE d.demandeur.role = :role")
+    List<DemandeConge> findByDemandeurRole(@Param("role") String role);
+
+    Page<DemandeConge> findByStatut(StatutDemande statut, Pageable pageable);
+
+    Page<DemandeConge> findByDemandeurRole(String role, Pageable pageable);
 }

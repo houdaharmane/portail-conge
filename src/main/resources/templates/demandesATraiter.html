@@ -20,13 +20,11 @@
       color: var(--text-color);
     }
 
-    /* Thème clair (par défaut) */
     body {
       --bg-color: #f6f6f6;
       --text-color: #000;
     }
 
-    /* Thème sombre */
     .dark-theme {
       --bg-color: #1e1e1e;
       --text-color: #f0f0f0;
@@ -96,12 +94,40 @@
       overflow-x: auto;
     }
 
-    .header {
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      margin-bottom: 20px;
-    }
+   .header {
+            height: 60px;
+            background-color: #f3f3f3;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 20px;
+            border-bottom: 1px solid #ccc;
+            box-shadow: 0 2px 8px #e9953d11;
+        }
+        .header a {
+            text-decoration: none;
+            color:  #0074C7;
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            font-size: 17px;
+        }
+        .header a i {
+            margin-right: 8px;
+            font-size: 24px;
+        }
+.dark-theme .header {
+  background-color: #2a2a2a;
+  border-bottom: 1px solid #444;
+}
+
+.dark-theme .header a {
+  color: #66aaff;
+}
+
+.dark-theme .theme-toggle-btn {
+  color: #f0f0f0;
+}
 
     .theme-toggle-btn {
       background: none;
@@ -264,9 +290,9 @@
     <a th:href="@{/profil-responsable}" th:classappend="${activePage == 'profil'} ? ' active'" class="sidebar-link">
         <i class="fa fa-user"></i> <span>Mon profil</span>
     </a>
-    <a href="#" th:classappend="${activePage == 'historique'} ? ' active'" class="sidebar-link">
-        <i class="fa fa-history"></i> <span>Historique</span>
-    </a>
+         <a th:href="@{/responsable/historique-demandes}" th:classappend="${activePage == 'historiqueDemandesResponsable'} ? ' active'" class="sidebar-link">
+                <i class="fa fa-history"></i> <span>Historique</span>
+            </a>
 </nav>
     </div>
     <div class="sidebar-footer">

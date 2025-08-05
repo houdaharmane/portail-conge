@@ -22,7 +22,7 @@
             --header-bg: #2c2c2c;
             --card-bg: #2c2c3a;
             --card-shadow: rgba(255, 255, 255, 0.05);
-            --sidebar-bg: #1e1e2f;
+            --sidebar-bg: #0074C7;
             --sidebar-text: #ffffff;
         }
 
@@ -42,7 +42,7 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            height: 100vh;
+            height: 117vh;
             box-shadow: 2px 0 12px var(--card-shadow);
         }
 
@@ -100,27 +100,43 @@
             flex-direction: column;
         }
 
-        .header {
-            height: 60px;
-            background-color: var(--header-bg);
-            display: flex;
-            align-items: flex-start;
-            justify-content: flex-end;
-            padding: 10px 20px 0 20px;
-        }
+.header {
+    height: 80px;
+    background-color: var(--header-bg);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    border-bottom: 1px solid #ccc;
+    box-shadow: 0 2px 8px #e9953d11;
+}
 
-        .theme-toggle-btn {
-            background: none;
-            border: none;
-            font-size: 20px;
-            color: var(--sidebar-bg);
-            cursor: pointer;
-        }
+.header a {
+    text-decoration: none;
+    color: #0074C7;
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    font-size: 17px;
+}
 
-        .dark-theme .theme-toggle-btn {
-            color: var(--text-color);
-        }
+.header a i {
+    margin-right: 8px;
+    font-size: 24px;
+}
 
+.theme-toggle-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: #0074C7;
+    cursor: pointer;
+    padding: 16px;
+}
+
+.dark-theme .theme-toggle-btn {
+    color: #f0f0f0;
+}
         .main-content {
             flex: 1;
             padding: 40px;
@@ -172,6 +188,11 @@
         .dark-theme .badge {
             background-color: #3385ff;
         }
+          .active-page {
+        background-color: #0074C7;
+        color: white !important;
+        pointer-events: none;
+    }
     </style>
 </head>
 <body>
@@ -214,13 +235,12 @@
     </div>
 
     <div class="main-content">
-        <h1>Historique des demandes - Responsable</h1>
 
         <div class="historique-cartes">
             <div class="demande-carte" th:each="demande : ${demandes}">
                 <div class="demande-info">
                     <strong th:text="${demande.demandeur.nom + ' ' + demande.demandeur.prenom}">Nom Prénom</strong>
-                    <span th:text="${demande.statut}" class="badge">Statut</span>
+<span th:text="${demande.statut}" class="badge">Statut</span>
                 </div>
                 <p>
                     Du <span th:text="${#temporals.format(demande.dateDebut, 'dd/MM/yyyy')}">01/08/2025</span>
@@ -234,6 +254,29 @@
                 <p>Aucune demande historique disponible.</p>
             </div>
         </div>
+        <div class="pagination" style="margin-top: 30px; text-align: center;">
+    <ul style="list-style: none; display: inline-flex; gap: 8px; padding: 0;">
+        <li th:if="${currentPage > 0}">
+            <a th:href="@{/responsable/historique-demandes(page=${currentPage - 1})}"
+               style="padding: 6px 12px; border: 1px solid #0074C7; color: #0074C7; text-decoration: none; border-radius: 4px;">
+               Précédent
+            </a>
+        </li>
+        <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+            <a th:href="@{/responsable/historique-demandes(page=${i})}"
+               th:text="${i + 1}"
+               th:classappend="${i == currentPage} ? ' active-page'"
+               style="padding: 6px 12px; border: 1px solid #0074C7; color: #0074C7; text-decoration: none; border-radius: 4px;">
+            </a>
+        </li>
+        <li th:if="${currentPage < totalPages - 1}">
+            <a th:href="@{/responsable/historique-demandes(page=${currentPage + 1})}"
+               style="padding: 6px 12px; border: 1px solid #0074C7; color: #0074C7; text-decoration: none; border-radius: 4px;">
+               Suivant
+            </a>
+        </li>
+    </ul>
+</div>
     </div>
 </div>
 

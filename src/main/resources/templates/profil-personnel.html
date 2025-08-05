@@ -125,23 +125,34 @@
         }
 
         /* Contenu principal */
-        .main-container {
+.main-container {
             flex: 1;
             display: flex;
             flex-direction: column;
-            background-color: var(--bg-color);
-            min-height: 100vh;
         }
-
-        .header {
+ .header {
+    width: 100%;
             height: 60px;
-            background-color: var(--header-bg);
+            background-color: #f3f3f3;
             display: flex;
             align-items: center;
             justify-content: flex-end;
             padding: 0 20px;
             border-bottom: 1px solid #ccc;
             box-shadow: 0 2px 8px #e9953d11;
+            
+        }
+        .header a {
+            text-decoration: none;
+            color:  #0074C7;
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            font-size: 17px;
+        }
+        .header a i {
+            margin-right: 8px;
+            font-size: 24px;
         }
 
         .theme-toggle-btn {
@@ -158,7 +169,7 @@
 
         .main-content {
             flex: 1;
-            max-width: 960px;
+            max-width: 900px;
             margin: 40px auto;
             padding: 0 20px;
             box-sizing: border-box;
@@ -206,13 +217,7 @@
             display: inline;
         }
 
-        /* Alert Notification */
-        .profile-option {
-            position: relative;
-            font-size: 24px;
-            color: var(--primary-color);
-            cursor: pointer;
-        }
+
 
         .profile-option .fa-bell {
             position: relative;
@@ -273,28 +278,7 @@
             font-size: 18px;
         }
 
-        .user-bio h3 {
-            margin-top: 20px;
-            margin-bottom: 8px;
-            font-weight: 700;
-            font-size: 18px;
-            color: var(--primary-color);
-        }
-
-        .bio {
-            font-size: 14px;
-            line-height: 1.5;
-            color: var(--text-color);
-            position: relative;
-        }
-
-        .bio #see-more-bio, .bio #see-less-bio {
-            color: var(--primary-color);
-            cursor: pointer;
-            font-weight: 600;
-            margin-left: 6px;
-            user-select: none;
-        }
+       
 
         .profile-btn {
             margin-top: 20px;

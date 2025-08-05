@@ -115,29 +115,27 @@
 
         .header {
             height: 60px;
-            background-color: var(--header-bg);
-            display: flex;
+background-color: var(--header-bg);
+             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: flex-end;
             padding: 0 20px;
             border-bottom: 1px solid #ccc;
             box-shadow: 0 2px 8px #e9953d11;
+            
         }
-
         .header a {
             text-decoration: none;
-            color: #0074C7;
+            color:  #0074C7;
             display: flex;
             align-items: center;
             font-weight: 600;
             font-size: 17px;
         }
-
         .header a i {
             margin-right: 8px;
             font-size: 24px;
         }
-
         .theme-toggle-btn {
             background: none;
             border: none;
@@ -269,24 +267,24 @@
     </div>
 
     <div class="main-content">
-       <h1 class="dashboard-title">Tableau de bord </h1>
 <div class="dashboard-cards">
-    <div class="card">
-        <div class="card-icon"><i class="fa fa-users"></i></div>
-        <div class="card-title">Personnel connectes</div>
-<div class="card-value" th:text="${totalPersonnelConnectes}">0</div>
-    </div>
     <div class="card">
         <div class="card-icon"><i class="fa fa-plane-departure"></i></div>
         <div class="card-title">Congés en attente</div>
 <div class="card-value" th:text="${congesEnAttente}">0</div>
     </div>
     <div class="card">
+    <div class="card-icon"><i class="fa fa-times-circle"></i></div>
+    <div class="card-title">Congés refusés</div>
+    <div class="card-value" th:text="${congesRefuses}">0</div>
+</div>
+    <div class="card">
         <div class="card-icon"><i class="fa fa-check-circle"></i></div>
         <div class="card-title">Congés validés</div>
 <div class="card-value" th:text="${congesValides}">0</div>
     </div>
 </div>
+
 
     </div>
 </div>

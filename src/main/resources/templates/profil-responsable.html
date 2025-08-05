@@ -58,6 +58,7 @@ body {
     min-height: 100vh;
     box-shadow: 2px 0 12px #e9953d22;
     padding: 0;
+
 }
 
 .sidebar-header {
@@ -123,33 +124,58 @@ nav {
     flex-direction: column;
     padding: 0 20px;
     max-width: 960px;
-    margin: 40px auto;
+    margin: 60px auto 40px auto;  
     box-sizing: border-box;
-    margin-top: -10px;  
+    margin-top: 60px;  
+    margin-right: 130px;
+    
 }
 
-/* Header */
-.header {
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    padding: 0 20px;
-    border-bottom: none;
+      .header {
+         margin-right: 50px;
+        width: 970px;
+        margin: 0 auto;
+            height: 60px;
+            background-color: #f3f3f3;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 20px;
+            border-bottom: 1px solid #ccc;
+            box-shadow: 0 2px 8px #e9953d11;
+            margin-top: -60px;
+        }
+        .header a {
+            text-decoration: none;
+            color:  #0074C7;
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            font-size: 17px;
+        }
+        .header a i {
+            margin-right: 8px;
+            font-size: 24px;
+        }
+.dark-theme .header {
+  background-color: #2a2a2a;
+  border-bottom: 1px solid #444;
 }
 
-/* Bouton changement thème */
+.dark-theme .header a {
+  color: #66aaff;
+}
+
+.dark-theme .theme-toggle-btn {
+  color: #f0f0f0;
+}
+
 .theme-toggle-btn {
     background: none;
     border: none;
     font-size: 20px;
-    color: var(--primary-color);
+    color: #0074C7;
     cursor: pointer;
-    transition: color 0.3s ease;
-}
-
-.theme-toggle-btn:hover {
-    color: var(--btn-hover-bg);
 }
 
 .dark-theme .theme-toggle-btn {
@@ -173,7 +199,7 @@ nav {
     cursor: pointer;
     border-radius: 50%;
     overflow: hidden; 
-    margin-top: -20px;
+    margin-top: 30px;
     background-color: #f0f0f0;
     box-shadow: 0 0 8px var(--primary-color);
     margin-right: 20px;
@@ -374,18 +400,13 @@ textarea[disabled], input[disabled] {
     </div>
 </div>
 
+
 <div class="main-container">
     <div class="header">
         <button id="theme-toggle" class="theme-toggle-btn" title="Changer de thème">
             <i class="fa fa-moon"></i>
         </button>
     </div>
-
-
-<h2 style="margin-top: 20px; margin-bottom: 40px; color: var(--primary-color); font-weight: 700; font-size: 28px;">
-    Profil Responsable
-</h2>
-
  <div class="profile-header">
     <div class="profile-img-wrapper">
         <img th:src="@{/personnel/photo/{id}(id=${utilisateur.id})}" 

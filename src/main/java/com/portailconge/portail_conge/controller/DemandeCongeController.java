@@ -71,11 +71,18 @@ public class DemandeCongeController {
         demande.setDuree(duree);
         demande.setDateDebut(dateDebut);
         demande.setDepartement(departement);
-        demande.setStatut(StatutDemande.EN_ATTENTE);
+        // demande.setStatut(StatutDemande.EN_ATTENTE);
 
         // Calcul date fin (inclus le jour de début)
         LocalDate dateFin = dateDebut.plusDays(duree - 1);
         demande.setDateFin(dateFin);
+        String role = demandeur.getRole(); // Récupère le rôle de l'utilisateur
+
+        if ("RESPONSABLE".equalsIgnoreCase(role)) {
+            demande.setStatut(StatutDemande.EN_ATTENTE_RH);
+        } else {
+            demande.setStatut(StatutDemande.EN_ATTENTE);
+        }
 
         demandeCongeRepository.save(demande);
 
