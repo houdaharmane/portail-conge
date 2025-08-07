@@ -159,10 +159,7 @@ public class RhController {
     @ResponseBody
     public byte[] getPhoto(@PathVariable("id") Integer id) {
         Utilisateur utilisateur = utilisateurRepository.findById(id).orElse(null);
-        if (utilisateur != null && utilisateur.getPhoto() != null) {
-            return utilisateur.getPhoto();
-        }
-        return new byte[0];
+        return (utilisateur != null && utilisateur.getPhoto() != null) ? utilisateur.getPhoto() : new byte[0];
     }
 
     @GetMapping("/rh/conge/demande")
@@ -286,6 +283,69 @@ public class RhController {
         model.addAttribute("activePage", "historiqueDemandesRh");
 
         return "historique-demandes-rh";
+    }
+
+    // Afficher la liste des utilisateurs
+    @GetMapping("/rh/utilisateurs")
+    public String afficherUtilisateurs(HttpSession session, Model model) {
+        Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
+        if (rh == null || !"RH".equals(rh.getRole())) {
+            return "redirect:/login";
+        }
+        List<Utilisateur> utilisateurs = utilisateurRepository.findAll();
+        model.addAttribute("utilisateurs", utilisateurs);
+        model.addAttribute("rh", rh);
+        model.addAttribute("activePage", "utilisateurs");
+        model.addAttribute("utilisateur", new Utilisateur()); // formulaire vide par défaut
+        return "utilisateurs";
+    }
+
+    // Afficher la liste + formulaire prérempli pour modification
+    @GetMapping("/rh/utilisateurs/modifier/{id}")
+    public String afficherFormulaireModificationUtilisateur(@PathVariable("id") Integer id, Model model,
+            HttpSession session) {
+        Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
+        if (rh == null || !"RH".equals(rh.getRole())) {
+            return "redirect:/login";
+        }
+
+        List<Utilisateur> utilisateurs = utilisateurRepository.findAll();
+        Utilisateur utilisateur = utilisateurRepository.findById(id).orElse(null);
+
+        model.addAttribute("utilisateurs", utilisateurs);
+        model.addAttribute("utilisateur", utilisateur); // formulaire prérempli
+        model.addAttribute("rh", rh);
+        model.addAttribute("activePage", "utilisateurs");
+
+        return "utilisateurs";
+    }
+
+    // Enregistrer la modification puis retourner liste avec formulaire vide
+    @PostMapping("/rh/utilisateurs/modifier")
+    public String enregistrerModificationUtilisateur(@ModelAttribute("utilisateur") Utilisateur utilisateurModifie,
+            HttpSession session, Model model) {
+        Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
+        if (rh == null || !"RH".equals(rh.getRole())) {
+            return "redirect:/login";
+        }
+
+        Utilisateur utilisateur = utilisateurRepository.findById(utilisateurModifie.getId()).orElse(null);
+        if (utilisateur != null) {
+            utilisateur.setEmail(utilisateurModifie.getEmail());
+            if (utilisateurModifie.getMotDePasse() != null && !utilisateurModifie.getMotDePasse().isEmpty()) {
+                utilisateur.setMotDePasse(utilisateurModifie.getMotDePasse());
+            }
+            utilisateurRepository.save(utilisateur);
+        }
+
+        // Recharge la liste et formulaire vide après modification
+        List<Utilisateur> utilisateurs = utilisateurRepository.findAll();
+        model.addAttribute("utilisateurs", utilisateurs);
+        model.addAttribute("utilisateur", new Utilisateur()); // formulaire vide
+        model.addAttribute("rh", rh);
+        model.addAttribute("activePage", "utilisateurs");
+
+        return "utilisateurs";
     }
 
 }

@@ -93,16 +93,16 @@
       color: var(--text-color);
       overflow-x: auto;
     }
-
-   .header {
+  .header {
             height: 60px;
-            background-color: #f3f3f3;
+            background-color: var(--header-bg);
             display: flex;
             align-items: center;
             justify-content: flex-end;
             padding: 0 20px;
             border-bottom: 1px solid #ccc;
             box-shadow: 0 2px 8px #e9953d11;
+            
         }
         .header a {
             text-decoration: none;
@@ -116,10 +116,18 @@
             margin-right: 8px;
             font-size: 24px;
         }
-.dark-theme .header {
-  background-color: #2a2a2a;
-  border-bottom: 1px solid #444;
-}
+        .theme-toggle-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #0074C7;
+            cursor: pointer;
+        }
+
+        .dark-theme .theme-toggle-btn {
+            color: #f0f0f0;
+        }
+
 
 .dark-theme .header a {
   color: #66aaff;
@@ -241,7 +249,7 @@
 .details-header {
   font-size: 24px;
   margin-bottom: 15px;
-  border-bottom: 2px solid #0074C7; /* tu peux aussi changer la couleur en thème sombre si tu veux */
+  border-bottom: 2px solid #0074C7;
   padding-bottom: 8px;
 }
 
@@ -307,7 +315,7 @@
         <i class="fa fa-moon"></i>
       </button>
     </div>
-<h2>Demandes à traiter</h2>
+    <h2></h2>
 <div style="display: flex; gap: 20px; height: 500px;">
   <div class="request-list" id="requestList" style="flex: 1; overflow-y: auto;">
     <div 
@@ -348,14 +356,31 @@
 
   <script>
 
-    
-    const themeToggleBtn = document.getElementById('theme-toggle');
-    themeToggleBtn.addEventListener('click', () => {
-      document.body.classList.toggle('dark-theme');
-      const icon = themeToggleBtn.querySelector('i');
-      icon.classList.toggle('fa-moon');
-      icon.classList.toggle('fa-sun');
-    });
+const themeToggleBtn = document.getElementById('theme-toggle');
+const icon = themeToggleBtn.querySelector('i');
+
+function applyTheme(theme) {
+  if (theme === 'dark') {
+    document.body.classList.add('dark-theme');
+    icon.classList.remove('fa-moon');
+    icon.classList.add('fa-sun');
+  } else {
+    document.body.classList.remove('dark-theme');
+    icon.classList.remove('fa-sun');
+    icon.classList.add('fa-moon');
+  }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  applyTheme(savedTheme);
+});
+
+themeToggleBtn.addEventListener('click', () => {
+  const isDark = document.body.classList.toggle('dark-theme');
+  applyTheme(isDark ? 'dark' : 'light');
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+});
 
     const requestList = document.getElementById('requestList');
     const detailsHeader = document.getElementById('detailsHeader');

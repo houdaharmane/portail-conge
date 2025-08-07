@@ -38,9 +38,7 @@ public class LoginController {
                 model.addAttribute("error", "Le rôle de l'utilisateur n'est pas défini, contactez l'administrateur.");
                 return "login";
             }
-
             session.setAttribute("utilisateur", utilisateur);
-            System.out.println("Role from DB: " + role);
 
             switch (role) {
                 case "PERSONNEL":
@@ -49,8 +47,6 @@ public class LoginController {
                     return "redirect:/dashboard-rh";
                 case "RESPONSABLE":
                     return "redirect:/dashboard-responsable";
-                case "ADMISSION":
-                    return "redirect:/dashboard-admission";
                 case "DIRECTEUR":
                     return "redirect:/dashboard-directeur";
                 default:
@@ -66,11 +62,9 @@ public class LoginController {
     @GetMapping("/dashboard-personnel")
     public String dashboardPersonnel(HttpSession session, Model model) {
         Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
-        System.out.println("Utilisateur dans le dashboard: " + utilisateur);
         if (utilisateur == null) {
             return "redirect:/login";
         }
-
         model.addAttribute("utilisateur", utilisateur);
         return "dashboard-personnel";
     }
@@ -81,7 +75,6 @@ public class LoginController {
         if (utilisateur == null) {
             return "redirect:/login";
         }
-
         model.addAttribute("utilisateur", utilisateur);
         return "profil-personnel";
     }

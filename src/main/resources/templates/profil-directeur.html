@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Profil RH - Portail Congé</title>
+    <title>Profil Directeur - Portail Congé</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -66,6 +66,7 @@
             object-fit: cover;
             background: #fff;
             box-shadow: 0 2px 8px #fff2;
+            margin-bottom: 10px;
         }
 
         .sidebar-menu {
@@ -326,59 +327,42 @@
             outline: none;
         }
         .edit-form select {
-    flex: 1;
-    padding: 6px 10px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    color: var(--text-color);
-    background-color: var(--card-bg);
-    transition: border-color 0.3s;
-}
+            flex: 1;
+            padding: 6px 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            color: var(--text-color);
+            background-color: var(--card-bg);
+            transition: border-color 0.3s;
+        }
 
-.edit-form select:focus {
-    border-color: var(--primary-color);
-    outline: none;
-}
+        .edit-form select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
 
-.edit-form input[type="number"] {
-    flex: 1;
-    padding: 6px 10px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    color: var(--text-color);
-    background-color: var(--card-bg);
-    transition: border-color 0.3s;
-}
+        .edit-form input[type="number"] {
+            flex: 1;
+            padding: 6px 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            color: var(--text-color);
+            background-color: var(--card-bg);
+            transition: border-color 0.3s;
+        }
 
-.edit-form input[type="number"]:focus {
-    border-color: var(--primary-color);
-    outline: none;
-}
-.sidebar-logo {
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
-    object-fit: cover;
-    background: #fff; 
-    box-shadow: 0 2px 8px #fff2;
-    margin-bottom: 10px;
-}
+        .edit-form input[type="number"]:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
 
-/* Mode sombre */
-.dark-theme .sidebar-logo {
-    background: #2a2a2a; 
-    box-shadow: 0 2px 8px #0005;
-}
-.profile-left img {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    margin-bottom: 15px;
-    border: 3px solid var(--primary-color);
-}
-
+        /* Mode sombre */
+        .dark-theme .sidebar-logo {
+            background: #2a2a2a; 
+            box-shadow: 0 2px 8px #0005;
+        }
     </style>
 </head>
 <body>
@@ -389,13 +373,18 @@
         <div class="sidebar-header">
             <img src="/img/modepbg.png" alt="Logo MODEP" class="sidebar-logo">
         </div>
-        <nav class="sidebar-menu">
-            <a th:href="@{/dashboard-rh}" class="sidebar-link"><i class="fa fa-home"></i> Tableau de bord</a>
-            <a th:href="@{/personnel/ajouter}" class="sidebar-link"><i class="fa fa-users"></i> Gestion du personnel</a>
-            <a href="#" class="sidebar-link"><i class="fa fa-wallet"></i> Soldes congés</a>
-            <a href="#" class="sidebar-link"><i class="fa fa-history"></i> Historique validations</a>
-            <a th:href="@{/conge/demande}" th:classappend="${activePage == 'demandeConge'} ? ' active'" class="sidebar-link">
-                <i class="fa fa-plane-departure"></i> Demande de congé
+  <nav>
+            <a th:href="@{/dashboard-directeur}" th:classappend="${activePage == 'dashboard'} ? ' active'" class="sidebar-link">
+                <i class="fa fa-home"></i> <span>Tableau de bord</span>
+            </a>
+            <a th:href="@{/directeur/demandes-finales}" th:classappend="${activePage == 'validationFinale'} ? ' active'" class="sidebar-link">
+                <i class="fa fa-check-double"></i> <span>Demandes à valider</span>
+            </a>
+            <a th:href="@{/directeur/statistiques}" th:classappend="${activePage == 'statistiques'} ? ' active'" class="sidebar-link">
+                <i class="fa fa-chart-line"></i> <span>Statistiques</span>
+            </a>
+            <a th:href="@{/directeur/historique}" th:classappend="${activePage == 'historique'} ? ' active'" class="sidebar-link">
+                <i class="fa fa-history"></i> <span>Historique</span>
             </a>
         </nav>
     </div>
@@ -407,9 +396,9 @@
 <!-- CONTENU -->
 <div class="main-container">
     <div class="header">
-        <a th:href="@{/profil}">
+        <a th:href="@{/profil-directeur}">
             <i class="fa fa-user-circle"></i>
-            <span th:text="${rh.role}">RH</span>
+            <span th:text="${directeur.role}">Directeur</span>
         </a>
         <button id="theme-toggle" class="theme-toggle-btn" title="Activer/désactiver mode sombre">
             <i class="fa fa-moon"></i>
@@ -419,41 +408,40 @@
     <div class="main-content">
         <!-- PROFIL GAUCHE -->
         <div class="profile-left">
-             <!-- Image de profil -->
-<img th:src="@{/profil/photo/{id}(id=${rh.id})}" alt="Photo de profil" />
+            <!-- Image de profil -->
+            <img th:src="@{/profil/photo/{id}(id=${directeur.id})}" alt="Photo de profil" />
 
-            <h2 th:text="${rh.nom} + ' ' + ${rh.prenom}"></h2>
+            <h2 th:text="${directeur.nom} + ' ' + ${directeur.prenom}">Jean Dupont</h2>
             <p>
-                <span th:text="${rh.role}">Responsable RH</span><br>
+                <span th:text="${directeur.role}">Directeur</span><br>
                 <small>
-                    <span th:if="${rh.departement != null}" th:text="${rh.departement.nom}">Département RH</span>
-                    <span th:if="${rh.departement == null}">Aucun département</span>
+                    <span th:if="${directeur.departement != null}" th:text="${directeur.departement.nom}">Direction Générale</span>
+                    <span th:if="${directeur.departement == null}">Aucun département</span>
                 </small>
             </p>
         </div>
 
         <!-- PROFIL DROITE -->
         <div class="profile-right">
-    <a href="#" id="btn-edit" class="btn-modify" style="margin-top: -24px;margin-left:10px ;display: inline-block;">Modifier</a>
+            <a href="#" id="btn-edit" class="btn-modify" style="margin-top: -24px; margin-left:10px; display: inline-block;">Modifier</a>
 
             <!-- Section affichage normale -->
             <div class="info-section" id="display-section">
-                <div class="info-row"><span class="info-label">Nom :</span><span class="info-value" th:text="${rh.nom}">Doe</span></div>
-                <div class="info-row"><span class="info-label">Prénom :</span><span class="info-value" th:text="${rh.prenom}">John</span></div>
-                <div class="info-row"><span class="info-label">Téléphone :</span><span class="info-value" th:text="${rh.telephone}">0600000000</span></div>
-                <div class="info-row"><span class="info-label">Email :</span><span class="info-value" th:text="${rh.email}">john@exemple.com</span></div>
+                <div class="info-row"><span class="info-label">Nom :</span><span class="info-value" th:text="${directeur.nom}">Dupont</span></div>
+                <div class="info-row"><span class="info-label">Prénom :</span><span class="info-value" th:text="${directeur.prenom}">Jean</span></div>
+                <div class="info-row"><span class="info-label">Téléphone :</span><span class="info-value" th:text="${directeur.telephone}">0600000000</span></div>
+                <div class="info-row"><span class="info-label">Email :</span><span class="info-value" th:text="${directeur.email}">jean.dupont@exemple.com</span></div>
                 <div class="info-row"><span class="info-label">Mot de passe :</span><span class="info-value">••••••••</span></div>
-<div class="info-row"><span class="info-label">CIN :</span><span class="info-value" th:text="${rh.cin}">RH</span></div>
-               <div class="info-row"><span class="info-label">Département :</span>
-  <span th:if="${rh.departement != null}" th:text="${rh.departement.nom}"></span>
-  <span th:if="${rh.departement == null}">Aucun département</span>
-</div>
-
-                <div class="info-row"><span class="info-label">Solde de congé :</span><span class="info-value" th:text="${rh.soldeConge + ' jours'}">20 jours</span></div>
+                <div class="info-row"><span class="info-label">CIN :</span><span class="info-value" th:text="${directeur.cin}">XX123456</span></div>
+                <div class="info-row">
+                    <span class="info-label">Département :</span>
+                    <span th:if="${directeur.departement != null}" th:text="${directeur.departement.nom}"></span>
+                    <span th:if="${directeur.departement == null}">Aucun département</span>
+                </div>
             </div>
 
             <!-- Formulaire de modification (caché par défaut) -->
-            <form id="edit-form" class="edit-form" style="display:none;" method="post" th:action="@{/profil/save}" th:object="${rh}" enctype="multipart/form-data">
+            <form id="edit-form" class="edit-form" style="display:none;" method="post" th:action="@{/profil-directeur/save}" th:object="${directeur}" enctype="multipart/form-data">
                 <input type="hidden" th:field="*{id}" />
 
                 <div class="info-row">
@@ -476,32 +464,26 @@
                     <label class="info-label" for="cin">CIN :</label>
                     <input type="text" id="cin" th:field="*{cin}" required />
                 </div>
-                <!-- Champ solde de congé -->
-                <div class="info-row">
-                    <label class="info-label" for="soldeConge">Solde de congé (jours) :</label>
-                    <input type="number" id="soldeConge" th:field="*{soldeConge}" min="0" required />
-                </div>
 
                 <!-- Champ département -->
                 <div class="info-row">
                     <label class="info-label" for="departementId">Département :</label>
-                  <select th:field="*{departement.id}">
-    <option th:each="dept : ${departements}" 
-            th:value="${dept.id}" 
-            th:text="${dept.nom}"></option>
-</select>
+                    <select th:field="*{departement.id}">
+                        <option th:each="dept : ${departements}" 
+                                th:value="${dept.id}" 
+                                th:text="${dept.nom}"></option>
+                    </select>
                 </div>
                 <div class="info-row">
-        <label class="info-label" for="imageFile">Photo de profil :</label>
-        <input type="file" id="imageFile" name="imageFile" accept="image/*" />
-    </div>
+                    <label class="info-label" for="imageFile">Photo de profil :</label>
+                    <input type="file" id="imageFile" name="imageFile" accept="image/*" />
+                </div>
 
                 <div style="margin-top: 15px;">
                     <button type="submit" class="btn-modify">Enregistrer</button>
                     <button type="button" id="btn-cancel" class="btn-modify" style="background:#999; margin-left: 10px;">Annuler</button>
                 </div>
             </form>
-
         </div>
     </div>
 </div>
@@ -526,27 +508,25 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Gestion affichage formulaire modification
+    // Gestion édition profil
     const btnEdit = document.getElementById('btn-edit');
-    const btnCancel = document.getElementById('btn-cancel');
     const displaySection = document.getElementById('display-section');
     const editForm = document.getElementById('edit-form');
+    const btnCancel = document.getElementById('btn-cancel');
 
-    if(btnEdit && btnCancel && displaySection && editForm) {
-        btnEdit.addEventListener('click', (e) => {
-            e.preventDefault();
-            displaySection.style.display = 'none';
-            editForm.style.display = 'block';
-            btnEdit.style.display = 'none';
-        });
+    btnEdit.addEventListener('click', e => {
+        e.preventDefault();
+        displaySection.style.display = 'none';
+        editForm.style.display = 'block';
+        btnEdit.style.display = 'none';
+    });
 
-        btnCancel.addEventListener('click', (e) => {
-            e.preventDefault();
-            editForm.style.display = 'none';
-            displaySection.style.display = 'block';
-            btnEdit.style.display = 'inline-block';
-        });
-    }
+    btnCancel.addEventListener('click', e => {
+        e.preventDefault();
+        editForm.style.display = 'none';
+        displaySection.style.display = 'block';
+        btnEdit.style.display = 'inline-block';
+    });
 });
 </script>
 

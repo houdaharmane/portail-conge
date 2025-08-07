@@ -5,149 +5,132 @@
     <title>Profil Responsable</title>
     <link rel="stylesheet" th:href="@{/css/style.css}" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <style>:root {
-    --bg-color: #f6f6f6;
-    --text-color: #000;
-    --header-bg: #f3f3f3;
-    --card-bg: #fff;
-    --card-shadow: #e9953d22;
-    --sidebar-bg: #0074C7;
-    --link-color: #fff;
-    --primary-color: #0074C7;
-    --btn-bg: #0074C7;
-    --btn-hover-bg: #005fa3;
-    --btn-color: #fff;
-    --alert-bg: #ff4d4d;
-    --alert-color: #fff;
-}
-
-.dark-theme {
-    --bg-color: #1e1e1e;
-    --text-color: #f0f0f0;
-    --header-bg: #2c2c2c;
-    --card-bg: #2a2a2a;
-    --card-shadow: #00000044;
-    --sidebar-bg: #0074C7;
-    --link-color: #fff;
-    --primary-color: #3399ff;
-    --btn-bg: #3399ff;
-    --btn-hover-bg: #267acc;
-    --btn-color: #fff;
-    --alert-bg: #ff6666;
-    --alert-color: #fff;
-}
-
-body {
-    margin: 0;
-    font-family: 'Segoe UI', Arial, sans-serif;
-    display: flex;
-    min-height: 100vh;
-    background: var(--bg-color);
-    color: var(--text-color);
-}
-
-/* Sidebar */
-.sidebar {
-    width: 240px;
-    background-color: var(--sidebar-bg);
-    color: var(--link-color);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: stretch;
-    min-height: 100vh;
-    box-shadow: 2px 0 12px #e9953d22;
-    padding: 0;
-
-}
-
-.sidebar-header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 32px 0 18px 0;
-}
-
-.sidebar-logo {
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
-    object-fit: cover;
-    background: #fff;
-    box-shadow: 0 2px 8px #fff2;
-    margin-bottom: 10px;
-}
-
-.dark-theme .sidebar-logo {
-    background: #2a2a2a;
-    box-shadow: 0 2px 8px #0005;
-}
-
-nav {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.sidebar-link, .sidebar-link:hover, .sidebar-footer .sidebar-link {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    text-decoration: none;
-    color: var(--link-color);
-    font-size: 16px;
-    font-weight: 600;
-    padding: 13px 30px;
-    border-left: 4px solid transparent;
-    transition: background 0.18s, border-left-color 0.18s;
-}
-
-.sidebar-link i {
-    font-size: 20px;
-    min-width: 20px;
-}
-
-.sidebar-link:hover, .sidebar-link.active {
-    background: #fff2;
-    color: #fff;
-    border-left: 4px solid #fff;
-}
-
-.sidebar-footer {
-    margin-bottom: 30px;
-}
-
-/* Main container */
-.main-container {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 0 20px;
-    max-width: 960px;
-    margin: 60px auto 40px auto;  
-    box-sizing: border-box;
-    margin-top: 60px;  
-    margin-right: 130px;
-    
-}
-
-      .header {
-         margin-right: 50px;
-        width: 970px;
-        margin: 0 auto;
+    <style>
+        :root {
+            --bg-color: #f6f6f6;
+            --text-color: #000;
+            --header-bg: #f3f3f3;
+            --card-bg: #fff;
+            --card-shadow: #e9953d22;
+            --sidebar-bg: #0074C7;
+            --link-color: #fff;
+            --primary-color: #0074C7;
+            --btn-bg: #0074C7;
+            --btn-hover-bg: #005fa3;
+            --btn-color: #fff;
+            --alert-bg: #ff4d4d;
+            --alert-color: #fff;
+        }
+        .dark-theme {
+            --bg-color: #1e1e1e;
+            --text-color: #f0f0f0;
+            --header-bg: #2c2c2c;
+            --card-bg: #2a2a2a;
+            --card-shadow: #00000044;
+            --sidebar-bg: #0074C7;
+            --link-color: #fff;
+            --primary-color: #3399ff;
+            --btn-bg: #3399ff;
+            --btn-hover-bg: #267acc;
+            --btn-color: #fff;
+            --alert-bg: #ff6666;
+            --alert-color: #fff;
+        }
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            display: flex;
+            min-height: 100vh;
+            background: var(--bg-color);
+            color: var(--text-color);
+        }
+        /* Sidebar */
+        .sidebar {
+            width: 240px;
+            background-color: var(--sidebar-bg);
+            color: var(--link-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: stretch;
+            min-height: 100vh;
+            box-shadow: 2px 0 12px #e9953d22;
+            padding: 0;
+        }
+        .sidebar-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 32px 0 18px 0;
+        }
+        .sidebar-logo {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #fff;
+            box-shadow: 0 2px 8px #fff2;
+            margin-bottom: 10px;
+        }
+        .dark-theme .sidebar-logo {
+            background: #2a2a2a;
+            box-shadow: 0 2px 8px #0005;
+        }
+        nav {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .sidebar-link, .sidebar-link:hover, .sidebar-footer .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            text-decoration: none;
+            color: var(--link-color);
+            font-size: 16px;
+            font-weight: 600;
+            padding: 13px 30px;
+            border-left: 4px solid transparent;
+            transition: background 0.18s, border-left-color 0.18s;
+        }
+        .sidebar-link i {
+            font-size: 20px;
+            min-width: 20px;
+        }
+        .sidebar-link:hover, .sidebar-link.active {
+            background: #fff2;
+            color: #fff;
+            border-left: 4px solid #fff;
+        }
+        .sidebar-footer {
+            margin-bottom: 30px;
+        }
+        /* Main container */
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 0 20px;
+            max-width: 960px;
+            margin: 60px auto 40px auto;  
+            box-sizing: border-box;
+            margin-right: 130px;
+        }
+        .header {
+            width: 100%;
             height: 60px;
-            background-color: #f3f3f3;
+            background-color: var(--header-bg);
             display: flex;
             align-items: center;
             justify-content: flex-end;
             padding: 0 20px;
             border-bottom: 1px solid #ccc;
             box-shadow: 0 2px 8px #e9953d11;
-            margin-top: -60px;
+            /* supprimé marges contradictoires */
         }
         .header a {
             text-decoration: none;
-            color:  #0074C7;
+            color: var(--primary-color);
             display: flex;
             align-items: center;
             font-weight: 600;
@@ -157,218 +140,184 @@ nav {
             margin-right: 8px;
             font-size: 24px;
         }
-.dark-theme .header {
-  background-color: #2a2a2a;
-  border-bottom: 1px solid #444;
-}
-
-.dark-theme .header a {
-  color: #66aaff;
-}
-
-.dark-theme .theme-toggle-btn {
-  color: #f0f0f0;
-}
-
-.theme-toggle-btn {
-    background: none;
-    border: none;
-    font-size: 20px;
-    color: #0074C7;
-    cursor: pointer;
-}
-
-.dark-theme .theme-toggle-btn {
-    color: #f0f0f0;
-}
-
-/* Profil header */
-.profile-header {
-    display: flex;
-    align-items: center;
-    gap: 24px;
-    flex-wrap: wrap;
-    margin-bottom: 30px;
-    margin-top: -10px;
-}
-
-.profile-img-wrapper {
-    position: relative;
-    width: 160px;
-    height: 160px;
-    cursor: pointer;
-    border-radius: 50%;
-    overflow: hidden; 
-    margin-top: 30px;
-    background-color: #f0f0f0;
-    box-shadow: 0 0 8px var(--primary-color);
-    margin-right: 20px;
-}
-
-.profile-img-wrapper img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-
-.profile-nav-info {
-    flex-grow: 1;
-    min-width: 200px;
-}
-
-.profile-nav-info h3.user-name {
-    font-size: 28px;
-    font-weight: 700;
-    margin: 0 0 8px;
-    color: var(--primary-color);
-}
-
-.address {
-    font-size: 16px;
-    color: var(--text-color);
-}
-
-.address p, .address span {
-    margin: 0;
-    display: inline;
-}
-
-/* Main Content */
-.main-bd {
-    display: flex;
-    gap: 40px;
-    flex-wrap: wrap;
-}
-
-.left-side {
-    flex: none;
-    width: 650px;
-    background: var(--card-bg);
-    padding: 24px;
-    border-radius: 12px;
-    box-shadow: 0 2px 12px var(--card-shadow);
-}
-.profile-img-wrapper img {
-    margin-top: -20px;
-}
-
-.profile-side p {
-    margin: 12px 0;
-    font-size: 15px;
-    color: var(--text-color);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.profile-side p i {
-    color: var(--primary-color);
-    min-width: 18px;
-    font-size: 18px;
-}
-
-/* Form Styles */
-form fieldset {
-    border: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-form legend {
-    font-size: 20px;
-    font-weight: bold;
-    color: var(--primary-color);
-    margin-bottom: 10px;
-}
-
-.form-row {
-    display: flex;
-    align-items: center;
-    margin-bottom: 12px;
-}
-
-.form-row label {
-    width: 150px; 
-    font-weight: bold;
-    margin-right: 10px;
-    color: var(--text-color);
-}
-
-.form-row input[type="text"],
-.form-row input[type="email"],
-.form-row textarea,
-.form-row input[type="file"] {
-    flex: 1;
-    padding: 8px 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: var(--card-bg);
-    color: var(--text-color);
-    font-size: 15px;
-    resize: vertical;
-    font-family: inherit;
-    transition: border 0.2s ease-in-out;
-}
-
-.form-row input:focus,
-.form-row textarea:focus {
-    border-color: var(--primary-color);
-    outline: none;
-    box-shadow: 0 0 0 2px #7749f822;
-}
-
-textarea[disabled], input[disabled] {
-    background-color: #eee;
-    color: #555;
-}
-
-
-/* Responsive */
-@media (max-width: 768px) {
-    .main-container {
-        margin: 20px 15px;
-        max-width: 100%;
-        padding: 0 15px;
-    }
-
-    .profile-header {
-        justify-content: center;
-    }
-
-    .main-bd {
-        flex-direction: column;
-        gap: 20px;
-    }
-
-    .left-side {
-        width: 100%;
-        padding: 20px;
-    }
-}
-.profile-btn button {
-    background-color: var(--btn-bg);
-    color: var(--btn-color);
-    border: none;
-    padding: 10px 20px;
-    font-weight: 600;
-    font-size: 16px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.profile-btn button:hover {
-    background-color: var(--btn-hover-bg);
-}
-
-</style>
+        .dark-theme .header {
+            background-color: #2a2a2a;
+            border-bottom: 1px solid #444;
+        }
+        .dark-theme .header a {
+            color: #66aaff;
+        }
+        .dark-theme .theme-toggle-btn {
+            color: #f0f0f0;
+        }
+        .theme-toggle-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--primary-color);
+            cursor: pointer;
+        }
+        /* Profil header */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+            margin-top: -10px;
+        }
+        .profile-img-wrapper {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            cursor: pointer;
+            border-radius: 50%;
+            overflow: hidden; 
+            margin-top: 30px;
+            background-color: #f0f0f0;
+            box-shadow: 0 0 8px var(--primary-color);
+            margin-right: 20px;
+        }
+        .profile-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            margin-top: -20px;
+        }
+        .profile-nav-info {
+            flex-grow: 1;
+            min-width: 200px;
+        }
+        .profile-nav-info h3.user-name {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 0 0 8px;
+            color: var(--primary-color);
+        }
+        .address {
+            font-size: 16px;
+            color: var(--text-color);
+        }
+        .address p, .address span {
+            margin: 0;
+            display: inline;
+        }
+        /* Main Content */
+        .main-bd {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+        .left-side {
+            flex: none;
+            width: 650px;
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px var(--card-shadow);
+        }
+        .profile-side p {
+            margin: 12px 0;
+            font-size: 15px;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .profile-side p i {
+            color: var(--primary-color);
+            min-width: 18px;
+            font-size: 18px;
+        }
+        /* Form Styles */
+        form fieldset {
+            border: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        form legend {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        .form-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .form-row label {
+            width: 150px; 
+            font-weight: bold;
+            margin-right: 10px;
+            color: var(--text-color);
+        }
+        .form-row input[type="text"],
+        .form-row input[type="email"],
+        .form-row textarea,
+        .form-row input[type="file"] {
+            flex: 1;
+            padding: 8px 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            font-size: 15px;
+            resize: vertical;
+            font-family: inherit;
+            transition: border 0.2s ease-in-out;
+        }
+        .form-row input:focus,
+        .form-row textarea:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 2px #7749f822;
+        }
+        textarea[disabled], input[disabled] {
+            background-color: #eee;
+            color: #555;
+        }
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-container {
+                margin: 20px 15px;
+                max-width: 100%;
+                padding: 0 15px;
+            }
+            .profile-header {
+                justify-content: center;
+            }
+            .main-bd {
+                flex-direction: column;
+                gap: 20px;
+            }
+            .left-side {
+                width: 100%;
+                padding: 20px;
+            }
+        }
+        .profile-btn button {
+            background-color: var(--btn-bg);
+            color: var(--btn-color);
+            border: none;
+            padding: 10px 20px;
+            font-weight: 600;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .profile-btn button:hover {
+            background-color: var(--btn-hover-bg);
+        }
+    </style>
 </head>
 <body>
 <div class="sidebar">
@@ -376,30 +325,28 @@ textarea[disabled], input[disabled] {
         <div class="sidebar-header">
             <img src="/img/modepbg.png" alt="Logo MODEP" class="sidebar-logo">
         </div>
-    <nav>
-    <a th:href="@{/dashboard-responsable}" th:classappend="${activePage == 'dashboard'} ? ' active'" class="sidebar-link">
-        <i class="fa fa-home"></i> <span>Tableau de bord</span>
-    </a>
- <a th:href="@{/demandes-a-traiter}" th:classappend="${activePage == 'demandesATraiter'} ? ' active'" class="sidebar-link">
-  <i class="fa fa-wallet"></i> <span>Demandes à traiter</span>
-</a>
-<a th:href="@{/responsable/conge/demande}" th:classappend="${activePage == 'demandeConge'} ? ' active'" class="sidebar-link">
-    <i class="fa fa-plane-departure"></i> <span>Demande de congé</span>
-</a>
-    <a th:href="@{/profil-responsable}" th:classappend="${activePage == 'profil'} ? ' active'" class="sidebar-link">
-        <i class="fa fa-user"></i> <span>Mon profil</span>
-    </a>
-     <a th:href="@{/responsable/historique-demandes}" th:classappend="${activePage == 'historiqueDemandesResponsable'} ? ' active'" class="sidebar-link">
+        <nav>
+            <a th:href="@{/dashboard-responsable}" th:classappend="${activePage == 'dashboard'} ? ' active'" class="sidebar-link">
+                <i class="fa fa-home"></i> <span>Tableau de bord</span>
+            </a>
+            <a th:href="@{/demandes-a-traiter}" th:classappend="${activePage == 'demandesATraiter'} ? ' active'" class="sidebar-link">
+                <i class="fa fa-wallet"></i> <span>Demandes à traiter</span>
+            </a>
+            <a th:href="@{/responsable/conge/demande}" th:classappend="${activePage == 'demandeConge'} ? ' active'" class="sidebar-link">
+                <i class="fa fa-plane-departure"></i> <span>Demande de congé</span>
+            </a>
+            <a th:href="@{/profil-responsable}" th:classappend="${activePage == 'profil'} ? ' active'" class="sidebar-link">
+                <i class="fa fa-user"></i> <span>Mon profil</span>
+            </a>
+            <a th:href="@{/responsable/historique-demandes}" th:classappend="${activePage == 'historiqueDemandesResponsable'} ? ' active'" class="sidebar-link">
                 <i class="fa fa-history"></i> <span>Historique</span>
             </a>
-</nav>
-
+        </nav>
     </div>
     <div class="sidebar-footer">
         <a href="/login" class="sidebar-link"><i class="fa fa-sign-out-alt"></i> <span>Déconnexion</span></a>
     </div>
 </div>
-
 
 <div class="main-container">
     <div class="header">
@@ -407,74 +354,61 @@ textarea[disabled], input[disabled] {
             <i class="fa fa-moon"></i>
         </button>
     </div>
- <div class="profile-header">
-    <div class="profile-img-wrapper">
-        <img th:src="@{/personnel/photo/{id}(id=${utilisateur.id})}" 
-             src="/img/default-avatar.png"
-             alt="Photo Profil" 
-             id="profileImage" />
-        <input type="file" id="imageUploadEdit" name="photo" accept="image/*" style="display:none;" />
-    </div>
-
-    <div class="profile-nav-info">
-        <h3 class="user-name" th:text="${utilisateur.prenom} + ' ' + ${utilisateur.nom}">Nom Prénom</h3>
-        <div class="address">
-            <p th:text="${utilisateur.departement != null} ? ${utilisateur.departement.nom} : ''">Département</p>
-            <span th:text="${utilisateur.role}">Rôle</span>
+    <div class="profile-header">
+        <div class="profile-img-wrapper">
+            <img th:src="@{/personnel/photo/{id}(id=${utilisateur.id})}" 
+                 src="/img/default-avatar.png"
+                 alt="Photo Profil" 
+                 id="profileImage" />
+            <input type="file" id="imageUploadInput" name="photo" accept="image/*" style="display:none;" />
+        </div>
+        <div class="profile-nav-info">
+            <h3 class="user-name" th:text="${utilisateur.prenom} + ' ' + ${utilisateur.nom}">Nom Prénom</h3>
+            <div class="address">
+                <p th:text="${utilisateur.departement != null} ? ${utilisateur.departement.nom} : ''">Département</p>
+                <span th:text="${utilisateur.role}">Rôle</span>
+            </div>
         </div>
     </div>
-</div>
-
 
     <div class="main-bd">
-
         <div class="left-side profile-side">
-
             <!-- FORMULAIRE LECTURE SEULE -->
             <form id="form-view" th:action="@{/personnel/modifier}" method="post">
                 <fieldset>
                     <legend>Informations personnelles</legend>
-
                     <div class="form-row">
                         <label>Matricule :</label>
                         <input type="text" name="matricule" th:value="${utilisateur.matricule}" disabled />
                     </div>
-
                     <div class="form-row">
                         <label>Prénom :</label>
                         <input type="text" name="prenom" th:value="${utilisateur.prenom}" disabled />
                     </div>
-
                     <div class="form-row">
                         <label>Nom :</label>
                         <input type="text" name="nom" th:value="${utilisateur.nom}" disabled />
                     </div>
-
                     <div class="form-row">
                         <label>Département :</label>
                         <input type="text" name="departement" th:value="${utilisateur.departement.nom}" disabled />
                     </div>
-
                     <div class="form-row">
                         <label>Rôle :</label>
                         <input type="text" name="role" th:value="${utilisateur.role}" disabled />
                     </div>
-
-                        <div class="form-row">
-                            <label for="cin-view">CIN :</label>
-                            <input type="text" id="cin-view" name="cin" th:value="${utilisateur.cin}" disabled />
-                        </div>
+                    <div class="form-row">
+                        <label for="cin-view">CIN :</label>
+                        <input type="text" id="cin-view" name="cin" th:value="${utilisateur.cin}" disabled />
+                    </div>
                     <div class="form-row">
                         <label>Email :</label>
                         <input type="email" name="email" th:value="${utilisateur.email}" disabled />
                     </div>
-
                     <div class="form-row">
                         <label>Téléphone :</label>
                         <input type="text" name="telephone" th:value="${utilisateur.telephone}" disabled />
                     </div>
-
-                   
                     <div class="profile-btn">
                         <button type="button" id="btn-edit"><i class="fa fa-edit"></i> Modifier</button>
                     </div>
@@ -485,85 +419,84 @@ textarea[disabled], input[disabled] {
             <form id="form-edit" th:action="@{/personnel/modifier}" method="post" enctype="multipart/form-data" style="display:none;">
                 <fieldset>
                     <legend>Modifier les informations</legend>
-
                     <div class="form-row">
-                        <label for="imageUploadEdit">Photo de profil :</label>
-                        <input type="file" id="imageUploadEdit" name="photo" accept="image/*" />
+                        <label for="imageUploadInput">Photo de profil :</label>
+                        <input type="file" id="imageUploadInput" name="photo" accept="image/*" />
                     </div>
-
                     <div class="form-row">
                         <label>Matricule :</label>
                         <input type="text" name="matricule" th:value="${utilisateur.matricule}" required />
                     </div>
-
                     <div class="form-row">
                         <label>Prénom :</label>
                         <input type="text" name="prenom" th:value="${utilisateur.prenom}" required />
                     </div>
-
                     <div class="form-row">
                         <label>Nom :</label>
                         <input type="text" name="nom" th:value="${utilisateur.nom}" required />
                     </div>
-
                     <div class="form-row">
                         <label>Département :</label>
                         <input type="text" name="departement" th:value="${utilisateur.departement.nom}" disabled />
                     </div>
-
                     <div class="form-row">
                         <label>Rôle :</label>
                         <input type="text" name="role" th:value="${utilisateur.role}" disabled />
                     </div>
-
-      <div class="form-row">
-                            <label for="cin-edit">CIN :</label>
-                            <input type="text" id="cin-edit" name="cin" th:value="${utilisateur.cin}" required />
-                        </div>
+                    <div class="form-row">
+                        <label for="cin-edit">CIN :</label>
+                        <input type="text" id="cin-edit" name="cin" th:value="${utilisateur.cin}" required />
+                    </div>
                     <div class="form-row">
                         <label>Email :</label>
                         <input type="email" name="email" th:value="${utilisateur.email}" required />
                     </div>
-
                     <div class="form-row">
                         <label>Téléphone :</label>
                         <input type="text" name="telephone" th:value="${utilisateur.telephone}" required />
                     </div>
-
-                   
-
                     <div class="profile-btn">
                         <button type="submit"><i class="fa fa-save"></i> Enregistrer</button>
                         <button type="button" id="btn-cancel"><i class="fa fa-times"></i> Annuler</button>
                     </div>
                 </fieldset>
             </form>
-
         </div>
-
     </div>
-
 </div>
 
 <script>
-    document.getElementById('theme-toggle').addEventListener('click', () => {
-    document.body.classList.toggle('dark-theme');
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const themeIcon = themeToggleBtn.querySelector('i');
 
-    const icon = document.querySelector('#theme-toggle i');
-    if (document.body.classList.contains('dark-theme')) {
-        icon.classList.remove('fa-moon');
-        icon.classList.add('fa-sun');
-    } else {
-        icon.classList.remove('fa-sun');
-        icon.classList.add('fa-moon');
+    function applyTheme(theme) {
+        if (theme === 'dark') {
+            document.body.classList.add('dark-theme');
+            themeIcon.classList.remove('fa-moon');
+            themeIcon.classList.add('fa-sun');
+        } else {
+            document.body.classList.remove('dark-theme');
+            themeIcon.classList.remove('fa-sun');
+            themeIcon.classList.add('fa-moon');
+        }
     }
-});
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        applyTheme(savedTheme);
+    });
+
+    themeToggleBtn.addEventListener('click', () => {
+        const isDark = document.body.classList.toggle('dark-theme');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        applyTheme(isDark ? 'dark' : 'light');
+    });
 
     const btnEdit = document.getElementById('btn-edit');
     const btnCancel = document.getElementById('btn-cancel');
     const formView = document.getElementById('form-view');
     const formEdit = document.getElementById('form-edit');
-    const imageUploadEdit = document.getElementById('imageUploadEdit');
+    const imageUploadInput = document.getElementById('imageUploadInput');
     const profileImage = document.getElementById('profileImage');
 
     btnEdit.addEventListener('click', () => {
@@ -576,8 +509,8 @@ textarea[disabled], input[disabled] {
         formView.style.display = 'block';
     });
 
-    imageUploadEdit.addEventListener('change', () => {
-        const file = imageUploadEdit.files[0];
+    imageUploadInput.addEventListener('change', () => {
+        const file = imageUploadInput.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = e => profileImage.src = e.target.result;
@@ -586,9 +519,8 @@ textarea[disabled], input[disabled] {
     });
 
     profileImage.addEventListener('click', () => {
-        imageUploadEdit.click();
+        imageUploadInput.click();
     });
 </script>
-
 </body>
 </html>
