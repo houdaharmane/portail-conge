@@ -222,15 +222,24 @@ public class ResponsableController {
             HttpSession session,
             Model model,
             @RequestParam(defaultValue = "0") int page) {
-        int pageSize = 3;
-        Pageable pageable = PageRequest.of(page, pageSize);
 
-        // Appel au repository ou service pour récupérer les demandes du responsable
-        Page<DemandeConge> demandesPage = demandeCongeRepository.findByDemandeurRole("RESPONSABLE", pageable);
         Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
         if (utilisateur == null || !"RESPONSABLE".equals(utilisateur.getRole())) {
             return "redirect:/login";
         }
+
+        int pageSize = 3;
+        Pageable pageable = PageRequest.of(page, pageSize);
+
+        List<StatutDemande> statutsHistorique = List.of(
+                StatutDemande.APPROUVEE_RESP,
+                StatutDemande.REFUSEE_RESP,
+                StatutDemande.EN_ATTENTE
+        // ajoute d'autres statuts si besoin
+        );
+
+        Page<DemandeConge> demandesPage = demandeCongeRepository.findByDemandeurRoleAndStatutIn("RESPONSABLE",
+                statutsHistorique, pageable);
 
         formaterDatesDemandes(demandesPage);
 

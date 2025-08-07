@@ -48,10 +48,15 @@ public interface DemandeCongeRepository extends JpaRepository<DemandeConge, Long
 
     Page<DemandeConge> findByStatut(StatutDemande statut, Pageable pageable);
 
-    Page<DemandeConge> findByDemandeurRole(String role, Pageable pageable);
-
     List<DemandeConge> findByStatutAndDemandeurRole(StatutDemande statut, String role);
 
     List<DemandeConge> findByDemandeur_Role(String role);
+
+    @Query("SELECT d FROM DemandeConge d WHERE d.demandeur.role = :role")
+    Page<DemandeConge> findByDemandeurRole(@Param("role") String role, Pageable pageable);
+
+    @Query("SELECT d FROM DemandeConge d WHERE d.demandeur.role = :role AND d.statut IN :statuts")
+    Page<DemandeConge> findByDemandeurRoleAndStatutIn(@Param("role") String role,
+            @Param("statuts") List<StatutDemande> statuts, Pageable pageable);
 
 }
