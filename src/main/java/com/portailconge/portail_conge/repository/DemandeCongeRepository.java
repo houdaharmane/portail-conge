@@ -39,7 +39,19 @@ public interface DemandeCongeRepository extends JpaRepository<DemandeConge, Long
     @Query("SELECT d FROM DemandeConge d WHERE d.demandeur.role = :role")
     List<DemandeConge> findByDemandeurRole(@Param("role") String role);
 
+    @Query("SELECT d FROM DemandeConge d WHERE d.demandeur.role = 'RESPONSABLE' AND d.statut NOT IN ('EN_ATTENTE', 'EN_ATTENTE_RH')")
+    List<DemandeConge> findDemandesTraiteesFaitesParResponsable();
+
+    // Afficher les demandes faites par des responsables, approuvées par eux
+    @Query("SELECT d FROM DemandeConge d WHERE d.demandeur.role = 'RESPONSABLE' AND d.statut = :statut")
+    List<DemandeConge> findDemandesResponsablesApprouvees(@Param("statut") StatutDemande statut);
+
     Page<DemandeConge> findByStatut(StatutDemande statut, Pageable pageable);
 
     Page<DemandeConge> findByDemandeurRole(String role, Pageable pageable);
+
+    List<DemandeConge> findByStatutAndDemandeurRole(StatutDemande statut, String role);
+
+    List<DemandeConge> findByDemandeur_Role(String role);
+
 }

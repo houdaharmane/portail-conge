@@ -65,6 +65,9 @@
             text-decoration: none;
             font-weight: 600;
         }
+.sidebar-link i {
+    margin-right: 8px;
+}
 
         .sidebar-link:hover, .sidebar-link.active {
             background: #ffffff22;
@@ -191,7 +194,7 @@
             margin-top: 0;
         }
         #editModal .modal-content {
-    background-color: var(--card-bg); /* s’adapte au thème clair/sombre */
+    background-color: var(--card-bg);
     padding: 30px 40px;
     border-radius: 12px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
@@ -235,13 +238,25 @@
         <div class="sidebar-header">
             <img src="/img/modepbg.png" alt="Logo MODEP" class="sidebar-logo">
         </div>
-        <nav>
-            <a th:href="@{/dashboard-rh}" class="sidebar-link"><i class="fa fa-home"></i>&nbsp;Tableau de bord</a>
-            <a th:href="@{/personnel/ajouter}" class="sidebar-link"><i class="fa fa-users"></i>&nbsp;Ajout des utilisateurs</a>
-            <a th:href="@{/rh/utilisateurs}" class="sidebar-link active"><i class="fa fa-user-cog"></i>&nbsp;Gestion des utilisateurs</a>
-            <a th:href="@{/rh/demandes-approuvees-responsable}" class="sidebar-link"><i class="fa fa-check-circle"></i>&nbsp;Demandes Approuvées</a>
-            <a th:href="@{/rh/historique}" class="sidebar-link"><i class="fa fa-history"></i>&nbsp;Historique</a>
-            <a th:href="@{/conge/demande}" class="sidebar-link"><i class="fa fa-plane-departure"></i>&nbsp;Demande de congé</a>
+       <nav>
+            <a th:href="@{/dashboard-rh}" th:classappend="${activePage == 'dashboard'} ? ' active'" class="sidebar-link">
+                <i class="fa fa-home"></i> <span>Tableau de bord</span>
+            </a>
+            <a th:href="@{/personnel/ajouter}" th:classappend="${activePage == 'personnel'} ? ' active'" class="sidebar-link">
+                <i class="fa fa-users"></i> <span>Ajout des utilisateurs</span>
+            </a>
+<a th:href="@{/rh/utilisateurs}" th:classappend="${activePage == 'utilisateurs'} ? ' active'" class="sidebar-link">
+    <i class="fa fa-user-cog"></i> <span>Gestion des utilisateurs</span>
+</a>
+  <a th:href="@{/rh/demandes-approuvees-responsable}" th:classappend="${activePage == 'demandesApprouveesParResponsable'} ? ' active'" class="sidebar-link">
+  <i class="fa fa-check-circle"></i> <span>Demandes Approuvées</span>
+</a>
+            <a th:href="@{/rh/historique}" th:classappend="${activePage == 'historique'} ? ' active'" class="sidebar-link">
+                <i class="fa fa-history"></i> <span>Historique validations</span>
+            </a>
+            <a th:href="@{/conge/demande}" th:classappend="${activePage == 'demandeConge'} ? ' active'" class="sidebar-link">
+                <i class="fa fa-plane-departure"></i> <span>Demande de congé</span>
+            </a>
         </nav>
     </div>
     <div class="sidebar-footer">

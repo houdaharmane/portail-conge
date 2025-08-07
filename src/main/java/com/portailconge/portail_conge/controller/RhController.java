@@ -214,14 +214,11 @@ public class RhController {
         if (rh == null || !"RH".equals(rh.getRole())) {
             return "redirect:/login";
         }
-
-        // Demandes approuvées par le responsable
         List<DemandeConge> demandesApprouvees = demandeCongeRepository.findByStatut(StatutDemande.APPROUVEE_RESP);
-
-        // Demandes réalisées par des responsables
         List<DemandeConge> demandesRealiseesParResponsable = demandeCongeRepository.findByDemandeurRole("RESPONSABLE");
+        List<DemandeConge> demandes = demandeCongeRepository.findDemandesTraiteesFaitesParResponsable();
 
-        // Envoie les deux listes à la vue
+        model.addAttribute("demandesAValider", demandes);
         model.addAttribute("demandesApprouvees", demandesApprouvees);
         model.addAttribute("demandesRealisees", demandesRealiseesParResponsable);
 

@@ -42,7 +42,7 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            height: 117vh;
+            height: 100vh; /* corrigé ici */
             box-shadow: 2px 0 12px var(--card-shadow);
         }
 
@@ -100,43 +100,30 @@
             flex-direction: column;
         }
 
-.header {
-    height: 80px;
-    background-color: var(--header-bg);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 20px;
-    border-bottom: 1px solid #ccc;
-    box-shadow: 0 2px 8px #e9953d11;
-}
+        .header {
+            height: 80px;
+            background-color: var(--header-bg);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 20px;
+            border-bottom: 1px solid #ccc;
+            box-shadow: 0 2px 8px #e9953d11;
+        }
 
-.header a {
-    text-decoration: none;
-    color: #0074C7;
-    display: flex;
-    align-items: center;
-    font-weight: 600;
-    font-size: 17px;
-}
+        .theme-toggle-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #0074C7;
+            cursor: pointer;
+            padding: 16px;
+        }
 
-.header a i {
-    margin-right: 8px;
-    font-size: 24px;
-}
+        .dark-theme .theme-toggle-btn {
+            color: #f0f0f0;
+        }
 
-.theme-toggle-btn {
-    background: none;
-    border: none;
-    font-size: 20px;
-    color: #0074C7;
-    cursor: pointer;
-    padding: 16px;
-}
-
-.dark-theme .theme-toggle-btn {
-    color: #f0f0f0;
-}
         .main-content {
             flex: 1;
             padding: 40px;
@@ -188,20 +175,46 @@
         .dark-theme .badge {
             background-color: #3385ff;
         }
-          .active-page {
-        background-color: #0074C7;
-        color: white !important;
-        pointer-events: none;
-    }
+
+        .active-page {
+            background-color: #0074C7;
+            color: white !important;
+            pointer-events: none;
+        }
+
+        /* Pagination styles */
+        .pagination ul {
+            list-style: none;
+            display: inline-flex;
+            gap: 8px;
+            padding: 0;
+        }
+
+        .pagination a {
+            padding: 6px 12px;
+            border: 1px solid #0074C7;
+            color: #0074C7;
+            text-decoration: none;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .pagination a.active-page {
+            background-color: #0074C7;
+            color: white !important;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
+
+<!-- Sidebar -->
 <div class="sidebar">
     <div>
         <div class="sidebar-header">
             <img src="/img/modepbg.png" alt="Logo MODEP" class="sidebar-logo">
         </div>
-           <nav>
+          <nav>
     <a th:href="@{/dashboard-responsable}" th:classappend="${activePage == 'dashboard'} ? ' active'" class="sidebar-link">
         <i class="fa fa-home"></i> <span>Tableau de bord</span>
     </a>
@@ -240,6 +253,7 @@
     </div>
 
     <div class="main-content">
+        <h1>Mes demandes de congé</h1>
 
         <div class="historique-cartes">
             <div class="demande-carte" th:each="demande : ${demandes}">
@@ -262,25 +276,18 @@
 
         <!-- Pagination -->
         <div class="pagination" style="margin-top: 30px; text-align: center;">
-            <ul style="list-style: none; display: inline-flex; gap: 8px; padding: 0;">
+            <ul>
                 <li th:if="${currentPage > 0}">
-                    <a th:href="@{/responsable/historique-demandes-responsable(page=${currentPage - 1})}"
-                       style="padding: 6px 12px; border: 1px solid #0074C7; color: #0074C7; text-decoration: none; border-radius: 4px;">
-                       Précédent
-                    </a>
+                    <a th:href="@{/responsable/historique-demandes-responsable(page=${currentPage - 1})}">Précédent</a>
                 </li>
                 <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
                     <a th:href="@{/responsable/historique-demandes-responsable(page=${i})}"
                        th:text="${i + 1}"
-                       th:classappend="${i == currentPage} ? ' active-page'"
-                       style="padding: 6px 12px; border: 1px solid #0074C7; color: #0074C7; text-decoration: none; border-radius: 4px;">
+                       th:classappend="${i == currentPage} ? ' active-page'">
                     </a>
                 </li>
                 <li th:if="${currentPage < totalPages - 1}">
-                    <a th:href="@{/responsable/historique-demandes-responsable(page=${currentPage + 1})}"
-                       style="padding: 6px 12px; border: 1px solid #0074C7; color: #0074C7; text-decoration: none; border-radius: 4px;">
-                       Suivant
-                    </a>
+                    <a th:href="@{/responsable/historique-demandes-responsable(page=${currentPage + 1})}">Suivant</a>
                 </li>
             </ul>
         </div>

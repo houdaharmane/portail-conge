@@ -247,9 +247,14 @@ background-color: var(--header-bg);
     <a th:href="@{/profil-responsable}" th:classappend="${activePage == 'profil'} ? ' active'" class="sidebar-link">
         <i class="fa fa-user"></i> <span>Mon profil</span>
     </a>
-<a th:href="@{/responsable/historique-demandes}" th:classappend="${activePage == 'historiqueDemandesResponsable'} ? ' active'" class="sidebar-link">
-    <i class="fa fa-history"></i> <span>Historique</span>
+<a th:href="@{/responsable/historique-demandes-personnel}" th:classappend="${activePage == 'historiqueDemandesPersonnel'} ? ' active'" class="sidebar-link">
+    <i class="fa fa-history"></i> <span>Historique du personnel</span>
 </a>
+
+<a th:href="@{/responsable/historique-demandes-responsable}" th:classappend="${activePage == 'historiqueDemandesResponsable'} ? ' active'" class="sidebar-link">
+    <i class="fa fa-history"></i> <span>Historique du responsable</span>
+</a>
+
 
 </nav>
 

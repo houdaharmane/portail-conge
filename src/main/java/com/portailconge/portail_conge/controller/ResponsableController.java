@@ -201,26 +201,7 @@ public class ResponsableController {
         return "profil-responsable";
     }
 
-    @GetMapping("/responsable/historique-demandes")
-    public String afficherHistoriqueResponsable(
-            HttpSession session,
-            Model model,
-            @RequestParam(defaultValue = "0") int page) { // page par défaut = 0
-
-        Utilisateur responsable = (Utilisateur) session.getAttribute("utilisateur");
-        if (responsable == null || !"RESPONSABLE".equals(responsable.getRole())) {
-            return "redirect:/login";
-        }
-
-        List<StatutDemande> statutsHistoriqueResp = List.of(
-                StatutDemande.APPROUVEE_RESP,
-                StatutDemande.REFUSEE_RESP);
-
-        int pageSize = 3; // nombre d'éléments par page
-        Pageable pageable = PageRequest.of(page, pageSize);
-
-        Page<DemandeConge> demandesPage = demandeCongeRepository.findByStatutIn(statutsHistoriqueResp, pageable);
-
+    private void formaterDatesDemandes(Page<DemandeConge> demandesPage) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         for (DemandeConge demande : demandesPage.getContent()) {
             if (demande.getDateSoumission() != null) {
@@ -233,11 +214,55 @@ public class ResponsableController {
                 demande.setDateFinFormatee(demande.getDateFin().format(formatter));
             }
         }
+    }
+
+    // Afficher historique des demandes faites par le responsable
+    @GetMapping("/responsable/historique-demandes-responsable")
+    public String afficherHistoriqueDemandesResponsable(
+            HttpSession session,
+            Model model,
+            @RequestParam(defaultValue = "0") int page) {
+        int pageSize = 3;
+        Pageable pageable = PageRequest.of(page, pageSize);
+
+        // Appel au repository ou service pour récupérer les demandes du responsable
+        Page<DemandeConge> demandesPage = demandeCongeRepository.findByDemandeurRole("RESPONSABLE", pageable);
+        Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
+        if (utilisateur == null || !"RESPONSABLE".equals(utilisateur.getRole())) {
+            return "redirect:/login";
+        }
+
+        formaterDatesDemandes(demandesPage);
 
         model.addAttribute("demandes", demandesPage.getContent());
-        model.addAttribute("activePage", "historiqueDemandesResponsable");
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", demandesPage.getTotalPages());
+        model.addAttribute("activePage", "historiqueDemandesResponsable");
+
+        return "HistoriqueDemandes-responsable";
+    }
+
+    // Afficher historique des demandes faites par le personnel
+    @GetMapping("/responsable/historique-demandes-personnel")
+    public String afficherHistoriqueDemandesPersonnel(
+            HttpSession session,
+            Model model,
+            @RequestParam(defaultValue = "0") int page) {
+
+        Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
+        if (utilisateur == null || !"RESPONSABLE".equals(utilisateur.getRole())) {
+            return "redirect:/login";
+        }
+
+        Pageable pageable = PageRequest.of(page, 5);
+        Page<DemandeConge> demandesPage = demandeCongeRepository.findByDemandeurRole("PERSONNEL", pageable);
+
+        formaterDatesDemandes(demandesPage);
+
+        model.addAttribute("demandes", demandesPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", demandesPage.getTotalPages());
+        model.addAttribute("activePage", "historiqueDemandesPersonnel");
 
         return "historique-demandes-responsable";
     }
