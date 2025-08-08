@@ -423,26 +423,32 @@ box-shadow: 0 4px 24px rgba(0, 116, 199, 0.9);
         <div class="sidebar-header">
             <img src="/img/modepbg.png" alt="Logo MODEP" class="sidebar-logo">
         </div>
-       <nav>
-            <a th:href="@{/dashboard-rh}" th:classappend="${activePage == 'dashboard'} ? ' active'" class="sidebar-link">
-                <i class="fa fa-home"></i> <span>Tableau de bord</span>
-            </a>
-            <a th:href="@{/personnel/ajouter}" th:classappend="${activePage == 'personnel'} ? ' active'" class="sidebar-link">
-                <i class="fa fa-users"></i> <span>Ajout des utilisateurs</span>
-            </a>
-<a th:href="@{/rh/utilisateurs}" th:classappend="${activePage == 'utilisateurs'} ? ' active'" class="sidebar-link">
-    <i class="fa fa-user-cog"></i> <span>Gestion des utilisateurs</span>
-</a>
-  <a th:href="@{/rh/demandes-approuvees-responsable}" th:classappend="${activePage == 'demandesApprouveesParResponsable'} ? ' active'" class="sidebar-link">
-  <i class="fa fa-check-circle"></i> <span>Demandes Approuvées</span>
-</a>
-            <a th:href="@{/rh/historique}" th:classappend="${activePage == 'historique'} ? ' active'" class="sidebar-link">
-                <i class="fa fa-history"></i> <span>Historique validations</span>
-            </a>
-            <a th:href="@{/conge/demande}" th:classappend="${activePage == 'demandeConge'} ? ' active'" class="sidebar-link">
-                <i class="fa fa-plane-departure"></i> <span>Demande de congé</span>
-            </a>
-        </nav>
+ <nav>
+    <a th:href="@{/dashboard-rh}" th:classappend="${activePage == 'dashboard'} ? ' active'" class="sidebar-link">
+        <i class="fa fa-home"></i> <span>Tableau de bord</span>
+    </a>
+    <a th:href="@{/personnel/ajouter}" th:classappend="${activePage == 'personnel'} ? ' active'" class="sidebar-link">
+        <i class="fa fa-users"></i> <span>Ajout des utilisateurs</span>
+    </a>
+    <a th:href="@{/rh/utilisateurs}" th:classappend="${activePage == 'utilisateurs'} ? ' active'" class="sidebar-link">
+        <i class="fa fa-user-cog"></i> <span>Gestion des utilisateurs</span>
+    </a>
+
+    <a th:href="@{/rh/demandes-responsable}" th:classappend="${activePage == 'demandesResponsable'} ? ' active'" class="sidebar-link">
+        <i class="fa fa-user-check"></i> <span>Demandes du Responsable</span>
+    </a>
+
+    <a th:href="@{/rh/demandes-approuvees}" th:classappend="${activePage == 'demandesApprouvees'} ? ' active'" class="sidebar-link">
+        <i class="fa fa-check-circle"></i> <span>Demandes Approuvées</span>
+    </a>
+
+    <a th:href="@{/rh/historique}" th:classappend="${activePage == 'historique'} ? ' active'" class="sidebar-link">
+        <i class="fa fa-history"></i> <span>Historique validations</span>
+    </a>
+    <a th:href="@{/conge/demande}" th:classappend="${activePage == 'demandeConge'} ? ' active'" class="sidebar-link">
+        <i class="fa fa-plane-departure"></i> <span>Demande de congé</span>
+    </a>
+</nav>
     </div>
     <div class="sidebar-footer">
         <a href="/login" class="sidebar-link"><i class="fa fa-sign-out-alt"></i> <span>Déconnexion</span></a>

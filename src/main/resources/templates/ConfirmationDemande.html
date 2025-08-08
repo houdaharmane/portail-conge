@@ -206,15 +206,10 @@ color: #2a5dad;      }
           <p>Merci, votre demande de congé a bien été prise en compte.</p>
 
         </div>
-<a 
-  th:href="@{/personnel/dashboard}" 
-  th:classappend="${activePage == 'dashboard'} ? ' active'" 
-  class="button-box sidebar-link"
->
+<a th:href="@{${dashboardUrl}}" class="button-box sidebar-link">
   <h1>Retour à l'accueil</h1>
 </a>
-
-      </div>
+   </div>
     </div>
     
 </body>

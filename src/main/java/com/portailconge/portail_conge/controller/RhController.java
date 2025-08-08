@@ -207,27 +207,6 @@ public class RhController {
         return "redirect:/ConfirmationDemande";
     }
 
-    @GetMapping("/rh/demandes-approuvees-responsable")
-    public String afficherDemandesApprouveesParResponsable(HttpSession session, Model model) {
-        Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
-
-        if (rh == null || !"RH".equals(rh.getRole())) {
-            return "redirect:/login";
-        }
-        List<DemandeConge> demandesApprouvees = demandeCongeRepository.findByStatut(StatutDemande.APPROUVEE_RESP);
-        List<DemandeConge> demandesRealiseesParResponsable = demandeCongeRepository.findByDemandeurRole("RESPONSABLE");
-        List<DemandeConge> demandes = demandeCongeRepository.findDemandesTraiteesFaitesParResponsable();
-
-        model.addAttribute("demandesAValider", demandes);
-        model.addAttribute("demandesApprouvees", demandesApprouvees);
-        model.addAttribute("demandesRealisees", demandesRealiseesParResponsable);
-
-        model.addAttribute("rh", rh);
-        model.addAttribute("activePage", "demandesApprouveesParResponsable");
-
-        return "demandeApprouveesRH";
-    }
-
     @PostMapping("/rh/demande/valider")
     public String validerDemande(@RequestParam("id") Long id, HttpSession session) {
         Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
@@ -237,7 +216,7 @@ public class RhController {
         }
 
         demandeCongeRepository.findById(id).ifPresent(demande -> {
-            demande.setStatut(StatutDemande.APPROUVEE_RH); // ou VALIDEE selon ta logique
+            demande.setStatut(StatutDemande.APPROUVEE_RH);
             demandeCongeRepository.save(demande);
         });
 
@@ -343,6 +322,21 @@ public class RhController {
         model.addAttribute("activePage", "utilisateurs");
 
         return "utilisateurs";
+    }
+
+    @GetMapping("/rh/demandes-responsable")
+    public String demandesResponsable(Model model) {
+        List<DemandeConge> demandes = demandeCongeRepository.findByDemandeurRole("RESPONSABLE");
+        model.addAttribute("demandesResponsable", demandes);
+        return "rh-demandes-responsable";
+    }
+
+    @GetMapping("/rh/demandes-approuvees")
+    public String demandesApprouvees(Model model) {
+        List<DemandeConge> demandes = demandeCongeRepository.findByStatut(StatutDemande.APPROUVEE);
+        model.addAttribute("demandesApprouvees", demandes);
+
+        return "demandes-approuvees";
     }
 
 }

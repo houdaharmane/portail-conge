@@ -150,9 +150,10 @@ public class ResponsableController {
         return "demandeConge-responsable";
     }
 
-    // Soumission demande congé responsable
     @PostMapping("/responsable/conge/demande/soumettre")
-    public String soumettreDemandeCongeResponsable(@ModelAttribute DemandeConge demandeConge, HttpSession session) {
+    public String soumettreDemandeCongeResponsable(@ModelAttribute DemandeConge demandeConge,
+            HttpSession session,
+            Model model) {
         Utilisateur responsable = (Utilisateur) session.getAttribute("utilisateur");
         if (responsable == null || !"RESPONSABLE".equals(responsable.getRole())) {
             return "redirect:/login";
@@ -161,10 +162,21 @@ public class ResponsableController {
         demandeConge.setDemandeur(responsable);
         demandeConge.setStatut(StatutDemande.EN_ATTENTE);
         demandeConge.setDateSoumission(LocalDate.now());
-
         demandeCongeRepository.save(demandeConge);
 
-        return "redirect:/dashboard-responsable";
+        // Définir dynamiquement l'URL du dashboard selon le rôle ou l'utilisateur
+        String dashboardUrl;
+        if ("RESPONSABLE".equals(responsable.getRole())) {
+            dashboardUrl = "/dashboard-responsable";
+        } else if ("PERSONNEL".equals(responsable.getRole())) {
+            dashboardUrl = "/personnel/dashboard";
+        } else {
+            dashboardUrl = "/dashboard";
+        }
+
+        model.addAttribute("dashboardUrl", dashboardUrl);
+
+        return "ConfirmationDemande";
     }
 
     // Afficher demandes approuvées par responsable pour ce département (statut

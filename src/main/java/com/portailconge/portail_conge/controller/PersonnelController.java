@@ -1,14 +1,18 @@
 package com.portailconge.portail_conge.controller;
 
+import com.portailconge.portail_conge.model.DemandeConge;
 import com.portailconge.portail_conge.model.Departement;
 import com.portailconge.portail_conge.model.Personnel;
+import com.portailconge.portail_conge.model.StatutDemande;
 import com.portailconge.portail_conge.model.Utilisateur;
 import com.portailconge.portail_conge.repository.DepartementRepository;
 import com.portailconge.portail_conge.service.AuthService;
 
 import jakarta.servlet.http.HttpSession;
+import com.portailconge.portail_conge.repository.DemandeCongeRepository;
 
 import java.io.IOException;
+import java.time.LocalDate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +27,8 @@ import org.springframework.http.HttpHeaders;
 @Controller
 @RequestMapping("/personnel")
 public class PersonnelController {
+    @Autowired
+    private DemandeCongeRepository demandeCongeRepository;
     @Autowired
     private UtilisateurService utilisateurService;
     @Autowired
@@ -205,6 +211,26 @@ public class PersonnelController {
         model.addAttribute("departementId", utilisateur.getDepartement().getId());
 
         return "demande-conge-personnel";
+    }
+
+    @PostMapping("/conge/demande/soumettre")
+    public String soumettreDemandeCongePersonnel(@ModelAttribute DemandeConge demandeConge,
+            HttpSession session,
+            Model model) {
+        Utilisateur personnel = (Utilisateur) session.getAttribute("utilisateur");
+        if (personnel == null || !"PERSONNEL".equals(personnel.getRole())) {
+            return "redirect:/login";
+        }
+
+        demandeConge.setDemandeur(personnel);
+        demandeConge.setStatut(StatutDemande.EN_ATTENTE);
+        demandeConge.setDateSoumission(LocalDate.now());
+        demandeCongeRepository.save(demandeConge);
+
+        String dashboardUrl = "/personnel/dashboard";
+        model.addAttribute("dashboardUrl", dashboardUrl);
+
+        return "ConfirmationDemande";
     }
 
 }

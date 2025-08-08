@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Demandes du Responsable</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <style>
+       :root {
+    --bg-color: #f6f6f6;
+    --text-color: #000;
+    --header-bg: #f3f3f3;
+    --card-bg: #fff;
+    --card-shadow: #e9953d22;
+    --sidebar-bg: #0074C7;
+    --link-color: #fff;
+}
+
+.dark-theme {
+    --bg-color: #1e1e1e;
+    --text-color: #f0f0f0;
+    --header-bg: #2c2c2c;
+    --card-bg: #2a2a2a;
+    --card-shadow: #00000044;
+    --sidebar-bg: #0074C7;
+    --link-color: #fff;
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    display: flex;
+    height: 100vh;
+    background: var(--bg-color);
+    color: var(--text-color);
+}
+
+/* Sidebar */
+.sidebar {
+    width: 240px;
+    background-color: var(--sidebar-bg);
+    color: var(--link-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: stretch;
+    min-height: 100vh;
+    box-shadow: 2px 0 12px #e9953d22;
+    padding: 0;
+}
+
+.sidebar-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 0 18px 0;
+}
+
+.sidebar-logo {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #fff;
+    box-shadow: 0 2px 8px #fff2;
+    margin-bottom: 10px;
+}
+
+.sidebar-title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.sidebar-link, 
+.sidebar-link:hover, 
+.sidebar-footer .sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-decoration: none;
+    color: var(--link-color);
+    font-size: 16px;
+    font-weight: 600;
+    padding: 13px 30px;
+    border-left: 4px solid transparent;
+    transition: background 0.18s, border-left-color 0.18s;
+}
+
+.sidebar-link i {
+    font-size: 20px;
+    min-width: 20px;
+}
+
+.sidebar-link:hover, 
+.sidebar-link.active {
+    background: #fff2;
+    color: #fff;
+    border-left: 4px solid #fff;
+}
+
+.sidebar-footer {
+    margin-bottom: 30px;
+}
+
+/* Mode sombre pour sidebar logo */
+.dark-theme .sidebar-logo {
+    background: #2a2a2a;
+    box-shadow: 0 2px 8px #0005;
+}
+
+/* Main container */
+.main-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+.header {
+    height: 60px;
+    background-color: var(--header-bg);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 20px;
+    border-bottom: 1px solid #ccc;
+    box-shadow: 0 2px 8px #e9953d11;
+}
+
+/* Bouton thème */
+.theme-toggle-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: #0074C7;
+    cursor: pointer;
+    outline: none;
+}
+
+.dark-theme .theme-toggle-btn {
+    color: #f0f0f0;
+}
+
+.theme-toggle-btn i {
+    pointer-events: none; 
+}
+/* Table styling */
+table {
+    width: 95%;     
+margin: 40px auto 20px auto;     border-collapse: collapse;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+thead {
+    background-color: #0074C7;
+    color: white;
+}
+
+thead th {
+    padding: 12px 16px;
+    font-weight: 600;
+    text-align: left;
+}
+
+tbody tr {
+    border-bottom: 1px solid #ddd;
+    transition: background-color 0.2s ease;
+    cursor: default;
+}
+
+tbody tr:hover {
+    background-color: #f0f7ff;
+}
+
+tbody td {
+    padding: 12px 16px;
+}
+
+/* Dernière ligne sans bordure */
+tbody tr:last-child {
+    border-bottom: none;
+}
+
+/* Boutons simples */
+a.btn {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 5px;
+    font-weight: 600;
+    font-size: 14px;
+    color: white;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    user-select: none;
+}
+
+a.btn-success {
+    background-color: #28a745;
+}
+
+a.btn-success:hover {
+    background-color: #218838;
+}
+
+a.btn-danger {
+    background-color: #dc3545;
+}
+
+a.btn-danger:hover {
+    background-color: #c82333;
+}
+
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div>
+        <div class="sidebar-header">
+            <img src="/img/modepbg.png" alt="Logo MODEP" class="sidebar-logo">
+        </div>
+       <nav>
+    <a th:href="@{/dashboard-rh}" th:classappend="${activePage == 'dashboard'} ? ' active'" class="sidebar-link">
+        <i class="fa fa-home"></i> <span>Tableau de bord</span>
+    </a>
+    <a th:href="@{/personnel/ajouter}" th:classappend="${activePage == 'personnel'} ? ' active'" class="sidebar-link">
+        <i class="fa fa-users"></i> <span>Ajout des utilisateurs</span>
+    </a>
+    <a th:href="@{/rh/utilisateurs}" th:classappend="${activePage == 'utilisateurs'} ? ' active'" class="sidebar-link">
+        <i class="fa fa-user-cog"></i> <span>Gestion des utilisateurs</span>
+    </a>
+
+    <a th:href="@{/rh/demandes-responsable}" th:classappend="${activePage == 'demandesResponsable'} ? ' active'" class="sidebar-link">
+        <i class="fa fa-user-check"></i> <span>Demandes du Responsable</span>
+    </a>
+
+    <a th:href="@{/rh/demandes-approuvees}" th:classappend="${activePage == 'demandesApprouvees'} ? ' active'" class="sidebar-link">
+        <i class="fa fa-check-circle"></i> <span>Demandes Approuvées</span>
+    </a>
+
+    <a th:href="@{/rh/historique}" th:classappend="${activePage == 'historique'} ? ' active'" class="sidebar-link">
+        <i class="fa fa-history"></i> <span>Historique validations</span>
+    </a>
+    <a th:href="@{/conge/demande}" th:classappend="${activePage == 'demandeConge'} ? ' active'" class="sidebar-link">
+        <i class="fa fa-plane-departure"></i> <span>Demande de congé</span>
+    </a>
+</nav>
+    </div>
+    <div class="sidebar-footer">
+        <a href="/login" class="sidebar-link"><i class="fa fa-sign-out-alt"></i> <span>Déconnexion</span></a>
+    </div>
+</div>
+
+<div class="main-container">
+    <div class="header">
+        <button id="theme-toggle" class="theme-toggle-btn" title="Changer de thème">
+            <i class="fa fa-moon"></i>
+        </button>
+    </div>
+
+    <div class="main-content">
+
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nom</th>
+                    <th>Prénom</th>
+                    <th>Département</th>
+                    <th>Rôle</th>
+                    <th>Date Début</th>
+                    <th>Date Fin</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="demande : ${demandesResponsable}">
+                    <td th:text="${demande.id}"></td>
+                    <td th:text="${demande.demandeur.nom}"></td>
+                    <td th:text="${demande.demandeur.prenom}"></td>
+                    <td th:text="${demande.demandeur.departement.nom}"></td>
+                    <td th:text="${demande.demandeur.role}"></td>
+                    <td th:text="${#temporals.format(demande.dateDebut, 'dd/MM/yyyy')}"></td>
+                    <td th:text="${#temporals.format(demande.dateFin, 'dd/MM/yyyy')}"></td>
+                    <td>
+                        <a th:href="@{/rh/accepter/{id}(id=${demande.id})}" class="btn btn-success">Accepter</a>
+                        <a th:href="@{/rh/refuser/{id}(id=${demande.id})}" class="btn btn-danger">Refuser</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    const toggleBtn = document.getElementById('theme-toggle');
+    const body = document.body;
+
+    if (localStorage.getItem('theme') === 'dark') {
+        body.classList.add('dark-theme');
+        toggleBtn.innerHTML = '<i class="fa fa-sun"></i>';
+    }
+
+    toggleBtn.addEventListener('click', () => {
+        body.classList.toggle('dark-theme');
+        const isDark = body.classList.contains('dark-theme');
+        toggleBtn.innerHTML = isDark ? '<i class="fa fa-sun"></i>' : '<i class="fa fa-moon"></i>';
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    });
+</script>
+
+</body>
+</html>

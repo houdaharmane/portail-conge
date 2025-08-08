@@ -125,21 +125,30 @@
         }
 
         /* Contenu principal */
-.main-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
  .header {
-        height: 60px;
-        background-color: var(--header-bg);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 20px;
-        border-bottom: 1px solid #ccc;
-        box-shadow: 0 2px 8px var(--card-shadow);
-    }
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 240px; 
+    height: 60px;
+    background-color: var(--header-bg);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 20px;
+    border-bottom: 1px solid #ccc;
+    box-shadow: 0 2px 8px #e9953d11;
+    z-index: 1000;
+}
+
+.main-container {
+    margin-top: 60px; 
+    margin-right: 130px;
+    max-width: 960px;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
         .theme-toggle-btn {
             background: none;
             border: none;
@@ -206,22 +215,6 @@
 
         .profile-option .fa-bell {
             position: relative;
-        }
-
-        .alert-message {
-            position: absolute;
-            top: -6px;
-            right: -10px;
-            background: var(--alert-bg);
-            color: var(--alert-color);
-            font-size: 0.75rem;
-            font-weight: 700;
-            padding: 2px 7px;
-            border-radius: 50%;
-            min-width: 20px;
-            text-align: center;
-            line-height: 1;
-            box-shadow: 0 0 6px rgba(0,0,0,0.2);
         }
 
         /* Section principale sous profile-header */
@@ -408,7 +401,7 @@
         }
 
         .form-row label {
-            width: 150px; /* largeur fixe du label */
+            width: 150px; 
             font-weight: bold;
             margin-right: 10px;
             color: var(--text-color);
@@ -643,45 +636,69 @@
 </div>
 
 <script>
-    // Thème sombre / clair (optionnel)
-    const themeToggleBtn = document.getElementById('theme-toggle');
-    themeToggleBtn.addEventListener('click', () => {
-        document.body.classList.toggle('dark-theme');
-        const icon = themeToggleBtn.querySelector('i');
-        icon.classList.toggle('fa-moon');
-        icon.classList.toggle('fa-sun');
-    });
+   const themeToggleBtn = document.getElementById('theme-toggle');
+const body = document.body;
 
-    // Bascule entre formulaire lecture seule et édition
-    const btnEdit = document.getElementById('btn-edit');
-    const btnCancel = document.getElementById('btn-cancel');
-    const formView = document.getElementById('form-view');
-    const formEdit = document.getElementById('form-edit');
+// Appliquer le thème stocké au chargement de la page
+document.addEventListener('DOMContentLoaded', () => {
+  const theme = localStorage.getItem('theme');
+  if (theme === 'dark') {
+    body.classList.add('dark-theme');
+    themeToggleBtn.querySelector('i').classList.remove('fa-moon');
+    themeToggleBtn.querySelector('i').classList.add('fa-sun');
+  } else {
+    body.classList.remove('dark-theme');
+    themeToggleBtn.querySelector('i').classList.remove('fa-sun');
+    themeToggleBtn.querySelector('i').classList.add('fa-moon');
+  }
+});
 
-    btnEdit.addEventListener('click', () => {
-        formView.style.display = 'none';
-        formEdit.style.display = 'block';
-    });
+// Bascule du thème et stockage dans localStorage
+themeToggleBtn.addEventListener('click', () => {
+  body.classList.toggle('dark-theme');
+  const icon = themeToggleBtn.querySelector('i');
+  if (body.classList.contains('dark-theme')) {
+    icon.classList.remove('fa-moon');
+    icon.classList.add('fa-sun');
+    localStorage.setItem('theme', 'dark');
+  } else {
+    icon.classList.remove('fa-sun');
+    icon.classList.add('fa-moon');
+    localStorage.setItem('theme', 'light');
+  }
+});
 
-    btnCancel.addEventListener('click', () => {
-        formEdit.style.display = 'none';
-        formView.style.display = 'block';
-    });
+// Bascule entre formulaire lecture seule et édition (ton code déjà existant)
+const btnEdit = document.getElementById('btn-edit');
+const btnCancel = document.getElementById('btn-cancel');
+const formView = document.getElementById('form-view');
+const formEdit = document.getElementById('form-edit');
 
-    // Optionnel : prévisualisation image de profil lors de l'upload
-    const imageUpload = document.getElementById('imageUpload');
-    const profileImage = document.getElementById('profileImage');
+btnEdit.addEventListener('click', () => {
+  formView.style.display = 'none';
+  formEdit.style.display = 'block';
+});
 
-    imageUpload.addEventListener('change', () => {
-        const file = imageUpload.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = e => {
-                profileImage.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-    });
+btnCancel.addEventListener('click', () => {
+  formEdit.style.display = 'none';
+  formView.style.display = 'block';
+});
+
+// Prévisualisation image de profil lors de l'upload (ton code déjà existant)
+const imageUpload = document.getElementById('imageUpload');
+const profileImage = document.getElementById('profileImage');
+
+imageUpload.addEventListener('change', () => {
+  const file = imageUpload.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      profileImage.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
 </script>
 
 </body>

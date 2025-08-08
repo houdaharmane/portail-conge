@@ -830,7 +830,6 @@ toggleBtn.addEventListener('click', () => {
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
 });
 
-// Gestion submit du formulaire calendrier pour afficher le formulaire intéressé
 document.getElementById('form-demande').onsubmit = function(e) {
     e.preventDefault();
 
@@ -843,26 +842,19 @@ document.getElementById('form-demande').onsubmit = function(e) {
     document.getElementById('dateDuField').value = document.getElementById('startDateDisplay').textContent;
     document.getElementById('dateAuField').value = document.getElementById('endDateDisplay').textContent;
 
-    // Ici on récupère le nombre uniquement depuis workdaysCount (ex: "4 jours ouvrés") et on extrait le nombre entier
-    const workdaysText = document.getElementById('workdaysCount').textContent; // ex: "4 jours ouvrés"
-    const workdaysNumber = parseInt(workdaysText, 10) || 0; // extraire le nombre entier
-
+    const workdaysText = document.getElementById('workdaysCount').textContent;
+    const workdaysNumber = parseInt(workdaysText, 10) || 0;
     document.getElementById('dureeDemande').value = workdaysNumber;
 
-    // Cache calendrier + sélecteurs + résumé + bouton Continuer
-    document.getElementById('calendar-container').style.display = 'none';
-    const halfDaySelect = document.querySelector('.half-day-select');
-    if(halfDaySelect) halfDaySelect.style.display = 'none';
-    const summary = document.querySelector('.summary');
-    if(summary) summary.style.display = 'none';
-    const submitBtn = document.querySelector('#congeForm button[type="submit"]');
-    if(submitBtn) submitBtn.style.display = 'none';
+    // Cacher tout le formulaire calendrier
+    document.getElementById('form-demande').style.display = 'none';
 
-    // Affiche formulaire intéressé
+    // Afficher formulaire intéressé
     document.getElementById('formulaire-interesse').style.display = 'block';
 
     return false;
 };
+
 
 // Bouton retour vers calendrier
 document.getElementById('back-to-calendar').addEventListener('click', () => {

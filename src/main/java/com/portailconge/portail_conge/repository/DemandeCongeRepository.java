@@ -21,6 +21,15 @@ public interface DemandeCongeRepository extends JpaRepository<DemandeConge, Long
         List<DemandeConge> findDemandesEnAttenteByDepartement(@Param("departement") Departement departement,
                         @Param("statut") StatutDemande statut);
 
+        // Pour afficher les demandes faites par un responsable en attente de validation
+        // RH
+        @Query("SELECT d FROM DemandeConge d WHERE d.demandeur.role = 'RESPONSABLE' AND d.statut = 'EN_ATTENTE_RH'")
+        List<DemandeConge> findDemandesResponsablePourRH();
+
+        // Pour afficher les demandes approuvées par le responsable (statut APPROUVEE)
+        @Query("SELECT d FROM DemandeConge d WHERE d.statut = 'APPROUVEE'")
+        List<DemandeConge> findDemandesApprouvees();
+
         List<DemandeConge> findByDemandeur(Utilisateur demandeur);
 
         List<DemandeConge> findByStatut(StatutDemande statut);

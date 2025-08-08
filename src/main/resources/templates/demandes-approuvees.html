@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Demandes Approuvées</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+<h2>Demandes Approuvées par le Responsable</h2>
+
+<table border="1">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Employé</th>
+            <th>Date Début</th>
+            <th>Date Fin</th>
+            <th>Statut</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="demande : ${demandesApprouvees}">
+            <td th:text="${demande.id}"></td>
+            <td th:text="${demande.demandeur.nom}"></td>
+            <td th:text="${#dates.format(demande.dateDebut, 'dd/MM/yyyy')}"></td>
+            <td th:text="${#dates.format(demande.dateFin, 'dd/MM/yyyy')}"></td>
+            <td th:text="${demande.statut}"></td>
+             <td>
+                <a th:href="@{/rh/accepter/{id}(id=${demande.id})}" class="btn btn-success">Accepter</a>
+                <a th:href="@{/rh/refuser/{id}(id=${demande.id})}" class="btn btn-danger">Refuser</a>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+</body>
+</html>
