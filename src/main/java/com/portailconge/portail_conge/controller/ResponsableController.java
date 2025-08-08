@@ -257,13 +257,13 @@ public class ResponsableController {
             HttpSession session,
             Model model,
             @RequestParam(defaultValue = "0") int page) {
-
+        int pageSize = 3;
+        Pageable pageable = PageRequest.of(page, pageSize);
         Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
         if (utilisateur == null || !"RESPONSABLE".equals(utilisateur.getRole())) {
             return "redirect:/login";
         }
 
-        Pageable pageable = PageRequest.of(page, 5);
         Page<DemandeConge> demandesPage = demandeCongeRepository.findByDemandeurRole("PERSONNEL", pageable);
 
         formaterDatesDemandes(demandesPage);

@@ -17,46 +17,44 @@ import java.util.List;
 @Repository
 public interface DemandeCongeRepository extends JpaRepository<DemandeConge, Long> {
 
-    @Query("SELECT d FROM DemandeConge d WHERE d.demandeur.departement = :departement AND d.statut = :statut")
-    List<DemandeConge> findDemandesEnAttenteByDepartement(@Param("departement") Departement departement,
-            @Param("statut") StatutDemande statut);
+        @Query("SELECT d FROM DemandeConge d WHERE d.demandeur.departement = :departement AND d.statut = :statut")
+        List<DemandeConge> findDemandesEnAttenteByDepartement(@Param("departement") Departement departement,
+                        @Param("statut") StatutDemande statut);
 
-    List<DemandeConge> findByDemandeur(Utilisateur demandeur);
+        List<DemandeConge> findByDemandeur(Utilisateur demandeur);
 
-    List<DemandeConge> findByStatut(StatutDemande statut);
+        List<DemandeConge> findByStatut(StatutDemande statut);
 
-    List<DemandeConge> findDemandesByDepartementAndStatut(Departement departement, StatutDemande statut);
+        List<DemandeConge> findDemandesByDepartementAndStatut(Departement departement, StatutDemande statut);
 
-    int countByStatut(StatutDemande statut);
+        int countByStatut(StatutDemande statut);
 
-    // Compter par liste de statuts
-    int countByStatutIn(List<StatutDemande> statuts);
+        int countByStatutIn(List<StatutDemande> statuts);
 
-    List<DemandeConge> findByStatutIn(List<StatutDemande> statuts);
+        List<DemandeConge> findByStatutIn(List<StatutDemande> statuts);
 
-    Page<DemandeConge> findByStatutIn(List<StatutDemande> statuts, Pageable pageable);
+        Page<DemandeConge> findByStatutIn(List<StatutDemande> statuts, Pageable pageable);
 
-    @Query("SELECT d FROM DemandeConge d WHERE d.demandeur.role = :role")
-    List<DemandeConge> findByDemandeurRole(@Param("role") String role);
+        @Query("SELECT d FROM DemandeConge d WHERE d.demandeur.role = :role")
+        List<DemandeConge> findByDemandeurRole(@Param("role") String role);
 
-    @Query("SELECT d FROM DemandeConge d WHERE d.demandeur.role = 'RESPONSABLE' AND d.statut NOT IN ('EN_ATTENTE', 'EN_ATTENTE_RH')")
-    List<DemandeConge> findDemandesTraiteesFaitesParResponsable();
+        @Query("SELECT d FROM DemandeConge d WHERE d.demandeur.role = 'RESPONSABLE' AND d.statut NOT IN ('EN_ATTENTE', 'EN_ATTENTE_RH')")
+        List<DemandeConge> findDemandesTraiteesFaitesParResponsable();
 
-    // Afficher les demandes faites par des responsables, approuvées par eux
-    @Query("SELECT d FROM DemandeConge d WHERE d.demandeur.role = 'RESPONSABLE' AND d.statut = :statut")
-    List<DemandeConge> findDemandesResponsablesApprouvees(@Param("statut") StatutDemande statut);
+        @Query("SELECT d FROM DemandeConge d WHERE d.demandeur.role = 'RESPONSABLE' AND d.statut = :statut")
+        List<DemandeConge> findDemandesResponsablesApprouvees(@Param("statut") StatutDemande statut);
 
-    Page<DemandeConge> findByStatut(StatutDemande statut, Pageable pageable);
+        Page<DemandeConge> findByStatut(StatutDemande statut, Pageable pageable);
 
-    List<DemandeConge> findByStatutAndDemandeurRole(StatutDemande statut, String role);
+        List<DemandeConge> findByStatutAndDemandeurRole(StatutDemande statut, String role);
 
-    List<DemandeConge> findByDemandeur_Role(String role);
+        List<DemandeConge> findByDemandeur_Role(String role);
 
-    @Query("SELECT d FROM DemandeConge d WHERE d.demandeur.role = :role")
-    Page<DemandeConge> findByDemandeurRole(@Param("role") String role, Pageable pageable);
+        @Query("SELECT d FROM DemandeConge d WHERE d.demandeur.role = :role")
+        Page<DemandeConge> findByDemandeurRole(@Param("role") String role, Pageable pageable);
 
-    @Query("SELECT d FROM DemandeConge d WHERE d.demandeur.role = :role AND d.statut IN :statuts")
-    Page<DemandeConge> findByDemandeurRoleAndStatutIn(@Param("role") String role,
-            @Param("statuts") List<StatutDemande> statuts, Pageable pageable);
-
+        Page<DemandeConge> findByDemandeurRoleAndStatutIn(
+                        String role,
+                        List<StatutDemande> statuts,
+                        Pageable pageable);
 }

@@ -264,20 +264,20 @@
         <div class="pagination" style="margin-top: 30px; text-align: center;">
             <ul style="list-style: none; display: inline-flex; gap: 8px; padding: 0;">
                 <li th:if="${currentPage > 0}">
-                    <a th:href="@{/responsable/historique-demandes-responsable(page=${currentPage - 1})}"
+                    <a th:href="@{/responsable/historique-demandes-personnel(page=${currentPage - 1})}"
                        style="padding: 6px 12px; border: 1px solid #0074C7; color: #0074C7; text-decoration: none; border-radius: 4px;">
                        Précédent
                     </a>
                 </li>
                 <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
-                    <a th:href="@{/responsable/historique-demandes-responsable(page=${i})}"
+                    <a th:href="@{/responsable/historique-demandes-personnel(page=${i})}"
                        th:text="${i + 1}"
                        th:classappend="${i == currentPage} ? ' active-page'"
                        style="padding: 6px 12px; border: 1px solid #0074C7; color: #0074C7; text-decoration: none; border-radius: 4px;">
                     </a>
                 </li>
                 <li th:if="${currentPage < totalPages - 1}">
-                    <a th:href="@{/responsable/historique-demandes-responsable(page=${currentPage + 1})}"
+                    <a th:href="@{/responsable/historique-demandes-personnel(page=${currentPage + 1})}"
                        style="padding: 6px 12px; border: 1px solid #0074C7; color: #0074C7; text-decoration: none; border-radius: 4px;">
                        Suivant
                     </a>
