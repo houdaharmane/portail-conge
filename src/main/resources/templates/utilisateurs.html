@@ -32,7 +32,7 @@
             color: var(--text-color);
         }
 
-        .sidebar {
+  .sidebar {
             width: 240px;
             background-color: var(--sidebar-bg);
             color: var(--link-color);
@@ -40,44 +40,52 @@
             flex-direction: column;
             justify-content: space-between;
             min-height: 100vh;
-            box-shadow: 2px 0 12px #e9953d22;
+            box-shadow: 2px 0 12px var(--card-shadow);
         }
-
         .sidebar-header {
-            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             padding: 32px 0 18px 0;
         }
-
         .sidebar-logo {
             width: 90px;
             height: 90px;
             border-radius: 50%;
-            object-fit: cover;
             background: #fff;
+            object-fit: cover;
             margin-bottom: 10px;
         }
-
-        .sidebar-link {
-            padding: 13px 30px;
+        .sidebar-menu {
             display: flex;
-            align-items: center;
-            color: var(--link-color);
-            text-decoration: none;
-            font-weight: 600;
+            flex-direction: column;
         }
+      .sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 20px;
+    text-decoration: none;
+    color: var(--link-color);
+    font-weight: 600;
+    font-size: 13px;
+}
+
 .sidebar-link i {
-    margin-right: 8px;
+    font-size: 20px;
+    min-width: 20px;
+}
+
+.sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
         .sidebar-link:hover, .sidebar-link.active {
-            background: #ffffff22;
+            background: rgba(255,255,255,0.15);
             border-left: 4px solid #fff;
         }
-
-        .sidebar-footer {
-            margin-bottom: 30px;
-        }
-
         .main-container {
             flex: 1;
             display: flex;

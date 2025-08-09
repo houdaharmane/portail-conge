@@ -4,6 +4,7 @@ import com.portailconge.portail_conge.model.DemandeConge;
 import com.portailconge.portail_conge.model.StatutDemande;
 import com.portailconge.portail_conge.model.Utilisateur;
 import com.portailconge.portail_conge.repository.UtilisateurRepository;
+import com.portailconge.portail_conge.service.DemandeService;
 import com.portailconge.portail_conge.repository.DemandeCongeRepository;
 import com.portailconge.portail_conge.repository.DepartementRepository;
 
@@ -21,6 +22,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 public class RhController {
+    @Autowired
+    private DemandeService demandeService;
     @Autowired
     private DemandeCongeRepository demandeCongeRepository;
 
@@ -333,9 +336,8 @@ public class RhController {
 
     @GetMapping("/rh/demandes-approuvees")
     public String demandesApprouvees(Model model) {
-        List<DemandeConge> demandes = demandeCongeRepository.findByStatut(StatutDemande.APPROUVEE);
+        List<DemandeConge> demandes = demandeService.getDemandesApprouveesParResponsable();
         model.addAttribute("demandesApprouvees", demandes);
-
         return "demandes-approuvees";
     }
 

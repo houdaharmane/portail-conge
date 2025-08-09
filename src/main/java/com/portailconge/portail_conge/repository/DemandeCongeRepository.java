@@ -66,4 +66,8 @@ public interface DemandeCongeRepository extends JpaRepository<DemandeConge, Long
                         String role,
                         List<StatutDemande> statuts,
                         Pageable pageable);
+
+        Page<DemandeConge> findByDemandeurAndStatutIn(Utilisateur demandeur, List<StatutDemande> statuts,
+                        Pageable pageable);
+
 }

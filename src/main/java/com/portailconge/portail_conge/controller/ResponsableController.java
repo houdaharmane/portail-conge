@@ -228,7 +228,6 @@ public class ResponsableController {
         }
     }
 
-    // Afficher historique des demandes faites par le responsable
     @GetMapping("/responsable/historique-demandes-responsable")
     public String afficherHistoriqueDemandesResponsable(
             HttpSession session,
@@ -246,11 +245,9 @@ public class ResponsableController {
         List<StatutDemande> statutsHistorique = List.of(
                 StatutDemande.APPROUVEE_RESP,
                 StatutDemande.REFUSEE_RESP,
-                StatutDemande.EN_ATTENTE
-        // ajoute d'autres statuts si besoin
-        );
+                StatutDemande.EN_ATTENTE);
 
-        Page<DemandeConge> demandesPage = demandeCongeRepository.findByDemandeurRoleAndStatutIn("RESPONSABLE",
+        Page<DemandeConge> demandesPage = demandeCongeRepository.findByDemandeurAndStatutIn(utilisateur,
                 statutsHistorique, pageable);
 
         formaterDatesDemandes(demandesPage);

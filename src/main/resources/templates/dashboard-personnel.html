@@ -38,10 +38,11 @@
             color: var(--text-color);
         }
 
+   
         .sidebar {
             width: 240px;
-            background-color: var(--sidebar-bg);
-            color: var(--link-color);
+            background-color: #0074C7;
+            color: #fff;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -73,6 +74,7 @@
             font-size: 22px;
             font-weight: 800;
             letter-spacing: 1px;
+            color: #fff;
         }
 
         .sidebar-menu {
@@ -81,12 +83,12 @@
             gap: 2px;
         }
 
-        .sidebar-link, .sidebar-link:hover, .sidebar-footer .sidebar-link {
+        .sidebar-link {
             display: flex;
             align-items: center;
             gap: 14px;
             text-decoration: none;
-            color: var(--link-color);
+            color: #fff;
             font-size: 16px;
             font-weight: 600;
             padding: 13px 30px;
@@ -107,6 +109,18 @@
 
         .sidebar-footer {
             margin-bottom: 30px;
+        }
+
+        .sidebar-footer .sidebar-link {
+            color: #fff;
+            opacity: 0.85;
+            border-left: 4px solid transparent;
+        }
+
+        .sidebar-footer .sidebar-link:hover {
+            opacity: 1;
+            border-left: 4px solid #fff;
+            background: #fff2;
         }
 
         .main-container {
