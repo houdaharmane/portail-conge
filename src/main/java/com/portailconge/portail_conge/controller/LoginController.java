@@ -79,4 +79,10 @@ public class LoginController {
         return "profil-personnel";
     }
 
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate(); // détruire la session utilisateur
+        return "redirect:/login?logout";
+    }
+
 }

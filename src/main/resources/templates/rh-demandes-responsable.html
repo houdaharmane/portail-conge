@@ -232,7 +232,7 @@ a.btn-danger:hover {
         <i class="fa fa-check-circle"></i> <span>Demandes Approuvées</span>
     </a>
 
-    <a th:href="@{/rh/historique}" th:classappend="${activePage == 'historique'} ? ' active'" class="sidebar-link">
+    <a th:href="@{/rh/historique-demandes}" th:classappend="${activePage == 'historique'} ? ' active'" class="sidebar-link">
         <i class="fa fa-history"></i> <span>Historique validations</span>
     </a>
     <a th:href="@{/conge/demande}" th:classappend="${activePage == 'demandeConge'} ? ' active'" class="sidebar-link">
@@ -241,7 +241,7 @@ a.btn-danger:hover {
 </nav>
     </div>
     <div class="sidebar-footer">
-        <a href="/login" class="sidebar-link"><i class="fa fa-sign-out-alt"></i> <span>Déconnexion</span></a>
+        <a href="/logout" class="sidebar-link"><i class="fa fa-sign-out-alt"></i> <span>Déconnexion</span></a>
     </div>
 </div>
 

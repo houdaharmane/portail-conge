@@ -167,15 +167,14 @@ public class RhController {
 
     @GetMapping("/rh/conge/demande")
     public String afficherFormulaireDemande(HttpSession session, Model model) {
-        Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
+        Utilisateur rhSession = (Utilisateur) session.getAttribute("utilisateur");
 
-        if (rh == null || !"RH".equals(rh.getRole())) {
+        if (rhSession == null || !"RH".equals(rhSession.getRole())) {
             return "redirect:/login";
         }
-        System.out.println("Utilisateur en session:");
-        System.out.println("Nom = " + rh.getNom());
-        System.out.println("Prénom = " + rh.getPrenom());
-        System.out.println("Matricule = " + rh.getMatricule());
+
+        Utilisateur rh = utilisateurRepository.findById(rhSession.getId())
+                .orElse(rhSession);
 
         model.addAttribute("rh", rh);
         model.addAttribute("activePage", "demandeConge");
@@ -257,7 +256,7 @@ public class RhController {
                 StatutDemande.REFUSEE);
 
         List<DemandeConge> demandesHistorique = demandeCongeRepository.findByStatutIn(statutsHistoriqueRh);
-
+        model.addAttribute("rh", rh);
         model.addAttribute("demandes", demandesHistorique);
         model.addAttribute("activePage", "historiqueDemandesRh");
 
@@ -339,6 +338,17 @@ public class RhController {
         List<DemandeConge> demandes = demandeService.getDemandesApprouveesParResponsable();
         model.addAttribute("demandesApprouvees", demandes);
         return "demandes-approuvees";
+    }
+
+    @GetMapping("/demande-conge")
+    public String demandeConge(Model model, HttpSession session) {
+        Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
+        System.out.println("Utilisateur en session dans /demande-conge : " + rh);
+        if (rh == null) {
+            return "redirect:/login";
+        }
+        model.addAttribute("rh", rh);
+        return "demande-conge";
     }
 
 }
