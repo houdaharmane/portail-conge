@@ -75,7 +75,6 @@ public class ResponsableController {
         return "redirect:/conges/confirmation";
     }
 
-    // Afficher demandes en attente pour responsable (statut EN_ATTENTE)
     @GetMapping("/demandes-a-traiter")
     public String afficherDemandesATraiter(HttpSession session, Model model) {
         Utilisateur responsable = (Utilisateur) session.getAttribute("utilisateur");
@@ -84,7 +83,9 @@ public class ResponsableController {
         }
 
         Departement departement = responsable.getDepartement();
-        List<DemandeConge> demandes = demandeCongeRepository.findDemandesEnAttenteByDepartement(
+
+        // Récupère uniquement les demandes EN_ATTENTE des personnels de ce département
+        List<DemandeConge> demandes = demandeCongeRepository.findDemandesEnAttentePersonnelByDepartement(
                 departement, StatutDemande.EN_ATTENTE);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -99,6 +100,7 @@ public class ResponsableController {
 
         model.addAttribute("demandes", demandes);
         model.addAttribute("activePage", "demandesATraiter");
+
         return "demandesATraiter";
     }
 

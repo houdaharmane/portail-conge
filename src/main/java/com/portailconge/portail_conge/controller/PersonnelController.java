@@ -6,36 +6,47 @@ import com.portailconge.portail_conge.model.Personnel;
 import com.portailconge.portail_conge.model.StatutDemande;
 import com.portailconge.portail_conge.model.Utilisateur;
 import com.portailconge.portail_conge.repository.DepartementRepository;
+import com.portailconge.portail_conge.repository.DemandeCongeRepository;
+import com.portailconge.portail_conge.repository.UtilisateurRepository;
 import com.portailconge.portail_conge.service.AuthService;
+import com.portailconge.portail_conge.service.UtilisateurService;
+import com.portailconge.portail_conge.service.CongeAdministratifService;
 
 import jakarta.servlet.http.HttpSession;
-import com.portailconge.portail_conge.repository.DemandeCongeRepository;
 
 import java.io.IOException;
 import java.time.LocalDate;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import com.portailconge.portail_conge.service.UtilisateurService;
-import org.springframework.http.HttpHeaders;
 
 @Controller
 @RequestMapping("/personnel")
 public class PersonnelController {
+
     @Autowired
     private DemandeCongeRepository demandeCongeRepository;
+
     @Autowired
     private UtilisateurService utilisateurService;
+
+    @Autowired
+    private UtilisateurRepository utilisateurRepository;
+
     @Autowired
     private DepartementRepository departementRepository;
 
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private CongeAdministratifService congeService;
 
     @GetMapping("/ajouter")
     public String afficherFormulaireAjout(Model model, HttpSession session) {
@@ -46,7 +57,6 @@ public class PersonnelController {
 
         model.addAttribute("rh", rh);
         model.addAttribute("departements", departementRepository.findAll());
-
         model.addAttribute("personnel", new Personnel());
 
         return "ajouter-personnel";
@@ -73,7 +83,6 @@ public class PersonnelController {
         }
 
         try {
-            // Créer l'utilisateur
             Utilisateur utilisateur = new Utilisateur();
             utilisateur.setMatricule(matricule);
             utilisateur.setNom(nom);
@@ -90,7 +99,6 @@ public class PersonnelController {
             utilisateur.setMotDePasse(motDePasse);
             utilisateur.setSoldeConge(soldeConge);
 
-            // Créer le personnel
             Personnel personnel = new Personnel();
             personnel.setNom(nom);
             personnel.setPrenom(prenom);
@@ -98,10 +106,8 @@ public class PersonnelController {
             personnel.setTelephone(telephone);
             personnel.setEmail(email);
             personnel.setCin(cin);
-
             personnel.setDepartementId(departement);
-
-            personnel.setUtilisateur(utilisateur); // liaison
+            personnel.setUtilisateur(utilisateur);
 
             authService.creerUtilisateurEtPersonnel(utilisateur, personnel);
 
@@ -112,29 +118,45 @@ public class PersonnelController {
         }
 
         return "redirect:/personnel/ajouter";
-
     }
 
-    // Interface personnel : tableau de bord
     @GetMapping("/dashboard")
-    public String showDashboard(Model model) {
+    public String showDashboard(Model model, HttpSession session) {
+        Utilisateur utilisateurSession = (Utilisateur) session.getAttribute("utilisateur");
+        if (utilisateurSession == null) {
+            return "redirect:/login";
+        }
+
+        Utilisateur utilisateur = utilisateurRepository.findById(utilisateurSession.getId())
+                .orElse(null);
+        if (utilisateur == null) {
+            return "redirect:/login";
+        }
+
+        int annee = LocalDate.now().getYear();
+        int congesAnnuels = 30; // Toujours 30
+
+        // Congés consommés confirmés cette année
+        int congesConsommes = congeService.calculerJoursPrisConfirmes(utilisateur, annee);
+
+        // Solde total disponible cumulatif (en tenant compte du report)
+        int soldeTotal = congeService.calculerSoldeTotalDisponible(utilisateur, annee);
+
+        model.addAttribute("congesAnnuels", congesAnnuels);
+        model.addAttribute("congesConsommes", congesConsommes);
+        model.addAttribute("soldeTotal", soldeTotal);
+
         model.addAttribute("activePage", "dashboard");
         return "dashboard-personnel";
     }
 
-    // Interface personnel : profil
     @GetMapping("/profil-personnel")
     public String showProfil(HttpSession session, Model model) {
         Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
-        System.out.println("Session utilisateur : " + utilisateur);
-
         if (utilisateur == null) {
-            System.out.println("Utilisateur null, redirection vers login");
-
             return "redirect:/login";
         }
         model.addAttribute("activePage", "profil");
-
         session.setAttribute("utilisateur", utilisateur);
         model.addAttribute("utilisateur", utilisateur);
         model.addAttribute("personnelrole", utilisateur.getRole());
@@ -177,7 +199,6 @@ public class PersonnelController {
 
         utilisateurService.save(utilisateur);
         session.setAttribute("utilisateur", utilisateur);
-
         model.addAttribute("utilisateur", utilisateur);
         model.addAttribute("successMessage", "Profil modifié avec succès !");
         return "profil-personnel";
@@ -190,11 +211,9 @@ public class PersonnelController {
         if (utilisateur == null || utilisateur.getPhoto() == null) {
             return ResponseEntity.notFound().build();
         }
-        byte[] image = utilisateur.getPhoto();
-
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_TYPE, "image/jpeg")
-                .body(image);
+                .body(utilisateur.getPhoto());
     }
 
     @GetMapping("/demande-conge-personnel")
@@ -227,10 +246,23 @@ public class PersonnelController {
         demandeConge.setDateSoumission(LocalDate.now());
         demandeCongeRepository.save(demandeConge);
 
-        String dashboardUrl = "/personnel/dashboard";
-        model.addAttribute("dashboardUrl", dashboardUrl);
-
+        model.addAttribute("dashboardUrl", "/personnel/dashboard");
         return "ConfirmationDemande";
+    }
+
+    @GetMapping("/solde-conge")
+    public ResponseEntity<Integer> getSoldeConge(@RequestParam Long utilisateurId) {
+        Integer id = Math.toIntExact(utilisateurId);
+
+        Utilisateur utilisateur = utilisateurRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+
+        int annee = LocalDate.now().getYear();
+
+        // Utilise la méthode cumulée ici
+        int solde = congeService.calculerSoldeTotalDisponible(utilisateur, annee);
+
+        return ResponseEntity.ok(solde);
     }
 
 }
