@@ -249,13 +249,12 @@ public class RhController {
             return "redirect:/login";
         }
 
-        // Statuts pertinents pour RH (par exemple, toutes les demandes
-        // approuvées/refusées par RH)
         List<StatutDemande> statutsHistoriqueRh = List.of(
                 StatutDemande.APPROUVEE_RH,
                 StatutDemande.REFUSEE);
 
         List<DemandeConge> demandesHistorique = demandeCongeRepository.findByStatutIn(statutsHistoriqueRh);
+
         model.addAttribute("rh", rh);
         model.addAttribute("demandes", demandesHistorique);
         model.addAttribute("activePage", "historiqueDemandesRh");
@@ -291,7 +290,7 @@ public class RhController {
         Utilisateur utilisateur = utilisateurRepository.findById(id).orElse(null);
 
         model.addAttribute("utilisateurs", utilisateurs);
-        model.addAttribute("utilisateur", utilisateur); // formulaire prérempli
+        model.addAttribute("utilisateur", utilisateur);
         model.addAttribute("rh", rh);
         model.addAttribute("activePage", "utilisateurs");
 
@@ -328,7 +327,7 @@ public class RhController {
 
     @GetMapping("/rh/demandes-responsable")
     public String demandesResponsable(Model model) {
-        List<DemandeConge> demandes = demandeCongeRepository.findByDemandeurRole("RESPONSABLE");
+        List<DemandeConge> demandes = demandeCongeRepository.findByStatut(StatutDemande.EN_ATTENTE); // traitées
         model.addAttribute("demandesResponsable", demandes);
         return "rh-demandes-responsable";
     }
@@ -349,6 +348,34 @@ public class RhController {
         }
         model.addAttribute("rh", rh);
         return "demande-conge";
+    }
+
+    @GetMapping("/rh/accepter/{id}")
+    public String accepterDemande(@PathVariable Long id, HttpSession session) {
+        Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
+        if (rh == null || !"RH".equals(rh.getRole())) {
+            return "redirect:/login";
+        }
+
+        demandeCongeRepository.findById(id).ifPresent(demande -> {
+            demande.setStatut(StatutDemande.EN_ATTENTE_DIRECTEUR);
+            demandeCongeRepository.save(demande);
+        });
+
+        return "redirect:/rh/demandes-responsable";
+    }
+
+    @GetMapping("/rh/historique-validations")
+    public String historiqueValidations(Model model, HttpSession session) {
+        Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
+        if (rh == null || !"RH".equals(rh.getRole())) {
+            return "redirect:/login";
+        }
+
+        List<DemandeConge> demandesHistorique = demandeCongeRepository.findByStatut(StatutDemande.EN_ATTENTE_DIRECTEUR);
+        model.addAttribute("demandesHistorique", demandesHistorique);
+
+        return "historique-validations-rh";
     }
 
 }

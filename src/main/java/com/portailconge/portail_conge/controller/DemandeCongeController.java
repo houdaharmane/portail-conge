@@ -81,7 +81,7 @@ public class DemandeCongeController {
         if ("RESPONSABLE".equalsIgnoreCase(role)) {
             demande.setStatut(StatutDemande.EN_ATTENTE_RH);
         } else {
-            demande.setStatut(StatutDemande.EN_ATTENTE);
+            demande.setStatut(StatutDemande.EN_ATTENTE_RESPONSABLE);
         }
 
         demandeCongeRepository.save(demande);

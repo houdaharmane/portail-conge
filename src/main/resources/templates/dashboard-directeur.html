@@ -236,20 +236,24 @@
         <div class="sidebar-header">
             <img src="/img/modepbg.png" alt="Logo MODEP" class="sidebar-logo">
         </div>
-        <nav>
-            <a th:href="@{/dashboard-directeur}" th:classappend="${activePage == 'dashboard'} ? ' active'" class="sidebar-link">
-                <i class="fa fa-home"></i> <span>Tableau de bord</span>
-            </a>
-            <a th:href="@{/directeur/demandes-finales}" th:classappend="${activePage == 'validationFinale'} ? ' active'" class="sidebar-link">
-                <i class="fa fa-check-double"></i> <span>Demandes à valider</span>
-            </a>
-            <a th:href="@{/directeur/statistiques}" th:classappend="${activePage == 'statistiques'} ? ' active'" class="sidebar-link">
-                <i class="fa fa-chart-line"></i> <span>Statistiques</span>
-            </a>
-            <a th:href="@{/directeur/historique}" th:classappend="${activePage == 'historique'} ? ' active'" class="sidebar-link">
-                <i class="fa fa-history"></i> <span>Historique</span>
-            </a>
-        </nav>
+<nav>
+    <a th:href="@{/dashboard-directeur}" th:classappend="${activePage == 'dashboard'} ? ' active'" class="sidebar-link">
+        <i class="fa fa-home"></i> <span>Tableau de bord</span>
+    </a>
+    <a th:href="@{/demandes-finales}" th:classappend="${activePage == 'validationFinale'} ? ' active'" class="sidebar-link">
+        <i class="fa fa-check-double"></i> <span>Demandes à valider</span>
+    </a>
+    <a th:href="@{/directeur/statistiques}" th:classappend="${activePage == 'statistiques'} ? ' active'" class="sidebar-link">
+        <i class="fa fa-chart-line"></i> <span>Statistiques</span>
+    </a>
+    <a th:href="@{/directeur/historique}" th:classappend="${activePage == 'historique'} ? ' active'" class="sidebar-link">
+        <i class="fa fa-history"></i> <span>Historique</span>
+    </a>
+    <a th:href="@{/directeur/demande-conge}" th:classappend="${activePage == 'demandeConge'} ? ' active'" class="sidebar-link">
+        <i class="fa fa-plane-departure"></i> <span>Demande de congé</span>
+    </a>
+</nav>
+
     </div>
     <div class="sidebar-footer">
         <a href="/logout" class="sidebar-link"><i class="fa fa-sign-out-alt"></i> <span>Déconnexion</span></a>

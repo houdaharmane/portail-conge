@@ -187,6 +187,33 @@
             background: #6c757d;
             color: #fff;
         }
+     .pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    gap: 5px;
+}
+
+.pagination button {
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    background-color: white;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s ease;
+    margin-top: -20px;
+}
+
+.pagination button.active {
+    background-color: #0074C7;
+    color: white;
+    border-color: #0074C7;
+}
+
+.pagination button:hover {
+    background-color: #eee;
+}
+
     </style>
 </head>
 <body>
@@ -235,6 +262,8 @@
             </div>
         </div>
     </div>
+    <div class="pagination" id="pagination"></div>
+
 </div>
 
 <!-- Modal -->
@@ -303,6 +332,67 @@
             closeModal();
         }
     });
+    const cards = Array.from(document.querySelectorAll(".card"));
+const cardsPerPage = 9;
+let currentPage = 1;
+
+function showPage(page) {
+    const start = (page - 1) * cardsPerPage;
+    const end = start + cardsPerPage;
+
+    cards.forEach((card, index) => {
+        card.style.display = (index >= start && index < end) ? "block" : "none";
+    });
+
+    renderPagination();
+}
+
+function renderPagination() {
+    const pagination = document.getElementById("pagination");
+    pagination.innerHTML = "";
+
+    const pageCount = Math.ceil(cards.length / cardsPerPage);
+
+    // Bouton "Précédent"
+    const prevBtn = document.createElement("button");
+    prevBtn.textContent = "«";
+    prevBtn.disabled = currentPage === 1;
+    prevBtn.addEventListener("click", () => {
+        if (currentPage > 1) {
+            currentPage--;
+            showPage(currentPage);
+        }
+    });
+    pagination.appendChild(prevBtn);
+
+    // Boutons numérotés
+    for (let i = 1; i <= pageCount; i++) {
+        const btn = document.createElement("button");
+        btn.textContent = i;
+        if (i === currentPage) btn.classList.add("active");
+        btn.addEventListener("click", () => {
+            currentPage = i;
+            showPage(currentPage);
+        });
+        pagination.appendChild(btn);
+    }
+
+    // Bouton "Suivant"
+    const nextBtn = document.createElement("button");
+    nextBtn.textContent = "»";
+    nextBtn.disabled = currentPage === pageCount;
+    nextBtn.addEventListener("click", () => {
+        if (currentPage < pageCount) {
+            currentPage++;
+            showPage(currentPage);
+        }
+    });
+    pagination.appendChild(nextBtn);
+}
+
+// Affichage initial
+showPage(currentPage);
+
 </script>
 
 </body>

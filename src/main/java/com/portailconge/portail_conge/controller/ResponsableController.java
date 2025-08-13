@@ -86,7 +86,7 @@ public class ResponsableController {
 
         // Récupère uniquement les demandes EN_ATTENTE des personnels de ce département
         List<DemandeConge> demandes = demandeCongeRepository.findDemandesEnAttentePersonnelByDepartement(
-                departement, StatutDemande.EN_ATTENTE);
+                departement, StatutDemande.EN_ATTENTE_RESPONSABLE);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         for (DemandeConge demande : demandes) {
@@ -244,10 +244,18 @@ public class ResponsableController {
         int pageSize = 3;
         Pageable pageable = PageRequest.of(page, pageSize);
 
+        // Inclure tous les statuts que tu veux voir dans l’historique
         List<StatutDemande> statutsHistorique = List.of(
+                StatutDemande.EN_ATTENTE,
+                StatutDemande.EN_ATTENTE_RESPONSABLE,
                 StatutDemande.APPROUVEE_RESP,
                 StatutDemande.REFUSEE_RESP,
-                StatutDemande.EN_ATTENTE);
+                StatutDemande.EN_ATTENTE_RH,
+                StatutDemande.APPROUVEE_RH,
+                StatutDemande.REFUSEE_RH,
+                StatutDemande.EN_ATTENTE_DIRECTEUR,
+                StatutDemande.APPROUVEE_DIRECTEUR,
+                StatutDemande.REFUSEE_DIRECTEUR);
 
         Page<DemandeConge> demandesPage = demandeCongeRepository.findByDemandeurAndStatutIn(utilisateur,
                 statutsHistorique, pageable);

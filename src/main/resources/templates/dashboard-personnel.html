@@ -412,30 +412,27 @@
 </div>
 
 <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+
 <script>
     const themeToggleBtn = document.getElementById('theme-toggle');
+
+    // Vérifier au chargement si un thème est déjà sauvegardé
+    if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark-theme');
+    }
+
     themeToggleBtn.addEventListener('click', () => {
         document.body.classList.toggle('dark-theme');
-    });
 
-    var swiper = new Swiper(".blog-slider", {
-        effect: "coverflow",
-        grabCursor: true,
-        centeredSlides: true,
-        slidesPerView: "auto",
-        loop: true,
-        coverflowEffect: {
-            rotate: 0,
-            stretch: 0,
-            depth: 100,
-            modifier: 2.5,
-        },
-        pagination: {
-            el: ".blog-slider__pagination",
-            clickable: true,
-        },
+        // Sauvegarder l'état du thème
+        if (document.body.classList.contains('dark-theme')) {
+            localStorage.setItem('theme', 'dark');
+        } else {
+            localStorage.setItem('theme', 'light');
+        }
     });
 </script>
+
 
 </body>
 </html>

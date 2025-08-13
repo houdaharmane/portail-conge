@@ -237,7 +237,7 @@
     <div class="header">
         <a th:href="@{/profil}">
             <i class="fa fa-user-circle fa-lg"></i>
-            <span th:text="${rh.role}">RH</span>
+<span th:text="${rh != null} ? ${rh.role} : 'Invité'">RH</span>
         </a>
         <button id="theme-toggle" class="theme-toggle-btn" title="Changer de thème">
             <i class="fa fa-moon"></i>

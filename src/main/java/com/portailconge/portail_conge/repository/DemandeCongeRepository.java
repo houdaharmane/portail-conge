@@ -78,4 +78,8 @@ public interface DemandeCongeRepository extends JpaRepository<DemandeConge, Long
         List<DemandeConge> findDemandesEnAttenteResponsableByDepartement(@Param("departement") Departement departement,
                         @Param("statut") StatutDemande statut);
 
+        List<DemandeConge> findByDemandeurRoleAndStatut(String role, StatutDemande statut);
+
+        List<DemandeConge> findByDemandeurRoleAndStatutIn(String role, List<StatutDemande> statuts);
+
 }

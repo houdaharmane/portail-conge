@@ -242,7 +242,7 @@ public class PersonnelController {
         }
 
         demandeConge.setDemandeur(personnel);
-        demandeConge.setStatut(StatutDemande.EN_ATTENTE);
+        demandeConge.setStatut(StatutDemande.EN_ATTENTE_RESPONSABLE);
         demandeConge.setDateSoumission(LocalDate.now());
         demandeCongeRepository.save(demandeConge);
 

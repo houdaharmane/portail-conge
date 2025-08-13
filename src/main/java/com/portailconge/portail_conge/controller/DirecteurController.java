@@ -1,10 +1,14 @@
 package com.portailconge.portail_conge.controller;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
+import com.portailconge.portail_conge.model.DemandeConge;
+import com.portailconge.portail_conge.model.StatutDemande;
 import com.portailconge.portail_conge.model.Utilisateur;
 import com.portailconge.portail_conge.repository.DepartementRepository;
+import com.portailconge.portail_conge.repository.DemandeCongeRepository;
 import com.portailconge.portail_conge.repository.UtilisateurRepository;
 
 import jakarta.servlet.http.HttpSession;
@@ -23,6 +27,9 @@ public class DirecteurController {
 
     @Autowired
     private DepartementRepository departementRepository;
+
+    @Autowired
+    private DemandeCongeRepository demandeCongeRepository;
 
     @GetMapping("/dashboard-directeur")
     public String dashboardDirecteur(HttpSession session, Model model) {
@@ -58,14 +65,14 @@ public class DirecteurController {
             @RequestParam(name = "confirm_password", required = false) String confirmPassword,
             HttpSession session,
             Model model) throws IOException {
-        System.out.println("Reception formulaire: nom=" + directeur.getNom() + ", prenom=" + directeur.getPrenom());
 
-        Integer utilisateurId = (Integer) session.getAttribute("utilisateurConnecteId");
+        Long utilisateurId = (Long) session.getAttribute("utilisateurConnecteId");
         if (utilisateurId == null) {
             return "redirect:/login";
         }
 
-        Optional<Utilisateur> optUser = utilisateurRepository.findById(utilisateurId);
+        Integer utilisateurIdInt = utilisateurId.intValue();
+        Optional<Utilisateur> optUser = utilisateurRepository.findById(utilisateurIdInt);
         if (optUser.isEmpty()) {
             return "redirect:/login";
         }
@@ -108,4 +115,47 @@ public class DirecteurController {
 
         return "redirect:/profil-directeur";
     }
+
+    @GetMapping("/demandes-finales")
+    public String afficherDemandesFinales(Model model, HttpSession session) {
+        Utilisateur directeur = (Utilisateur) session.getAttribute("utilisateur");
+        if (directeur == null || !"DIRECTEUR".equals(directeur.getRole())) {
+            return "redirect:/login";
+        }
+        List<DemandeConge> demandes = demandeCongeRepository.findByStatut(StatutDemande.EN_ATTENTE_DIRECTEUR);
+        model.addAttribute("demandesFinales", demandes);
+        return "demandes-finales";
+    }
+
+    @GetMapping("/directeur/accepter/{id}")
+    public String accepterParDirecteur(@PathVariable Long id, HttpSession session, Model model) {
+        Utilisateur directeur = (Utilisateur) session.getAttribute("utilisateur");
+        if (directeur == null || !"DIRECTEUR".equals(directeur.getRole())) {
+            return "redirect:/login";
+        }
+
+        demandeCongeRepository.findById(id).ifPresent(demande -> {
+            demande.setStatut(StatutDemande.APPROUVEE);
+            demandeCongeRepository.save(demande);
+        });
+
+        model.addAttribute("directeur", directeur);
+        model.addAttribute("demandesFinales", demandeCongeRepository.findAll());
+        return "demandes-finales";
+    }
+
+    @GetMapping("/directeur/demande-conge")
+    public String afficherFormulaireDemandeConge(Model model) {
+        model.addAttribute("activePage", "demandeConge");
+        model.addAttribute("demandeConge", new DemandeConge());
+        return "demande-conge-directeur";
+    }
+
+    @PostMapping("/directeur/demande-conge")
+    public String soumettreDemandeConge(@ModelAttribute DemandeConge demandeConge) {
+        demandeConge.setStatut(StatutDemande.EN_ATTENTE_RH);
+        demandeCongeRepository.save(demandeConge);
+        return "redirect:/dashboard-directeur";
+    }
+
 }

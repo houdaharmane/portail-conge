@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Demandes Finales - Directeur</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/fontawesome.min.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+:root {
+    --bg-color: #f6f6f6;
+    --text-color: #000;
+    --sidebar-bg: #0074C7;
+    --link-color: #fff;
+    --primary-color: #0074C7;
+}
+.dark-theme {
+    --bg-color: #1e1e1e;
+    --text-color: #f0f0f0;
+}
+
+body {
+    margin: 0;
+    display: flex;
+    height: 100vh;
+    background-color: var(--bg-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: 240px;
+    background-color: var(--sidebar-bg);
+    color: var(--link-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: stretch;
+    min-height: 100vh;
+    box-shadow: 2px 0 12px #e9953d22;
+    padding: 0;
+}
+.sidebar-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 0 18px 0;
+}
+.sidebar-logo {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #fff;
+    box-shadow: 0 2px 8px #fff2;
+    margin-bottom: 10px;
+}
+.sidebar-title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+.sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.sidebar-link, .sidebar-link:hover, .sidebar-footer .sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-decoration: none;
+    color: var(--link-color);
+    font-size: 16px;
+    font-weight: 600;
+    padding: 13px 30px;
+    border-left: 4px solid transparent;
+    transition: background 0.18s, border-left-color 0.18s;
+}
+.sidebar-link i {
+    font-size: 20px;
+    min-width: 20px;
+}
+.sidebar-link:hover, .sidebar-link.active {
+    background: #fff2;
+    color: #fff;
+    border-left: 4px solid #fff;
+}
+.sidebar-footer {
+    margin-bottom: 30px;
+}
+
+/* HEADER */
+.header {
+    height: 80px;
+    background-color: var(--bg-color);
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 0 40px 15px 40px;
+    border-bottom: 1px solid #ccc;
+    font-size: 18px;
+}
+.header a {
+    text-decoration: none;
+    color: var(--primary-color);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.header a i {
+    margin-right: 5px;
+    font-size: 24px;
+}
+.theme-toggle-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 24px;
+    color: var(--primary-color);
+}
+.dark-theme .theme-toggle-btn {
+    color: var(--text-color);
+}
+
+/* CONTENU PRINCIPAL */
+.main-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    overflow-y: auto;
+}
+.card {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    background: white;
+}
+
+/* CONTENU BLANC */
+.content-wrapper {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    margin-top: 50px;
+}
+
+/* FILTRE */
+.filter-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #fff;
+    padding: 12px 16px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+}
+.filter-container label {
+    font-weight: 600;
+    color: var(--primary-color);
+    font-size: 15px;
+    margin: 0;
+}
+.filter-container select {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    background-color: #f9f9f9;
+    transition: all 0.2s ease-in-out;
+}
+.filter-container select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 4px rgba(0, 116, 199, 0.4);
+}
+.dark-theme .filter-container {
+    background: #2a2a2a;
+    box-shadow: 0 2px 6px rgba(255,255,255,0.05);
+}
+.dark-theme .filter-container label {
+    color: var(--text-color);
+}
+.dark-theme .filter-container select {
+    background-color: #3a3a3a;
+    border-color: #555;
+    color: var(--text-color);
+}
+
+/* TABLEAU MODERNE */
+.table-responsive {
+    margin-top: 20px;
+}
+.table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+    font-size: 15px;
+}
+.table thead {
+    background-color: #7749F8;
+    color: white;
+    border-radius: 12px 12px 0 0;
+}
+.table th, .table td {
+    padding: 12px 20px;
+    text-align: left;
+    vertical-align: middle;
+}
+.table tbody tr {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.table tbody tr:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+/* BADGES */
+.badge-pending {
+    background-color: #ffc107;
+    color: #212529;
+    border-radius: 12px;
+    padding: 4px 10px;
+    font-size: 13px;
+    font-weight: 600;
+}
+.badge-approved {
+    background-color: #28a745;
+    color: #fff;
+    border-radius: 12px;
+    padding: 4px 10px;
+    font-size: 13px;
+    font-weight: 600;
+}
+.badge-rejected {
+    background-color: #dc3545;
+    color: #fff;
+    border-radius: 12px;
+    padding: 4px 10px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* BOUTONS ACTION */
+.btn-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    padding: 5px 12px;
+    border-radius: 6px;
+    transition: background 0.2s, transform 0.2s;
+}
+.btn-action:hover {
+    transform: translateY(-2px);
+}
+
+/* MODE SOMBRE */
+.dark-theme .content-wrapper {
+    background: #2a2a2a;
+    color: var(--text-color);
+}
+.dark-theme .table {
+    color: var(--text-color);
+}
+.dark-theme .table thead {
+    background-color: #444 !important;
+}
+.dark-theme .table tbody tr {
+    background-color: #333;
+}
+.dark-theme .table tbody tr:nth-child(even) {
+    background-color: #3a3a3a;
+}
+.dark-theme .table th, 
+.dark-theme .table td {
+    border-color: #555 !important;
+}
+.dark-theme .badge-pending { background-color: #d4a017; color: #fff; }
+.dark-theme .badge-approved { background-color: #28a745; color: #fff; }
+.dark-theme .badge-rejected { background-color: #dc3545; color: #fff; }
+
+
+    </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <div>
+        <div class="sidebar-header">
+            <img src="/img/modepbg.png" alt="Logo MODEP" class="sidebar-logo">
+        </div>
+        <nav>
+            <a th:href="@{/dashboard-directeur}" class="sidebar-link active">
+                <i class="fa fa-home"></i> Tableau de bord
+            </a>
+            <a th:href="@{/demandes-finales}" class="sidebar-link">
+                <i class="fa fa-check-double"></i> Demandes à valider
+            </a>
+            <a th:href="@{/directeur/statistiques}" class="sidebar-link">
+                <i class="fa fa-chart-line"></i> Statistiques
+            </a>
+            <a th:href="@{/directeur/historique}" class="sidebar-link">
+                <i class="fa fa-history"></i> Historique
+            </a>
+        </nav>
+    </div>
+    <div class="sidebar-footer">
+        <a href="/logout" class="sidebar-link">
+            <i class="fa fa-sign-out-alt"></i> Déconnexion
+        </a>
+    </div>
+</div>
+
+<!-- CONTENU PRINCIPAL -->
+<div class="main-container">
+    <!-- HEADER -->
+    <div class="header">
+        <a th:href="@{/profil-directeur}">
+            <i class="fa fa-user-circle"></i>
+            <span>Directeur</span>
+        </a>
+        <button id="theme-toggle" class="theme-toggle-btn" title="Activer/désactiver mode sombre">
+            <i class="fa fa-moon"></i>
+        </button>
+    </div>
+
+    <!-- FILTRE -->
+  <!-- CONTENU BLANC -->
+<div class="content-wrapper">
+    <!-- FILTRE -->
+<div class="filter-container">
+
+            <label for="filter-demandeur" class="mb-0">Filtrer par type :</label>
+            <select id="filter-demandeur" class="form-select w-auto">
+                <option value="ALL" selected>Tous</option>
+                <option value="RESPONSABLE">Responsable</option>
+                <option value="PERSONNEL">Personnel</option>
+            </select>
+        </div>
+
+        <!-- Tableau -->
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Employé</th>
+                    <th>Date début</th>
+                    <th>Date fin</th>
+                    <th>Statut</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="demande : ${demandesFinales}" 
+                    th:attr="data-type=${demande.demandeur != null ? demande.demandeur.role : 'UNKNOWN'}">
+                    <td th:text="${demande.id}"></td>
+                    <td th:text="${demande.demandeur != null ? demande.demandeur.nom + ' ' + demande.demandeur.prenom : 'Utilisateur inconnu'}"></td>
+                    <td th:text="${#temporals.format(demande.dateDebut, 'dd/MM/yyyy')}"></td>
+                    <td th:text="${#temporals.format(demande.dateFin, 'dd/MM/yyyy')}"></td>
+                    <td>
+                        <span th:classappend="
+                            ${demande.statut.name() == 'EN_ATTENTE'} ? 'badge badge-pending' :
+                            (${demande.statut.name() == 'APPROUVEE'} ? 'badge badge-approved' : 'badge badge-rejected')
+                        " th:text="${demande.statut}">
+                        </span>
+                    </td>
+                    <td>
+                        <a th:href="@{'/directeur/accepter/' + ${demande.id}}" 
+                           class="btn btn-success btn-sm btn-action"
+                           onclick="return confirm('Confirmez-vous l\'approbation de cette demande ?');">
+                            <i class="fas fa-check"></i> Accepter
+                        </a>
+                        <a th:href="@{'/directeur/refuser/' + ${demande.id}}" 
+                           class="btn btn-danger btn-sm btn-action"
+                           onclick="return confirm('Confirmez-vous le refus de cette demande ?');">
+                            <i class="fas fa-times"></i> Refuser
+                        </a>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(demandesFinales)}">
+                    <td colspan="6" class="text-center text-muted py-4">
+                        <i class="fas fa-info-circle"></i> Aucune demande en attente
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Toggle mode sombre
+    const toggleBtn = document.getElementById('theme-toggle');
+    const body = document.body;
+    if(localStorage.getItem('theme') === 'dark') {
+        body.classList.add('dark-theme');
+        toggleBtn.innerHTML = '<i class="fa fa-sun"></i>';
+    }
+    toggleBtn.addEventListener('click', () => {
+        body.classList.toggle('dark-theme');
+        const isDark = body.classList.contains('dark-theme');
+        toggleBtn.innerHTML = isDark ? '<i class="fa fa-sun"></i>' : '<i class="fa fa-moon"></i>';
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    });
+
+    // Filtre par type de demandeur
+    const filterSelect = document.getElementById('filter-demandeur');
+    const tableRows = document.querySelectorAll('table tbody tr');
+
+    filterSelect.addEventListener('change', () => {
+        const filterValue = filterSelect.value;
+        tableRows.forEach(row => {
+            const type = row.getAttribute('data-type');
+            if(filterValue === 'ALL' || type === filterValue) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+});
+</script>
+</body>
+</html>

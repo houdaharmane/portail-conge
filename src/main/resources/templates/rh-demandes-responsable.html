@@ -277,7 +277,7 @@ a.btn-danger:hover {
                     <td th:text="${#temporals.format(demande.dateDebut, 'dd/MM/yyyy')}"></td>
                     <td th:text="${#temporals.format(demande.dateFin, 'dd/MM/yyyy')}"></td>
                     <td>
-                        <a th:href="@{/rh/accepter/{id}(id=${demande.id})}" class="btn btn-success">Accepter</a>
+<a th:href="@{/rh/accepter/{id}(id=${demande.id})}" class="btn btn-success">Accepter</a>
                         <a th:href="@{/rh/refuser/{id}(id=${demande.id})}" class="btn btn-danger">Refuser</a>
                     </td>
                 </tr>
