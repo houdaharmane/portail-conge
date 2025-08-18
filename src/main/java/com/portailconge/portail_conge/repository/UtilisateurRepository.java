@@ -11,4 +11,5 @@ public interface UtilisateurRepository extends JpaRepository<Utilisateur, Intege
     int countByRole(String role);
 
     Utilisateur findByMatricule(String matricule);
+
 }

@@ -6,6 +6,7 @@ import com.portailconge.portail_conge.model.StatutDemande;
 import com.portailconge.portail_conge.model.Utilisateur;
 import com.portailconge.portail_conge.repository.CongeAdministratifRepository;
 import com.portailconge.portail_conge.repository.DemandeCongeRepository;
+import com.portailconge.portail_conge.repository.UtilisateurRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,33 +19,45 @@ import java.time.temporal.ChronoUnit;
 @Controller
 @RequestMapping("/conge")
 public class CongeController {
+
+    @Autowired
+    private UtilisateurRepository utilisateurRepository;
+
     @Autowired
     private CongeAdministratifRepository congeAdministratifRepository;
+
     @Autowired
     private DemandeCongeRepository demandeCongeRepository;
 
+    /**
+     * Affichage du formulaire de demande de congé (RH connecté)
+     */
     @GetMapping("/demande")
     public String afficherFormulaireDemandeConge(Model model) {
         model.addAttribute("activePage", "demandeConge");
 
-        // Exemple statique pour test
-        Utilisateur rh = new Utilisateur();
-        rh.setRole("RH");
+        // Utilisateur fictif pour test
+        Utilisateur rh = utilisateurRepository.findById(1).orElse(null);
         model.addAttribute("rh", rh);
 
         return "demande-conge";
     }
 
+    /**
+     * Étape suivante : réception des dates choisies
+     */
     @PostMapping("/etape-suivante")
     public String traiterDemandeConge(@RequestParam("dateDebut") String dateDebut,
             @RequestParam("dateFin") String dateFin,
             Model model) {
         model.addAttribute("dateDebut", dateDebut);
         model.addAttribute("dateFin", dateFin);
-
         return "details-demande";
     }
 
+    /**
+     * Historique des demandes pour les responsables
+     */
     @GetMapping("/historique-responsable")
     public String afficherDemandesResponsable(Model model) {
         List<DemandeConge> demandes = demandeCongeRepository.findByDemandeurRole("RESPONSABLE");
@@ -52,6 +65,9 @@ public class CongeController {
         return "historique-demandes-responsable";
     }
 
+    /**
+     * Historique des demandes pour les personnels
+     */
     @GetMapping("/historique-personnel")
     public String afficherDemandesPersonnel(Model model) {
         List<DemandeConge> demandes = demandeCongeRepository.findByDemandeurRole("PERSONNEL");
@@ -59,25 +75,28 @@ public class CongeController {
         return "historique-demandes-personnel";
     }
 
+    /**
+     * Validation d’une demande de congé
+     */
     @PostMapping("/demande/{id}/valider")
     public String validerDemande(@PathVariable Long id, Model model) {
         DemandeConge demande = demandeCongeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Demande non trouvée"));
 
-        if (!demande.getStatut().equals(StatutDemande.EN_ATTENTE) &&
-                !demande.getStatut().equals(StatutDemande.EN_ATTENTE_RH)) {
+        if (!(demande.getStatut().equals(StatutDemande.EN_ATTENTE) ||
+                demande.getStatut().equals(StatutDemande.EN_ATTENTE_RH))) {
             model.addAttribute("error", "Cette demande a déjà été traitée.");
-            return "redirect:/conge/historique-responsable"; // adapter selon ta page
+            return "redirect:/conge/historique-responsable";
         }
 
-        // Met à jour le statut de la demande
+        // Mise à jour du statut
         demande.setStatut(StatutDemande.APPROUVEE);
         demandeCongeRepository.save(demande);
 
-        // Calcul du nombre de jours (inclus)
+        // Calcul du nombre de jours
         long joursPris = ChronoUnit.DAYS.between(demande.getDateDebut(), demande.getDateFin()) + 1;
 
-        // Enregistre dans CongeAdministratif pour déduire du solde
+        // Enregistrement dans les congés administratifs
         CongeAdministratif conge = new CongeAdministratif();
         conge.setUtilisateur(demande.getDemandeur());
         conge.setDateDebut(demande.getDateDebut());
