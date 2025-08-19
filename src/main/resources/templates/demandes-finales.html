@@ -345,6 +345,7 @@ body {
                 <option value="ALL" selected>Tous</option>
                 <option value="RESPONSABLE">Responsable</option>
                 <option value="PERSONNEL">Personnel</option>
+                <option value="RH">RH</option>
             </select>
         </div>
 
@@ -368,13 +369,15 @@ body {
                     <td th:text="${demande.demandeur != null ? demande.demandeur.nom + ' ' + demande.demandeur.prenom : 'Utilisateur inconnu'}"></td>
                     <td th:text="${#temporals.format(demande.dateDebut, 'dd/MM/yyyy')}"></td>
                     <td th:text="${#temporals.format(demande.dateFin, 'dd/MM/yyyy')}"></td>
-                    <td>
-                        <span th:classappend="
-                            ${demande.statut.name() == 'EN_ATTENTE'} ? 'badge badge-pending' :
-                            (${demande.statut.name() == 'APPROUVEE'} ? 'badge badge-approved' : 'badge badge-rejected')
-                        " th:text="${demande.statut}">
-                        </span>
-                    </td>
+                  <td>
+    <span th:classappend="
+        ${demande.statut.name() == 'EN_ATTENTE_DIRECTEUR'} ? 'badge badge-pending' :
+        (${demande.statut.name() == 'APPROUVEE_DIRECTEUR'} ? 'badge badge-approved' :
+        (${demande.statut.name() == 'REFUSEE_DIRECTEUR'} ? 'badge badge-rejected' : 'badge badge-pending'))
+    " th:text="${demande.statut}">
+    </span>
+</td>
+
                     <td>
                         <a th:href="@{'/directeur/accepter/' + ${demande.id}}" 
                            class="btn btn-success btn-sm btn-action"
