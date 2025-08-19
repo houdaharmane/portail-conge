@@ -1,6 +1,7 @@
 package com.portailconge.portail_conge.controller;
 
 import com.portailconge.portail_conge.model.DemandeConge;
+import com.portailconge.portail_conge.model.Departement;
 import com.portailconge.portail_conge.model.StatutDemande;
 import com.portailconge.portail_conge.model.Utilisateur;
 import com.portailconge.portail_conge.repository.UtilisateurRepository;
@@ -13,6 +14,7 @@ import jakarta.servlet.http.HttpSession;
 import java.util.List;
 
 import java.io.IOException;
+import java.time.LocalDate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -138,6 +140,7 @@ public class RhController {
             @RequestParam String nom,
             @RequestParam String prenom,
             @RequestParam String email,
+            @RequestParam("fonction") String fonction,
             @RequestParam String motDePasse,
             @RequestParam String role,
             @RequestParam Integer departementId,
@@ -147,9 +150,8 @@ public class RhController {
         utilisateur.setNom(nom);
         utilisateur.setPrenom(prenom);
         utilisateur.setEmail(email);
-        utilisateur.setMotDePasse(motDePasse);
         utilisateur.setRole(role); // Ici on affecte bien le rôle choisi
-
+        utilisateur.setMotDePasse(motDePasse);
         departementRepository.findById(departementId).ifPresent(utilisateur::setDepartement);
 
         utilisateurRepository.save(utilisateur);
@@ -183,30 +185,96 @@ public class RhController {
 
     @PostMapping("/rh/conge/demande")
     public String soumettreDemandeInteresse(
+            @RequestParam("utilisateurId") Integer utilisateurId,
             @RequestParam("matricule") String matricule,
             @RequestParam("nomPrenom") String nomPrenom,
             @RequestParam("fonction") String fonction,
             @RequestParam("departementId") Integer departementId,
-            @RequestParam("duree") String duree,
-            @RequestParam("dateDebut") String dateDebut,
-            @RequestParam("dateFin") String dateFin,
+            @RequestParam("duree") String dureeStr,
+            @RequestParam("dateDebut") String dateDebutStr,
+            @RequestParam("dateFin") String dateFinStr,
             Model model,
             HttpSession session) {
-        Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
 
-        if (rh == null || !"RH".equals(rh.getRole())) {
+        Utilisateur rh = utilisateurRepository.findById(utilisateurId).orElse(null);
+        if (rh == null || !"RH".equalsIgnoreCase(rh.getRole())) {
             return "redirect:/login";
         }
 
-        System.out.println("Demande reçue :");
-        System.out.println("Matricule : " + matricule);
-        System.out.println("Nom Prénom : " + nomPrenom);
-        System.out.println("Fonction : " + fonction);
-        System.out.println("Département ID : " + departementId);
-        System.out.println("Durée : " + duree);
-        System.out.println("Du " + dateDebut + " au " + dateFin);
+        // Validation simple
+        if (matricule == null || matricule.isEmpty() || departementId == null) {
+            model.addAttribute("error", "Matricule et département obligatoires.");
+            model.addAttribute("rh", rh);
+            return "demande-conge"; // retourne le formulaire avec l'erreur
+        }
 
-        return "redirect:/ConfirmationDemande";
+        int duree;
+        try {
+            duree = Integer.parseInt(dureeStr);
+            if (duree <= 0)
+                throw new NumberFormatException();
+        } catch (NumberFormatException e) {
+            model.addAttribute("error", "Durée invalide.");
+            model.addAttribute("rh", rh);
+            return "demande-conge";
+        }
+
+        LocalDate dateDebut;
+        try {
+            dateDebut = LocalDate.parse(dateDebutStr);
+        } catch (Exception e) {
+            model.addAttribute("error", "Date de début invalide.");
+            model.addAttribute("rh", rh);
+            return "demande-conge";
+        }
+
+        LocalDate dateFin;
+        try {
+            dateFin = LocalDate.parse(dateFinStr);
+        } catch (Exception e) {
+            dateFin = dateDebut.plusDays(duree - 1);
+        }
+
+        Departement departement = departementRepository.findById(departementId).orElse(null);
+        if (departement == null) {
+            model.addAttribute("error", "Département invalide.");
+            model.addAttribute("rh", rh);
+            return "demande-conge";
+        }
+
+        // Création de la demande
+        DemandeConge demande = new DemandeConge();
+        demande.setDemandeur(rh);
+        demande.setDuree(duree);
+        demande.setDateDebut(dateDebut);
+        demande.setDateFin(dateFin);
+        demande.setDepartement(departement);
+        demande.setStatut(StatutDemande.EN_ATTENTE_DIRECTEUR);
+
+        demandeCongeRepository.save(demande);
+
+        // Préparation de la page de confirmation
+        model.addAttribute("rh", rh);
+        model.addAttribute("message", "Demande enregistrée et envoyée au directeur avec succès.");
+        model.addAttribute("dashboardUrl", "/dashboard");
+        System.out.println("Redirection vers ConfirmationDemande pour RH : " + rh.getNom());
+        // Déterminer le dashboard en fonction du rôle
+        String dashboardUrl;
+        switch (rh.getRole()) {
+            case "RH":
+                dashboardUrl = "/dashboard-rh";
+                break;
+            case "RESPONSABLE":
+                dashboardUrl = "/dashboard-responsable";
+                break;
+            case "DIRECTEUR":
+                dashboardUrl = "/dashboard-directeur";
+                break;
+            default:
+                dashboardUrl = "/login";
+        }
+        model.addAttribute("dashboardUrl", dashboardUrl);
+        return "ConfirmationDemande";
     }
 
     @PostMapping("/rh/demande/valider")

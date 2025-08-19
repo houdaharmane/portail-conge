@@ -83,6 +83,7 @@ public class DemandeCongeController {
         } else {
             demande.setStatut(StatutDemande.EN_ATTENTE_RESPONSABLE);
         }
+        model.addAttribute("dashboardUrl", "/personnel/conges/mes-demandes");
 
         demandeCongeRepository.save(demande);
 
