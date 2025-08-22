@@ -93,14 +93,25 @@
             flex-direction: column;
         }
         .header {
-            height: 60px;
-            background-color: var(--header-bg);
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            padding: 0 20px;
-            box-shadow: 0 2px 8px var(--card-shadow);
-        }
+    height: 60px;
+    background-color: var(--header-bg);
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* espace entre gauche et droite */
+    padding: 0 20px;
+    border-bottom: 1px solid #ccc;
+    box-shadow: 0 2px 8px #e9953d11;
+}
+
+.header a {
+    color: #0074C7;
+    text-decoration: none;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px; /* espace entre icône et texte */
+}
+
         .theme-toggle-btn {
             background: none;
             border: none;
@@ -229,7 +240,7 @@
             <a th:href="@{/personnel/ajouter}" class="sidebar-link"><i class="fa fa-users"></i> Ajout des utilisateurs</a>
             <a th:href="@{/rh/utilisateurs}" class="sidebar-link"><i class="fa fa-user-cog"></i> Gestion des utilisateurs</a>
             <a th:href="@{/rh/demandes-responsable}" class="sidebar-link"><i class="fa fa-user-check"></i> Demandes du Responsable</a>
-            <a th:href="@{/rh/demandes-approuvees}" class="sidebar-link active"><i class="fa fa-check-circle"></i> Demandes Approuvées</a>
+            <a th:href="@{/rh/demandes-approuvees}" class="sidebar-link active"><i class="fa fa-check-circle"></i> Demandes des employes</a>
             <a th:href="@{/rh/historique-demandes}" class="sidebar-link"><i class="fa fa-history"></i> Historique validations</a>
             <a th:href="@{/conge/demande}" class="sidebar-link"><i class="fa fa-plane-departure"></i> Demande de congé</a>
         </nav>
@@ -242,6 +253,8 @@
 <!-- Main content -->
 <div class="main-container">
     <div class="header">
+                <a th:href="@{/profil}"><i class="fa fa-user-circle fa-lg"></i> <span th:text="${rh.role}">RH</span></a>
+
         <button id="theme-toggle" class="theme-toggle-btn"><i class="fa fa-moon"></i></button>
     </div>
 
@@ -333,7 +346,7 @@
         }
     });
     const cards = Array.from(document.querySelectorAll(".card"));
-const cardsPerPage = 9;
+const cardsPerPage = 6;
 let currentPage = 1;
 
 function showPage(page) {

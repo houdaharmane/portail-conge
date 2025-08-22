@@ -262,7 +262,7 @@
     </a>
 
     <a th:href="@{/rh/demandes-approuvees}" th:classappend="${activePage == 'demandesApprouvees'} ? ' active'" class="sidebar-link">
-        <i class="fa fa-check-circle"></i> <span>Demandes Approuvées</span>
+        <i class="fa fa-check-circle"></i> <span>Demandes des employes</span>
     </a>
 
     <a th:href="@{/rh/historique-demandes}" th:classappend="${activePage == 'historique'} ? ' active'" class="sidebar-link">
@@ -287,7 +287,6 @@
     </div>
 
     <div class="main-content">
-        <h2>Gestion des utilisateurs</h2>
 
         <table>
             <thead>
@@ -342,6 +341,7 @@
                     <div style="margin-top: 15px;">
                         <button type="submit" class="submit-btn">Enregistrer</button>
                         <button type="button" class="submit-btn" style="background-color: gray;" onclick="closeModal()">Annuler</button>
+                        
                     </div>
                 </form>
             </div>

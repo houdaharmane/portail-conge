@@ -306,12 +306,13 @@ body {
             <a th:href="@{/demandes-finales}" class="sidebar-link">
                 <i class="fa fa-check-double"></i> Demandes à valider
             </a>
-            <a th:href="@{/directeur/statistiques}" class="sidebar-link">
-                <i class="fa fa-chart-line"></i> Statistiques
-            </a>
+
             <a th:href="@{/directeur/historique}" class="sidebar-link">
                 <i class="fa fa-history"></i> Historique
             </a>
+                <a th:href="@{/directeur/demande-conge}" th:classappend="${activePage == 'demandeConge'} ? ' active'" class="sidebar-link">
+        <i class="fa fa-plane-departure"></i> <span>Demande de congé</span>
+    </a>
         </nav>
     </div>
     <div class="sidebar-footer">

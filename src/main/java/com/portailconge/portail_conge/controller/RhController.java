@@ -319,7 +319,8 @@ public class RhController {
 
         List<StatutDemande> statutsHistoriqueRh = List.of(
                 StatutDemande.APPROUVEE_RH,
-                StatutDemande.REFUSEE);
+                StatutDemande.REFUSEE,
+                StatutDemande.EN_ATTENTE_DIRECTEUR);
 
         List<DemandeConge> demandesHistorique = demandeCongeRepository.findByStatutIn(statutsHistoriqueRh);
 
@@ -394,16 +395,32 @@ public class RhController {
     }
 
     @GetMapping("/rh/demandes-responsable")
-    public String demandesResponsable(Model model) {
-        List<DemandeConge> demandes = demandeCongeRepository.findByStatut(StatutDemande.EN_ATTENTE); // traitées
+    public String demandesResponsable(HttpSession session, Model model) {
+        Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur"); // ← récupère l'utilisateur RH
+
+        if (rh == null || !"RH".equals(rh.getRole())) {
+            return "redirect:/login";
+        }
+
+        List<DemandeConge> demandes = demandeCongeRepository.findByStatut(StatutDemande.EN_ATTENTE);
         model.addAttribute("demandesResponsable", demandes);
+        model.addAttribute("rh", rh);
         return "rh-demandes-responsable";
     }
 
     @GetMapping("/rh/demandes-approuvees")
-    public String demandesApprouvees(Model model) {
+    public String demandesApprouvees(HttpSession session, Model model) {
+        Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
+
+        if (rh == null || !"RH".equals(rh.getRole())) {
+            return "redirect:/login";
+        }
+
         List<DemandeConge> demandes = demandeService.getDemandesApprouveesParResponsable();
+        model.addAttribute("rh", rh);
         model.addAttribute("demandesApprouvees", demandes);
+        model.addAttribute("activePage", "demandesApprouvees");
+
         return "demandes-approuvees";
     }
 

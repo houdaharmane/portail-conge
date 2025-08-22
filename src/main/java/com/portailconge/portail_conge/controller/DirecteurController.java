@@ -38,10 +38,20 @@ public class DirecteurController {
             return "redirect:/login";
         }
 
+        // Statistiques dynamiques
+        long totalDemandes = demandeCongeRepository.count();
+        long demandesEnAttente = demandeCongeRepository.countByStatut(StatutDemande.EN_ATTENTE_DIRECTEUR);
+        long demandesApprouvees = demandeCongeRepository.countByStatut(StatutDemande.APPROUVEE_DIRECTEUR);
+        long tauxAcceptation = totalDemandes == 0 ? 0 : Math.round((double) demandesApprouvees / totalDemandes * 100);
+
         model.addAttribute("directeur", utilisateur);
         model.addAttribute("activePage", "dashboard");
-        session.setAttribute("utilisateurConnecteId", utilisateur.getId());
+        model.addAttribute("totalDemandes", totalDemandes);
+        model.addAttribute("demandesEnAttente", demandesEnAttente);
+        model.addAttribute("demandesApprouvees", demandesApprouvees);
+        model.addAttribute("tauxAcceptation", tauxAcceptation);
 
+        session.setAttribute("utilisateurConnecteId", utilisateur.getId());
         return "dashboard-directeur";
     }
 
@@ -66,12 +76,14 @@ public class DirecteurController {
             HttpSession session,
             Model model) throws IOException {
 
-        Long utilisateurId = (Long) session.getAttribute("utilisateurConnecteId");
+        // Récupération de l'ID du directeur depuis la session (Integer)
+        Integer utilisateurId = (Integer) session.getAttribute("utilisateurConnecteId");
         if (utilisateurId == null) {
             return "redirect:/login";
         }
 
-        Optional<Utilisateur> optUser = utilisateurRepository.findById(utilisateurId.intValue());
+        // Récupération de l'utilisateur depuis la base
+        Optional<Utilisateur> optUser = utilisateurRepository.findById(utilisateurId);
         if (optUser.isEmpty()) {
             return "redirect:/login";
         }
@@ -96,9 +108,10 @@ public class DirecteurController {
         utilisateurEnBase.setEmail(directeur.getEmail());
         utilisateurEnBase.setCin(directeur.getCin());
 
-        // Mise à jour du département
+        // Mise à jour du département (Integer)
         if (directeur.getDepartement() != null && directeur.getDepartement().getId() != null) {
-            departementRepository.findById(directeur.getDepartement().getId())
+            Integer deptId = directeur.getDepartement().getId();
+            departementRepository.findById(deptId)
                     .ifPresent(utilisateurEnBase::setDepartement);
         } else {
             utilisateurEnBase.setDepartement(null);
@@ -109,6 +122,7 @@ public class DirecteurController {
             utilisateurEnBase.setPhoto(imageFile.getBytes());
         }
 
+        // Sauvegarde finale
         utilisateurRepository.save(utilisateurEnBase);
         session.setAttribute("utilisateur", utilisateurEnBase);
 
@@ -173,16 +187,29 @@ public class DirecteurController {
     // FORMULAIRE DIRECTEUR
 
     @GetMapping("/directeur/demande-conge")
-    public String afficherFormulaireDemandeConge(Model model) {
+    public String afficherFormulaireDemandeConge(Model model, HttpSession session) {
+        Utilisateur directeur = (Utilisateur) session.getAttribute("utilisateur");
+        if (directeur == null || !"DIRECTEUR".equals(directeur.getRole())) {
+            return "redirect:/login";
+        }
+
         model.addAttribute("activePage", "demandeConge");
         model.addAttribute("demandeConge", new DemandeConge());
+        model.addAttribute("directeur", directeur);
         return "demande-conge-directeur";
     }
 
     @PostMapping("/directeur/demande-conge")
-    public String soumettreDemandeConge(@ModelAttribute DemandeConge demandeConge) {
+    public String soumettreDemandeConge(@ModelAttribute DemandeConge demandeConge, HttpSession session) {
+        Utilisateur directeur = (Utilisateur) session.getAttribute("utilisateur");
+        if (directeur == null || !"DIRECTEUR".equals(directeur.getRole())) {
+            return "redirect:/login";
+        }
+
         demandeConge.setStatut(StatutDemande.EN_ATTENTE_RH);
         demandeCongeRepository.save(demandeConge);
+
+        // pas besoin de model.addAttribute ici si tu fais un redirect
         return "redirect:/dashboard-directeur";
     }
 

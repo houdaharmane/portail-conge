@@ -5,6 +5,8 @@
     <title>Directeur Dashboard</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
          :root {
             --bg-color: #f6f6f6;
@@ -47,6 +49,8 @@
             min-height: 100vh;
             box-shadow: 2px 0 12px #e9953d22;
             padding: 0;
+            position: fixed;
+            overflow: auto;
         }
 
         .sidebar-header {
@@ -122,6 +126,9 @@
     padding: 0 20px;
     border-bottom: 1px solid #ccc;
     box-shadow: 0 2px 8px #e9953d11;
+    position: fixed;
+    left: 240px;
+    width: calc(100% - 240px);
 }
 
 .header a {
@@ -144,6 +151,8 @@
     font-size: 20px;
     color: #0074C7;
     cursor: pointer;
+    margin-right: 30px;
+    right: 10px;
 }
 
 .dark-theme .theme-toggle-btn {
@@ -158,6 +167,9 @@
             align-items: center;
             padding: 40px 0;
             background-color: var(--bg-color);
+            margin-left: 240px;
+            padding: 0 40px;
+            margin-top: 60px;
         }
 
         .dashboard-title {
@@ -170,7 +182,7 @@
         .dashboard-cards {
             display: flex;
             gap: 24px;
-            margin-top: 15px;
+            margin-top: 40px;
             flex-wrap: wrap;
         }
 
@@ -243,9 +255,6 @@
     <a th:href="@{/demandes-finales}" th:classappend="${activePage == 'validationFinale'} ? ' active'" class="sidebar-link">
         <i class="fa fa-check-double"></i> <span>Demandes à valider</span>
     </a>
-    <a th:href="@{/directeur/statistiques}" th:classappend="${activePage == 'statistiques'} ? ' active'" class="sidebar-link">
-        <i class="fa fa-chart-line"></i> <span>Statistiques</span>
-    </a>
     <a th:href="@{/directeur/historique}" th:classappend="${activePage == 'historique'} ? ' active'" class="sidebar-link">
         <i class="fa fa-history"></i> <span>Historique</span>
     </a>
@@ -272,33 +281,36 @@
     </div>
 
     <div class="main-content">
-        <div class="dashboard-title">Bienvenue sur votre espace Directeur</div>
         <div class="dashboard-cards">
             <div class="card">
                 <div class="card-icon"><i class="fa fa-file-alt"></i></div>
                 <div class="card-title">Total des demandes</div>
-                <div class="card-value">45</div>
+<div class="card-value" th:text="${totalDemandes}">0</div>
             </div>
             <div class="card">
                 <div class="card-icon"><i class="fa fa-user-clock"></i></div>
                 <div class="card-title">En attente validation finale</div>
-                <div class="card-value">8</div>
+<div class="card-value" th:text="${demandesEnAttente}">0</div>
             </div>
             <div class="card">
                 <div class="card-icon"><i class="fa fa-check-circle"></i></div>
                 <div class="card-title">Demandes approuvées</div>
-                <div class="card-value">29</div>
+                <div class="card-value" th:text="${demandesApprouvees}">0</div>
             </div>
             <div class="card">
                 <div class="card-icon"><i class="fa fa-chart-pie"></i></div>
                 <div class="card-title">Taux d’acceptation</div>
-                <div class="card-value">76%</div>
+<div class="card-value" th:text="${tauxAcceptation + '%'}">0%</div>
             </div>
         </div>
-    </div>
+        <div class="dashboard-chart" style="width: 100%; max-width: 1000px; margin-top: 40px;">
+    <canvas id="demandesChart"></canvas>
 </div>
 
-<script>
+    </div>
+</div>
+<script th:inline="javascript">
+    // Theme toggle
     const toggleBtn = document.getElementById('theme-toggle');
     const body = document.body;
 
@@ -312,6 +324,36 @@
         const isDark = body.classList.contains('dark-theme');
         toggleBtn.innerHTML = isDark ? '<i class="fa fa-sun"></i>' : '<i class="fa fa-moon"></i>';
         localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    });
+
+    // Chart.js
+    const total = [[${totalDemandes}]];
+    const attente = [[${demandesEnAttente}]];
+    const approuvees = [[${demandesApprouvees}]];
+
+    const ctx = document.getElementById('demandesChart').getContext('2d');
+    const demandesChart = new Chart(ctx, {
+        type: 'bar', // ou 'line', 'pie', etc.
+        data: {
+            labels: ['Total', 'En attente', 'Approuvées'],
+            datasets: [{
+                label: 'Nombre de demandes',
+                data: [total, attente, approuvees],
+                backgroundColor: ['#0074C7', '#FFA500', '#28A745'],
+                borderRadius: 6,
+                barThickness: 30
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+                tooltip: { enabled: true }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
     });
 </script>
 

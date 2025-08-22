@@ -380,12 +380,12 @@
             <a th:href="@{/demandes-finales}" th:classappend="${activePage == 'validationFinale'} ? ' active'" class="sidebar-link">
                 <i class="fa fa-check-double"></i> <span>Demandes à valider</span>
             </a>
-            <a th:href="@{/directeur/statistiques}" th:classappend="${activePage == 'statistiques'} ? ' active'" class="sidebar-link">
-                <i class="fa fa-chart-line"></i> <span>Statistiques</span>
-            </a>
             <a th:href="@{/directeur/historique}" th:classappend="${activePage == 'historique'} ? ' active'" class="sidebar-link">
                 <i class="fa fa-history"></i> <span>Historique</span>
             </a>
+              <a th:href="@{/directeur/demande-conge}" th:classappend="${activePage == 'demandeConge'} ? ' active'" class="sidebar-link">
+        <i class="fa fa-plane-departure"></i> <span>Demande de congé</span>
+    </a>
         </nav>
     </div>
     <div class="sidebar-footer">
