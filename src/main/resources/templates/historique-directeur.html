@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Historique des demandes - Directeur</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-color: #f6f6f6;
+            --text-color: #000;
+            --header-bg: #f3f3f3;
+            --card-bg: #fff;
+            --card-shadow: #e9953d22;
+            --sidebar-bg: #0074C7;
+            --link-color: #fff;
+            --profil-btn-bg: #0074C7;
+            --profil-btn-color: #fff;
+        }
+
+        .dark-theme {
+            --bg-color: #1e1e1e;
+            --text-color: #f0f0f0;
+            --header-bg: #2c2c2c;
+            --card-bg: #2a2a2a;
+            --card-shadow: #00000044;
+            --sidebar-bg: #0074C7;
+            --link-color: #fff;
+            --profil-btn-bg: #00509e;
+            --profil-btn-color: #fff;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            display: flex;
+            min-height: 100vh;
+            background: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        .sidebar {
+            width: 240px;
+            background-color: var(--sidebar-bg);
+            color: var(--link-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 100vh;
+            position: fixed;
+            overflow: auto;
+        }
+
+        .sidebar-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 32px 0 18px 0;
+        }
+
+        .sidebar-logo {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #fff;
+            box-shadow: 0 2px 8px #fff2;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-link, .sidebar-link:hover {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            text-decoration: none;
+            color: var(--link-color);
+            font-size: 16px;
+            font-weight: 600;
+            padding: 13px 30px;
+            border-left: 4px solid transparent;
+            transition: background 0.18s, border-left-color 0.18s;
+        }
+
+        .sidebar-link:hover, .sidebar-link.active {
+            background: #fff2;
+            border-left: 4px solid #fff;
+        }
+
+        .main-container { flex: 1; margin-left: 240px; }
+
+        .header {
+            height: 60px;
+            background-color: var(--header-bg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            border-bottom: 1px solid #ccc;
+            box-shadow: 0 2px 8px var(--card-shadow);
+        }
+
+        /* Bouton profil directeur */
+        .profil-btn {
+            color: #0074C7;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-weight: 600;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .profil-btn i {
+            font-size: 20px;
+        }
+
+        /* Bouton thème */
+        .theme-toggle-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #0074C7;
+            cursor: pointer;
+        }
+
+        .theme-toggle-btn:hover {
+            color: #0074C7 !important;
+        }
+
+        .dark-theme .theme-toggle-btn {
+            color: #f0f0f0;
+        }
+
+        .main-content { margin-top: 60px; padding: 20px 40px; }
+
+        .demandes-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px var(--card-shadow);
+            font-size: 15px;
+        }
+
+        .demandes-table thead { background-color: #0074C7; color: #fff; }
+        .demandes-table th { padding: 14px 18px; text-align: left; font-weight: 700; }
+        .demandes-table td { padding: 12px 18px; color: var(--text-color); }
+
+        .demandes-table tbody tr {
+            border-bottom: 1px solid #e0e0e0;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .demandes-table tbody tr:hover {
+            background-color: #f0f8ff;
+            transform: translateX(2px);
+        }
+
+        .status-approved {
+            color: #28a745;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-refused {
+            color: #dc3545;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .dark-theme .demandes-table thead { background-color: #00509e; color: #f0f0f0; }
+        .dark-theme .demandes-table tbody tr:hover { background-color: #33384d; }
+
+        @media (max-width: 900px) {
+            .main-content { padding: 20px; }
+            .demandes-table th, .demandes-table td { padding: 10px 12px; font-size: 14px; }
+        }
+    </style>
+</head>
+<body>
+<div class="sidebar">
+    <div>
+        <div class="sidebar-header">
+            <img src="/img/modepbg.png" alt="Logo MODEP" class="sidebar-logo">
+        </div>
+        <nav>
+            <a th:href="@{/dashboard-directeur}" th:classappend="${activePage == 'dashboard'} ? ' active'" class="sidebar-link">
+                <i class="fa fa-home"></i> Tableau de bord
+            </a>
+            <a th:href="@{/demandes-finales}" th:classappend="${activePage == 'validationFinale'} ? ' active'" class="sidebar-link">
+                <i class="fa fa-check-double"></i> Demandes à valider
+            </a>
+            <a th:href="@{/directeur/historique}" th:classappend="${activePage == 'historique'} ? ' active'" class="sidebar-link">
+                <i class="fa fa-history"></i> Historique
+            </a>
+            <a th:href="@{/directeur/demande-conge}" th:classappend="${activePage == 'demandeConge'} ? ' active'" class="sidebar-link">
+                <i class="fa fa-plane-departure"></i> Demande de congé
+            </a>
+        </nav>
+    </div>
+    <div class="sidebar-footer">
+        <a href="/logout" class="sidebar-link"><i class="fa fa-sign-out-alt"></i> Déconnexion</a>
+    </div>
+</div>
+
+<div class="main-container">
+    <div class="header">
+        <!-- Bouton profil directeur bleu avec icône -->
+        <a th:href="@{/profil-directeur}" class="profil-btn">
+            <i class="fa fa-user-circle"></i>
+            <span th:text="${directeur.role}">Directeur</span>
+        </a>
+
+        <!-- Bouton thème -->
+        <button id="theme-toggle" class="theme-toggle-btn" title="Changer de thème">
+            <i class="fa fa-moon"></i>
+        </button>
+    </div>
+
+    <div class="main-content">
+        <table class="demandes-table">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Prénom</th>
+                    <th>Matricule</th>
+                    <th>Date début</th>
+                    <th>Date fin</th>
+                    <th>Statut</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="demande : ${demandes}">
+                    <td th:text="${demande.demandeur != null ? demande.demandeur.nom : 'Inconnu'}">Nom</td>
+                    <td th:text="${demande.demandeur != null ? demande.demandeur.prenom : 'Inconnu'}">Prénom</td>
+                    <td th:text="${demande.demandeur != null ? demande.demandeur.matricule : 'Inconnu'}">Matricule</td>
+                    <td th:text="${#temporals.format(demande.dateDebut, 'dd/MM/yyyy')}">01/01/2025</td>
+                    <td th:text="${#temporals.format(demande.dateFin, 'dd/MM/yyyy')}">01/01/2025</td>
+<td th:text="${demande.statut}"
+    th:classappend="${demande.statut.name() == 'APPROUVEE' 
+                     or demande.statut.name() == 'APPROUVEE_DIRECTEUR'} ? ' status-approved' : ' status-refused'">
+    Statut
+</td>
+
+
+
+                    
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    const toggleBtn = document.getElementById('theme-toggle');
+    const body = document.body;
+
+    if (localStorage.getItem('theme') === 'dark') {
+        body.classList.add('dark-theme');
+        toggleBtn.innerHTML = '<i class="fa fa-sun"></i>';
+    }
+
+    toggleBtn.addEventListener('click', () => {
+        body.classList.toggle('dark-theme');
+        const isDark = body.classList.contains('dark-theme');
+        toggleBtn.innerHTML = isDark ? '<i class="fa fa-sun"></i>' : '<i class="fa fa-moon"></i>';
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    });
+</script>
+</body>
+</html>

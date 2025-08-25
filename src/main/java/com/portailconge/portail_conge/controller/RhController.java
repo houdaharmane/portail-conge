@@ -43,10 +43,25 @@ public class RhController {
             return "redirect:/login";
         }
 
+        // Comptage dynamique des demandes
+        long demandesEnAttente = demandeCongeRepository.countByStatut(StatutDemande.EN_ATTENTE);
+        long demandesRefuses = demandeCongeRepository.countByStatut(StatutDemande.REFUSEE);
+        long demandesValidees = demandeCongeRepository.countByStatut(StatutDemande.EN_ATTENTE_DIRECTEUR);
+        long historique = demandeCongeRepository.countByStatut(StatutDemande.EN_ATTENTE_DIRECTEUR);
+        long soldeConges = rh.getSoldeConge() != null ? rh.getSoldeConge() : 0;
+
         model.addAttribute("rh", rh);
         model.addAttribute("email", rh.getEmail());
         model.addAttribute("role", rh.getRole());
         model.addAttribute("activePage", "dashboard");
+
+        // Ajouter les compteurs
+        model.addAttribute("demandesEnAttente", demandesEnAttente);
+        model.addAttribute("demandesValidees", demandesValidees);
+        model.addAttribute("demandesRefuses", demandesRefuses);
+        model.addAttribute("historique", historique);
+        model.addAttribute("soldeConges", soldeConges);
+
         return "dashboard-rh";
     }
 
@@ -293,10 +308,9 @@ public class RhController {
         return "redirect:/rh/demandes-approuvees-responsable";
     }
 
-    @PostMapping("/rh/demande/refuser")
-    public String refuserDemande(@RequestParam("id") Long id, HttpSession session) {
+    @GetMapping("/rh/refuser/{id}")
+    public String refuserDemandeGet(@PathVariable Long id, HttpSession session) {
         Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
-
         if (rh == null || !"RH".equals(rh.getRole())) {
             return "redirect:/login";
         }
@@ -306,7 +320,7 @@ public class RhController {
             demandeCongeRepository.save(demande);
         });
 
-        return "redirect:/rh/demandes-approuvees-responsable";
+        return "rh-demandes-responsable";
     }
 
     @GetMapping("/rh/historique-demandes")
@@ -396,13 +410,14 @@ public class RhController {
 
     @GetMapping("/rh/demandes-responsable")
     public String demandesResponsable(HttpSession session, Model model) {
-        Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur"); // ← récupère l'utilisateur RH
+        Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
 
         if (rh == null || !"RH".equals(rh.getRole())) {
             return "redirect:/login";
         }
 
-        List<DemandeConge> demandes = demandeCongeRepository.findByStatut(StatutDemande.EN_ATTENTE);
+        List<DemandeConge> demandes = demandeCongeRepository.findByStatutAndDemandeurRole(StatutDemande.EN_ATTENTE,
+                "RESPONSABLE");
         model.addAttribute("demandesResponsable", demandes);
         model.addAttribute("rh", rh);
         return "rh-demandes-responsable";

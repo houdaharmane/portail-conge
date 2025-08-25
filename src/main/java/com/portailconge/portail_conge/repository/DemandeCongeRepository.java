@@ -84,4 +84,16 @@ public interface DemandeCongeRepository extends JpaRepository<DemandeConge, Long
 
         List<DemandeConge> findByStatutOrDemandeurRole(StatutDemande statut, String role);
 
+        List<DemandeConge> findByDemandeurIdAndStatutIn(Long demandeurId, List<StatutDemande> statuts);
+
+        List<DemandeConge> findByDemandeur_IdAndStatutIn(Long demandeurId, List<StatutDemande> statuts);
+
+        // Toutes les demandes d’un utilisateur avec certains statuts
+        List<DemandeConge> findByDemandeurAndStatutIn(Utilisateur demandeur, List<StatutDemande> statuts);
+
+        @Query("SELECT d FROM DemandeConge d " +
+                        "WHERE d.demandeur = :directeur " +
+                        "   OR d.statut IN ('APPROUVEE_DIRECTEUR','REFUSEE_DIRECTEUR')")
+        List<DemandeConge> findHistoriqueDirecteur(@Param("directeur") Utilisateur directeur);
+
 }

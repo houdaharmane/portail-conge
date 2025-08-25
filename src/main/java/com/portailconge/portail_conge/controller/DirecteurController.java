@@ -138,12 +138,8 @@ public class DirecteurController {
             return "redirect:/login";
         }
 
-        // Inclure toutes les demandes visibles pour le directeur
-        List<DemandeConge> demandes = demandeCongeRepository.findByStatutIn(
-                List.of(
-                        StatutDemande.EN_ATTENTE_DIRECTEUR,
-                        StatutDemande.APPROUVEE_DIRECTEUR,
-                        StatutDemande.REFUSEE_DIRECTEUR));
+        // Inclure uniquement les demandes EN_ATTENTE_DIRECTEUR
+        List<DemandeConge> demandes = demandeCongeRepository.findByStatut(StatutDemande.EN_ATTENTE_DIRECTEUR);
 
         model.addAttribute("demandesFinales", demandes);
         return "demandes-finales";
@@ -192,6 +188,10 @@ public class DirecteurController {
         if (directeur == null || !"DIRECTEUR".equals(directeur.getRole())) {
             return "redirect:/login";
         }
+        model.addAttribute("directeur", directeur);
+        model.addAttribute("nomPrenom", directeur.getNom() + " " + directeur.getPrenom());
+        model.addAttribute("matricule", directeur.getMatricule());
+        model.addAttribute("role", directeur.getRole());
 
         model.addAttribute("activePage", "demandeConge");
         model.addAttribute("demandeConge", new DemandeConge());
@@ -206,11 +206,30 @@ public class DirecteurController {
             return "redirect:/login";
         }
 
-        demandeConge.setStatut(StatutDemande.EN_ATTENTE_RH);
+        demandeConge.setDemandeur(directeur);
+
+        // Si c’est le directeur qui fait la demande, on met directement APPROUVEE
+        demandeConge.setStatut(StatutDemande.APPROUVEE);
+
         demandeCongeRepository.save(demandeConge);
 
-        // pas besoin de model.addAttribute ici si tu fais un redirect
-        return "redirect:/dashboard-directeur";
+        return "ConfirmationDemande";
+    }
+
+    @GetMapping("/directeur/historique")
+    public String historiqueDirecteur(HttpSession session, Model model) {
+        Utilisateur directeur = (Utilisateur) session.getAttribute("utilisateur");
+        if (directeur == null || !"DIRECTEUR".equals(directeur.getRole())) {
+            return "redirect:/login";
+        }
+
+        List<DemandeConge> demandes = demandeCongeRepository.findHistoriqueDirecteur(directeur);
+
+        model.addAttribute("demandes", demandes);
+        model.addAttribute("directeur", directeur);
+        model.addAttribute("activePage", "historique");
+
+        return "historique-directeur";
     }
 
 }

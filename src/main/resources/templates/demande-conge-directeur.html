@@ -183,12 +183,13 @@
         .selected { background: #0074C7; color: white; }
         .disabled { color: #ccc; cursor: not-allowed; }
         .half-day-select {
-            margin-top: 20px;
- color: var(--text-color);              background: var(--header-bg);
-            padding: 12px;
-            border-radius: 10px;
-            display: flex;
-            justify-content: space-around;
+        margin-top: 20px;
+        color: var(--text-color);       
+        background: var(--header-bg);
+        padding: 12px;
+        border-radius: 10px;
+        display: flex;
+        justify-content: space-around;
         }
         .half-day-select div {
             text-align: center;
@@ -470,10 +471,10 @@ body.dark-theme .day.taken {
     </div>
      <div class="main-content">
         <!-- FORMULAIRE CALENDRIER -->
-        <div class="form-container" id="calendar-form"
-             data-matricule="${directeur.matricule}"
-             data-nom="${directeur.nomPrenom}"
-             data-role="${directeur.role}">
+      <div class="form-container" id="calendar-form"
+     th:data-matricule="${matricule}"
+     th:data-nom="${nomPrenom}"
+     th:data-role="${role}">
             <h2>Faire une demande</h2>
             <form th:action="@{/directeur/demande-conge}" method="post" id="congeForm">
                 <div class="calendar" id="calendar-container"></div>
@@ -666,7 +667,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.getElementById('dateDuField').value = document.getElementById('dateDebut').value;
         document.getElementById('dateAuField').value = document.getElementById('dateFin').value;
-        document.getElementById('dureeDemande').value = document.getElementById('workdaysCount').textContent;
+document.getElementById('dureeDemande').value = parseInt(document.getElementById('workdaysCount').textContent, 10);
 
         document.getElementById('calendar-container').style.display = 'none';
         document.querySelector('.half-day-select').style.display = 'none';

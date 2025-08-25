@@ -266,28 +266,30 @@
 
     <div class="main-content">
         <div class="dashboard-title">Bienvenue sur votre espace RH</div>
-        <div class="dashboard-cards">
-            <div class="card">
-                <div class="card-icon"><i class="fa fa-calendar-check"></i></div>
-                <div class="card-title">Demandes en attente</div>
-                <div class="card-value">12</div>
-            </div>
-            <div class="card">
-                <div class="card-icon"><i class="fa fa-wallet"></i></div>
-                <div class="card-title">Soldes congés</div>
-                <div class="card-value">32</div>
-            </div>
-            <div class="card">
-                <div class="card-icon"><i class="fa fa-check-circle"></i></div>
-                <div class="card-title">Demandes validées</div>
-                <div class="card-value">7</div>
-            </div>
-            <div class="card">
-                <div class="card-icon"><i class="fa fa-history"></i></div>
-                <div class="card-title">Historique</div>
-                <div class="card-value">28</div>
-            </div>
-        </div>
+<div class="dashboard-cards">
+    <div class="card">
+        <div class="card-icon"><i class="fa fa-calendar-check"></i></div>
+        <div class="card-title">Demandes en attente</div>
+        <div class="card-value" th:text="${demandesEnAttente}">0</div>
+    </div>
+  <div class="card">
+<div class="card-icon"><i class="fa-solid fa-circle-xmark"></i></div>
+        <div class="card-title">Demandes Refuses</div>
+        <div class="card-value" th:text="${demandesRefuses}">0</div>
+    </div>
+    <div class="card">
+        <div class="card-icon"><i class="fa fa-check-circle"></i></div>
+        <div class="card-title">Demandes validées</div>
+        <div class="card-value" th:text="${demandesValidees}">0</div>
+    </div>
+
+    <div class="card">
+        <div class="card-icon"><i class="fa fa-history"></i></div>
+        <div class="card-title">Historique</div>
+        <div class="card-value" th:text="${historique}">0</div>
+    </div>
+</div>
+
     </div>
 </div>
 
