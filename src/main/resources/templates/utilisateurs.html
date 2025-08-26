@@ -246,32 +246,16 @@
         <div class="sidebar-header">
             <img src="/img/modepbg.png" alt="Logo MODEP" class="sidebar-logo">
         </div>
-    <nav>
-    <a th:href="@{/dashboard-rh}" th:classappend="${activePage == 'dashboard'} ? ' active'" class="sidebar-link">
-        <i class="fa fa-home"></i> <span>Tableau de bord</span>
-    </a>
-    <a th:href="@{/personnel/ajouter}" th:classappend="${activePage == 'personnel'} ? ' active'" class="sidebar-link">
-        <i class="fa fa-users"></i> <span>Ajout des utilisateurs</span>
-    </a>
-    <a th:href="@{/rh/utilisateurs}" th:classappend="${activePage == 'utilisateurs'} ? ' active'" class="sidebar-link">
-        <i class="fa fa-user-cog"></i> <span>Gestion des utilisateurs</span>
-    </a>
-
-    <a th:href="@{/rh/demandes-responsable}" th:classappend="${activePage == 'demandesResponsable'} ? ' active'" class="sidebar-link">
-        <i class="fa fa-user-check"></i> <span>Demandes du Responsable</span>
-    </a>
-
-    <a th:href="@{/rh/demandes-approuvees}" th:classappend="${activePage == 'demandesApprouvees'} ? ' active'" class="sidebar-link">
-        <i class="fa fa-check-circle"></i> <span>Demandes des employes</span>
-    </a>
-
-    <a th:href="@{/rh/historique-demandes}" th:classappend="${activePage == 'historique'} ? ' active'" class="sidebar-link">
-        <i class="fa fa-history"></i> <span>Historique validations</span>
-    </a>
-    <a th:href="@{/conge/demande}" th:classappend="${activePage == 'demandeConge'} ? ' active'" class="sidebar-link">
-        <i class="fa fa-plane-departure"></i> <span>Demande de congé</span>
-    </a>
-</nav>
+   <nav>
+            <a th:href="@{/dashboard-rh}" class="sidebar-link"><i class="fa fa-home"></i> Tableau de bord</a>
+            <a th:href="@{/personnel/ajouter}" class="sidebar-link"><i class="fa fa-users"></i> Ajout des utilisateurs</a>
+            <a th:href="@{/rh/utilisateurs}" class="sidebar-link"><i class="fa fa-user-cog"></i> Gestion des utilisateurs</a>
+            <a th:href="@{/rh/demandes-responsable}" class="sidebar-link"><i class="fa fa-user-check"></i> Demandes du Responsable</a>
+            <a th:href="@{/rh/demandes-approuvees}" class="sidebar-link"><i class="fa fa-check-circle"></i> Demandes des employés</a>
+            <a th:href="@{/rh/historique-demandes}" class="sidebar-link"><i class="fa fa-history"></i> Historique validations</a>
+            <a th:href="@{/conge/demande}" class="sidebar-link"><i class="fa fa-plane-departure"></i> Demande de congé</a>
+            <a th:href="@{/rh/demandes-directeur}" class="sidebar-link"><i class="fa fa-bell"></i> Nouvelles demandes</a>
+        </nav>
     </div>
     <div class="sidebar-footer">
         <a href="/logout" class="sidebar-link"><i class="fa fa-sign-out-alt"></i>&nbsp;Déconnexion</a>

@@ -96,4 +96,8 @@ public interface DemandeCongeRepository extends JpaRepository<DemandeConge, Long
                         "   OR d.statut IN ('APPROUVEE_DIRECTEUR','REFUSEE_DIRECTEUR')")
         List<DemandeConge> findHistoriqueDirecteur(@Param("directeur") Utilisateur directeur);
 
+        List<DemandeConge> findByLuParRHFalse();
+
+        List<DemandeConge> findByDemandeurRoleAndLuParRHFalse(String role);
+
 }

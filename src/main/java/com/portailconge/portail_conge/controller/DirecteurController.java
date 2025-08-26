@@ -208,7 +208,10 @@ public class DirecteurController {
 
         demandeConge.setDemandeur(directeur);
 
-        // Si c’est le directeur qui fait la demande, on met directement APPROUVEE
+        // Par défaut, demande non lue par RH
+        demandeConge.setLuParRH(false);
+
+        // Statut peut rester EN_ATTENTE (au lieu de APPROUVEE directement)
         demandeConge.setStatut(StatutDemande.APPROUVEE);
 
         demandeCongeRepository.save(demandeConge);

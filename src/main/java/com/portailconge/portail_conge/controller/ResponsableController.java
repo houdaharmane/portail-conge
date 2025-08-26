@@ -8,7 +8,7 @@ import com.portailconge.portail_conge.repository.DemandeCongeRepository;
 import com.portailconge.portail_conge.service.CongeService;
 import com.portailconge.portail_conge.service.UtilisateurService;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import jakarta.servlet.http.HttpSession;
@@ -69,7 +69,7 @@ public class ResponsableController {
 
         demandeConge.setDemandeur(utilisateur);
         demandeConge.setStatut(StatutDemande.EN_ATTENTE);
-        demandeConge.setDateSoumission(LocalDate.now());
+        demandeConge.setDateSoumission(LocalDateTime.now());
         demandeCongeRepository.save(demandeConge);
 
         return "redirect:/conges/confirmation";
@@ -163,7 +163,8 @@ public class ResponsableController {
 
         demandeConge.setDemandeur(responsable);
         demandeConge.setStatut(StatutDemande.EN_ATTENTE);
-        demandeConge.setDateSoumission(LocalDate.now());
+        demandeConge.setDateSoumission(LocalDateTime.now());
+
         demandeCongeRepository.save(demandeConge);
 
         // Définir dynamiquement l'URL du dashboard selon le rôle ou l'utilisateur

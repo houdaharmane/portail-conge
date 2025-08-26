@@ -11,6 +11,7 @@ import com.portailconge.portail_conge.repository.DepartementRepository;
 
 import jakarta.servlet.http.HttpSession;
 
+import java.util.HashMap;
 import java.util.List;
 
 import java.io.IOException;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import java.util.Map;
 
 @Controller
 public class RhController {
@@ -38,29 +40,44 @@ public class RhController {
     @GetMapping("/dashboard-rh")
     public String rhDashboard(HttpSession session, Model model) {
         Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
-
         if (rh == null || !"RH".equals(rh.getRole())) {
             return "redirect:/login";
         }
 
-        // Comptage dynamique des demandes
-        long demandesEnAttente = demandeCongeRepository.countByStatut(StatutDemande.EN_ATTENTE);
+        // Comptage mis à jour
+        long demandesEnAttente = demandeCongeRepository.countByStatutIn(List.of(
+                StatutDemande.EN_ATTENTE,
+                StatutDemande.EN_ATTENTE_DIRECTEUR)); // inclut celles envoyées au directeur
+
         long demandesRefuses = demandeCongeRepository.countByStatut(StatutDemande.REFUSEE);
-        long demandesValidees = demandeCongeRepository.countByStatut(StatutDemande.EN_ATTENTE_DIRECTEUR);
-        long historique = demandeCongeRepository.countByStatut(StatutDemande.EN_ATTENTE_DIRECTEUR);
-        long soldeConges = rh.getSoldeConge() != null ? rh.getSoldeConge() : 0;
+
+        long demandesValidees = demandeCongeRepository.countByStatutIn(List.of(
+                StatutDemande.APPROUVEE_RH,
+                StatutDemande.APPROUVEE_DIRECTEUR)); // inclut celles validées par le directeur
+
+        // Historique
+        List<StatutDemande> statutsHistoriqueRh = List.of(
+                StatutDemande.APPROUVEE_RH,
+                StatutDemande.APPROUVEE_DIRECTEUR,
+                StatutDemande.REFUSEE,
+                StatutDemande.EN_ATTENTE_DIRECTEUR);
+        List<DemandeConge> demandesHistorique = demandeCongeRepository.findByStatutIn(statutsHistoriqueRh);
+
+        // Notifications des nouvelles demandes du directeur
+        List<DemandeConge> notifications = demandeCongeRepository.findByDemandeurRoleAndLuParRHFalse("DIRECTEUR");
 
         model.addAttribute("rh", rh);
         model.addAttribute("email", rh.getEmail());
         model.addAttribute("role", rh.getRole());
         model.addAttribute("activePage", "dashboard");
 
-        // Ajouter les compteurs
         model.addAttribute("demandesEnAttente", demandesEnAttente);
         model.addAttribute("demandesValidees", demandesValidees);
         model.addAttribute("demandesRefuses", demandesRefuses);
-        model.addAttribute("historique", historique);
-        model.addAttribute("soldeConges", soldeConges);
+        model.addAttribute("historique", demandesHistorique.size());
+
+        model.addAttribute("notifications", notifications);
+        model.addAttribute("notificationsCount", notifications.size());
 
         return "dashboard-rh";
     }
@@ -478,4 +495,62 @@ public class RhController {
         return "historique-validations-rh";
     }
 
+    // ---------------- Liste des demandes du directeur ----------------
+    @GetMapping("/rh/demandes-directeur")
+    public String afficherDemandesDirecteur(Model model) {
+        List<DemandeConge> demandes = demandeCongeRepository.findByDemandeurRole("DIRECTEUR");
+
+        // Compter les demandes non lues par RH
+        long nouvellesDemandes = demandes.stream()
+                .filter(d -> Boolean.FALSE.equals(d.getLuParRH()))
+                .count();
+
+        // Ajouter les attributs au modèle
+        model.addAttribute("demandes", demandes);
+        model.addAttribute("nouvellesDemandes", nouvellesDemandes);
+
+        return "demandes-directeur";
+    }
+
+    // ---------------- Marquer les demandes comme lues ----------------
+    @GetMapping("/rh/demandes-directeur/lues")
+    public String marquerDemandesCommeLues() {
+        List<DemandeConge> nouvelles = demandeCongeRepository.findByDemandeurRole("DIRECTEUR")
+                .stream().filter(d -> Boolean.FALSE.equals(d.getLuParRH()))
+                .toList();
+
+        nouvelles.forEach(d -> d.setLuParRH(true));
+        demandeCongeRepository.saveAll(nouvelles);
+
+        return "redirect:/rh/demandes-directeur";
+    }
+
+    @GetMapping("/rh/notifications")
+    @ResponseBody
+    public List<Map<String, Object>> getNotifications() {
+        List<DemandeConge> nouvellesDemandes = demandeCongeRepository.findByDemandeurRole("DIRECTEUR")
+                .stream()
+                .filter(d -> d.getLuParRH() == null || !d.getLuParRH())
+                .toList();
+
+        return nouvellesDemandes.stream()
+                .map(d -> {
+                    Map<String, Object> map = new HashMap<>();
+                    Map<String, String> demandeur = new HashMap<>();
+                    demandeur.put("nom", d.getDemandeur().getNom());
+                    demandeur.put("prenom", d.getDemandeur().getPrenom());
+                    map.put("demandeur", demandeur);
+                    map.put("dateDebut", d.getDateDebut() != null ? d.getDateDebut().toString() : "");
+                    map.put("dateFin", d.getDateFin() != null ? d.getDateFin().toString() : "");
+                    map.put("dateSoumission",
+                            d.getDateSoumission() != null ? d.getDateSoumission().toLocalDate().toString() : "");
+                    map.put("heureSoumission",
+                            d.getDateSoumission() != null
+                                    ? d.getDateSoumission().toLocalTime().withSecond(0).withNano(0).toString()
+                                    : "");
+                    return map;
+                })
+                .toList();
+
+    }
 }

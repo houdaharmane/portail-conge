@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Demandes du Directeur</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-color: #f6f6f6;
+            --text-color: #000;
+            --header-bg: #0074C7;
+            --card-bg: #fff;
+            --card-shadow: rgba(0,0,0,0.1);
+            --sidebar-bg: #0074C7;
+            --link-color: #fff;
+            --highlight-color: #e9953d;
+        }
+
+        .dark-theme {
+            --bg-color: #1e1e1e;
+            --text-color: #f0f0f0;
+            --header-bg: #2c2c2c;
+            --card-bg: #2a2a2a;
+            --card-shadow: rgba(0,0,0,0.5);
+            --sidebar-bg: #0074C7;
+            --link-color: #fff;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+            background: var(--bg-color);
+            color: var(--text-color);
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 240px;
+            background-color: var(--sidebar-bg);
+            color: var(--link-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 100vh;
+            box-shadow: 2px 0 12px var(--card-shadow);
+            position: fixed;
+            left: 0;
+            top: 0;
+        }
+
+        .sidebar-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 32px 0 18px 0;
+        }
+
+        .sidebar-logo {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #fff;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            text-decoration: none;
+            color: var(--link-color);
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .sidebar-link i { font-size: 18px; }
+        .sidebar-link:hover, .sidebar-link.active {
+            background: rgba(255,255,255,0.15);
+            border-left: 4px solid #fff;
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+        }
+
+        /* Main container */
+        .main-container {
+            margin-left: 240px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            height: 60px;
+            background-color: var(--header-bg);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .header a {
+            text-decoration: none;
+            color: #fff;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            font-size: 17px;
+        }
+
+        .header a i { margin-right: 8px; font-size: 24px; }
+        .theme-toggle-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        /* Main content */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            background: var(--bg-color);
+            overflow-y: auto;
+        }
+
+        .dashboard-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--highlight-color);
+            margin-bottom: 20px;
+        }
+
+        /* Cards */
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            box-shadow: 0 2px 12px var(--card-shadow);
+            border-radius: 12px;
+            padding: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px var(--card-shadow);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .card-id {
+            font-weight: 600;
+            color: #0074C7;
+        }
+
+        .card-status {
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+        }
+
+        /* Badges pour statuts */
+        .status-APPROUVÉ { background: #d4edda; color: #155724; }
+        .status-REFUSÉ { background: #f8d7da; color: #721c24; }
+        .status-EN_ATTENTE { background: #fff3cd; color: #856404; }
+
+        .card-body p {
+            margin: 6px 0;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div>
+        <div class="sidebar-header">
+            <img src="/img/modepbg.png" alt="Logo MODEP" class="sidebar-logo">
+        </div>
+
+        <nav>
+            <a th:href="@{/dashboard-rh}" class="sidebar-link"><i class="fa fa-home"></i> Tableau de bord</a>
+            <a th:href="@{/personnel/ajouter}" class="sidebar-link"><i class="fa fa-users"></i> Ajout des utilisateurs</a>
+            <a th:href="@{/rh/utilisateurs}" class="sidebar-link"><i class="fa fa-user-cog"></i> Gestion des utilisateurs</a>
+            <a th:href="@{/rh/demandes-responsable}" class="sidebar-link"><i class="fa fa-user-check"></i> Demandes du Responsable</a>
+            <a th:href="@{/rh/demandes-approuvees}" class="sidebar-link"><i class="fa fa-check-circle"></i> Demandes des employés</a>
+            <a th:href="@{/rh/historique-demandes}" class="sidebar-link"><i class="fa fa-history"></i> Historique validations</a>
+            <a th:href="@{/conge/demande}" class="sidebar-link"><i class="fa fa-plane-departure"></i> Demande de congé</a>
+            <a th:href="@{/rh/demandes-directeur}" class="sidebar-link"><i class="fa fa-bell"></i> Nouvelles demandes</a>
+        </nav>
+    </div>
+
+    <div class="sidebar-footer">
+        <a href="/logout" class="sidebar-link"><i class="fa fa-sign-out-alt"></i> Déconnexion</a>
+    </div>
+</div>
+
+<div class="main-container">
+    <div class="header">
+        <a th:href="@{/profil}">
+            <i class="fa fa-user-circle"></i>
+            <span th:text="${rh != null} ? ${rh.role} : 'RH'">RH</span>
+        </a>
+        <button id="theme-toggle" class="theme-toggle-btn">
+            <i class="fa fa-moon"></i>
+        </button>
+    </div>
+
+    <div class="main-content">
+
+        <div class="cards-container">
+            <div class="card" th:each="demande : ${demandes}">
+                <div class="card-header">
+                    <span class="card-id">ID: <span th:text="${demande.id}"></span></span>
+                    <span class="card-status" th:classappend="' status-' + ${demande.statut}" th:text="${demande.statut}"></span>
+                </div>
+                <div class="card-body">
+                    <p><i class="fa fa-user"></i> <strong>Demandeur :</strong> <span th:text="${demande.demandeur.nom} + ' ' + ${demande.demandeur.prenom}"></span></p>
+                    <p><i class="fa fa-calendar-day"></i> <strong>Date début :</strong> <span th:text="${demande.dateDebut}"></span></p>
+                    <p><i class="fa fa-calendar-check"></i> <strong>Date fin :</strong> <span th:text="${demande.dateFin}"></span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const toggleBtn = document.getElementById('theme-toggle');
+    const body = document.body;
+
+    if (localStorage.getItem('theme') === 'dark') {
+        body.classList.add('dark-theme');
+        toggleBtn.innerHTML = '<i class="fa fa-sun"></i>';
+    }
+
+    toggleBtn.addEventListener('click', () => {
+        body.classList.toggle('dark-theme');
+        const isDark = body.classList.contains('dark-theme');
+        toggleBtn.innerHTML = isDark ? '<i class="fa fa-sun"></i>' : '<i class="fa fa-moon"></i>';
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    });
+</script>
+
+</body>
+</html>

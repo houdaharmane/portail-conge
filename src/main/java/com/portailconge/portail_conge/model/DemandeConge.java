@@ -10,6 +10,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Transient;
 
 @Entity
@@ -18,63 +20,41 @@ public class DemandeConge {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private LocalDate dateFin;
+
     private LocalDate dateDebut;
+    private LocalDate dateFin;
     private int duree; // durée en jours
 
     @ManyToOne
-    private Utilisateur demandeur; // le personnel qui fait la demande
-    @Enumerated(EnumType.STRING)
-    private StatutDemande statut;
-
-    public DemandeConge() {
-    }
+    private Utilisateur demandeur;
 
     @ManyToOne
     private Departement departement;
 
-    public Departement getDepartement() {
-        return departement;
-    }
+    @Enumerated(EnumType.STRING)
+    private StatutDemande statut;
 
-    public void setDepartement(Departement departement) {
-        this.departement = departement;
-    }
+    @Column(name = "lu_par_rh")
+    private Boolean luParRH = false;
 
+    @Column(name = "date_soumission")
+    private LocalDateTime dateSoumission;
+
+    // Champs temporaires pour l'affichage formaté
     @Transient
     private String dateDebutFormatee;
 
     @Transient
     private String dateFinFormatee;
 
-    public String getDateDebutFormatee() {
-        return dateDebutFormatee;
-    }
-
-    public void setDateDebutFormatee(String dateDebutFormatee) {
-        this.dateDebutFormatee = dateDebutFormatee;
-    }
-
-    public String getDateFinFormatee() {
-        return dateFinFormatee;
-    }
-
-    public void setDateFinFormatee(String dateFinFormatee) {
-        this.dateFinFormatee = dateFinFormatee;
-    }
-
     @Transient
     private String dateSoumissionFormatee;
 
-    public String getDateSoumissionFormatee() {
-        return dateSoumissionFormatee;
+    // -------------------- Constructeurs --------------------
+    public DemandeConge() {
     }
 
-    public void setDateSoumissionFormatee(String dateSoumissionFormatee) {
-        this.dateSoumissionFormatee = dateSoumissionFormatee;
-    }
-    // Getters et setters
-
+    // -------------------- Getters et Setters --------------------
     public Long getId() {
         return id;
     }
@@ -89,6 +69,14 @@ public class DemandeConge {
 
     public void setDateDebut(LocalDate dateDebut) {
         this.dateDebut = dateDebut;
+    }
+
+    public LocalDate getDateFin() {
+        return dateFin;
+    }
+
+    public void setDateFin(LocalDate dateFin) {
+        this.dateFin = dateFin;
     }
 
     public int getDuree() {
@@ -107,6 +95,14 @@ public class DemandeConge {
         this.demandeur = demandeur;
     }
 
+    public Departement getDepartement() {
+        return departement;
+    }
+
+    public void setDepartement(Departement departement) {
+        this.departement = departement;
+    }
+
     public StatutDemande getStatut() {
         return statut;
     }
@@ -115,23 +111,43 @@ public class DemandeConge {
         this.statut = statut;
     }
 
-    public LocalDate getDateFin() {
-        return dateFin;
+    public Boolean getLuParRH() {
+        return luParRH;
     }
 
-    public void setDateFin(LocalDate dateFin) {
-        this.dateFin = dateFin;
+    public void setLuParRH(Boolean luParRH) {
+        this.luParRH = luParRH;
     }
 
-    @Column(name = "date_soumission")
-    private LocalDate dateSoumission;
-
-    public LocalDate getDateSoumission() {
+    public LocalDateTime getDateSoumission() {
         return dateSoumission;
     }
 
-    public void setDateSoumission(LocalDate dateSoumission) {
+    public void setDateSoumission(LocalDateTime dateSoumission) {
         this.dateSoumission = dateSoumission;
     }
 
+    public String getDateDebutFormatee() {
+        return dateDebutFormatee;
+    }
+
+    public void setDateDebutFormatee(String dateDebutFormatee) {
+        this.dateDebutFormatee = dateDebutFormatee;
+    }
+
+    public String getDateFinFormatee() {
+        return dateFinFormatee;
+    }
+
+    public void setDateFinFormatee(String dateFinFormatee) {
+        this.dateFinFormatee = dateFinFormatee;
+    }
+
+    public String getDateSoumissionFormatee() {
+        return dateSoumissionFormatee;
+    }
+
+    public void setDateSoumissionFormatee(String dateSoumissionFormatee) {
+        this.dateSoumissionFormatee = dateSoumissionFormatee;
+    }
 }

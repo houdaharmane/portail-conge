@@ -14,7 +14,6 @@
             --card-shadow: #e9953d22;
             --sidebar-bg: #0074C7;
             --link-color: #fff;
-            
         }
 
         .dark-theme {
@@ -36,7 +35,8 @@
             color: var(--text-color);
         }
 
-   .sidebar {
+        /* Sidebar */
+        .sidebar {
             width: 240px;
             background-color: var(--sidebar-bg);
             color: var(--link-color);
@@ -56,83 +56,79 @@
             width: 90px;
             height: 90px;
             border-radius: 50%;
-            background: #fff;
             object-fit: cover;
+            background: #fff; 
+            box-shadow: 0 2px 8px #fff2;
             margin-bottom: 10px;
+        }
+        .dark-theme .sidebar-logo {
+            background: #2a2a2a; 
+            box-shadow: 0 2px 8px #0005;
         }
         .sidebar-menu {
             display: flex;
             flex-direction: column;
+            gap: 4px;
         }
-      .sidebar-link {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 20px;
-    text-decoration: none;
-    color: var(--link-color);
-    font-weight: 600;
-    font-size: 13px;
-}
-
-.sidebar-link i {
-    font-size: 20px;
-    min-width: 20px;
-}
-
-.sidebar-menu {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 20px;
+            text-decoration: none;
+            color: var(--link-color);
+            font-weight: 600;
+            font-size: 13px;
+        }
+        .sidebar-link i {
+            font-size: 20px;
+            min-width: 20px;
+        }
         .sidebar-link:hover, .sidebar-link.active {
             background: rgba(255,255,255,0.15);
             border-left: 4px solid #fff;
         }
 
+        /* Main content */
         .main-container {
             flex: 1;
             display: flex;
             flex-direction: column;
         }
-
-      .header {
-    height: 60px;
-    background-color: var(--header-bg);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 20px;
-    border-bottom: 1px solid #ccc;
-    box-shadow: 0 2px 8px #e9953d11;
-}
-
-.header a {
-    text-decoration: none;
-    color: #0074C7;
-    display: flex;
-    align-items: center;
-    font-weight: 600;
-    font-size: 17px;
-}
-
-.header a i {
-    margin-right: 8px;
-    font-size: 24px;
-}
-
-.theme-toggle-btn {
-    background: none;
-    border: none;
-    font-size: 20px;
-    color: #0074C7;
-    cursor: pointer;
-}
-
-.dark-theme .theme-toggle-btn {
-    color: #f0f0f0;
-}
+        .header {
+            height: 60px;
+            background-color: var(--header-bg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            border-bottom: 1px solid #ccc;
+            box-shadow: 0 2px 8px #e9953d11;
+            position: relative;
+        }
+        .header a {
+            text-decoration: none;
+            color: #0074C7;
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            font-size: 17px;
+        }
+        .header a i {
+            margin-right: 8px;
+            font-size: 24px;
+        }
+        .theme-toggle-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #0074C7;
+            cursor: pointer;
+            margin-left: 15px;
+        }
+        .dark-theme .theme-toggle-btn {
+            color: #f0f0f0;
+        }
 
         .main-content {
             flex: 1;
@@ -143,21 +139,18 @@
             padding: 40px 0;
             background-color: var(--bg-color);
         }
-
         .dashboard-title {
             font-size: 28px;
             color: #0074C7;
             font-weight: 700;
             margin-bottom: 18px;
         }
-
         .dashboard-cards {
             display: flex;
             gap: 24px;
             margin-top: 15px;
             flex-wrap: wrap;
         }
-
         .card {
             background: var(--card-bg);
             border-radius: 14px;
@@ -169,47 +162,112 @@
             flex-direction: column;
             align-items: center;
         }
-
         .card-icon {
             font-size: 32px;
             color: #0074C7;
             margin-bottom: 10px;
         }
-
         .card-title {
             font-size: 17px;
             font-weight: 600;
             color: var(--text-color);
             margin-bottom: 4px;
         }
-
         .card-value {
             font-size: 22px;
             color: #0074C7;
             font-weight: 700;
         }
-
         @media (max-width: 900px) {
             .dashboard-cards {
                 flex-direction: column;
                 gap: 18px;
             }
         }
-        .sidebar-logo {
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
-    object-fit: cover;
-    background: #fff; 
-    box-shadow: 0 2px 8px #fff2;
-    margin-bottom: 10px;
+
+        /* Notifications popup */
+      /* Notifications en bas à droite */
+.notif-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 999;
 }
 
-/* Mode sombre */
-.dark-theme .sidebar-logo {
-    background: #2a2a2a; 
-    box-shadow: 0 2px 8px #0005;
+.notif-icon {
+    font-size: 28px;
+    cursor: pointer;
+    color: #0074C7;
+    position: relative;
 }
+
+.notif-badge {
+    min-width: 18px;
+    height: 18px;
+    background: red;
+    color: white;
+    border-radius: 50%;
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    text-align: center;
+    font-size: 12px;
+    line-height: 18px;
+    display: none;
+    font-weight: bold;
+}
+
+.notif-popup {
+    display: none;
+    position: absolute;
+    bottom: 40px; 
+    right: 0;
+    width: 600px;
+    max-height: 400px;
+    overflow-y: auto;
+    background: var(--card-bg);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    border-radius: 10px;
+    padding: 10px;
+    transition: all 0.2s ease;
+    padding: 12px;
+}
+.dark-theme .notif-popup li:nth-child(odd) {
+    background: #2c2c2c;
+}
+.dark-theme .notif-popup li:nth-child(even) {
+    background: #333333;
+}
+
+.notif-popup li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--card-bg); 
+    margin-bottom: 8px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    color: var(--text-color);
+    font-weight: 500; 
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
+}
+
+
+
+.notif-popup li .notif-time {
+    font-size: 12px;
+    color: #555; /* plus lisible */
+    margin-left: 8px;
+    font-style: italic;
+}
+
+.notif-badge {
+    justify-content: center;
+    align-items: center;
+    display: none;
+}
+
     </style>
 </head>
 <body>
@@ -219,37 +277,19 @@
         <div class="sidebar-header">
             <img src="/img/modepbg.png" alt="Logo MODEP" class="sidebar-logo">
         </div>
-        
-<nav>
-    <a th:href="@{/dashboard-rh}" th:classappend="${activePage == 'dashboard'} ? ' active'" class="sidebar-link">
-        <i class="fa fa-home"></i> <span>Tableau de bord</span>
-    </a>
-    <a th:href="@{/personnel/ajouter}" th:classappend="${activePage == 'personnel'} ? ' active'" class="sidebar-link">
-        <i class="fa fa-users"></i> <span>Ajout des utilisateurs</span>
-    </a>
-    <a th:href="@{/rh/utilisateurs}" th:classappend="${activePage == 'utilisateurs'} ? ' active'" class="sidebar-link">
-        <i class="fa fa-user-cog"></i> <span>Gestion des utilisateurs</span>
-    </a>
-
-    <a th:href="@{/rh/demandes-responsable}" th:classappend="${activePage == 'demandesResponsable'} ? ' active'" class="sidebar-link">
-        <i class="fa fa-user-check"></i> <span>Demandes du Responsable</span>
-    </a>
-
-    <a th:href="@{/rh/demandes-approuvees}" th:classappend="${activePage == 'demandesApprouvees'} ? ' active'" class="sidebar-link">
-        <i class="fa fa-check-circle"></i> <span>Demandes des employes</span>
-    </a>
-
-    <a th:href="@{/rh/historique-demandes}" th:classappend="${activePage == 'historique'} ? ' active'" class="sidebar-link">
-        <i class="fa fa-history"></i> <span>Historique validations</span>
-    </a>
-    <a th:href="@{/conge/demande}" th:classappend="${activePage == 'demandeConge'} ? ' active'" class="sidebar-link">
-        <i class="fa fa-plane-departure"></i> <span>Demande de congé</span>
-    </a>
-</nav>
-
+        <nav>
+            <a th:href="@{/dashboard-rh}" class="sidebar-link"><i class="fa fa-home"></i> Tableau de bord</a>
+            <a th:href="@{/personnel/ajouter}" class="sidebar-link"><i class="fa fa-users"></i> Ajout des utilisateurs</a>
+            <a th:href="@{/rh/utilisateurs}" class="sidebar-link"><i class="fa fa-user-cog"></i> Gestion des utilisateurs</a>
+            <a th:href="@{/rh/demandes-responsable}" class="sidebar-link"><i class="fa fa-user-check"></i> Demandes du Responsable</a>
+            <a th:href="@{/rh/demandes-approuvees}" class="sidebar-link"><i class="fa fa-check-circle"></i> Demandes des employés</a>
+            <a th:href="@{/rh/historique-demandes}" class="sidebar-link"><i class="fa fa-history"></i> Historique validations</a>
+            <a th:href="@{/conge/demande}" class="sidebar-link"><i class="fa fa-plane-departure"></i> Demande de congé</a>
+            <a th:href="@{/rh/demandes-directeur}" class="sidebar-link"><i class="fa fa-bell"></i> Nouvelles demandes</a>
+        </nav>
     </div>
     <div class="sidebar-footer">
-        <a href="/logout" class="sidebar-link"><i class="fa fa-sign-out-alt"></i> <span>Déconnexion</span></a>
+        <a href="/logout" class="sidebar-link"><i class="fa fa-sign-out-alt"></i> Déconnexion</a>
     </div>
 </div>
 
@@ -259,55 +299,93 @@
             <i class="fa fa-user-circle fa-lg"></i>
             <span th:text="${rh.role}">RH</span>
         </a>
-        <button id="theme-toggle" class="theme-toggle-btn" title="Changer de thème">
-            <i class="fa fa-moon"></i>
-        </button>
+        <div style="display:flex; align-items:center;">
+            <button id="theme-toggle" class="theme-toggle-btn" title="Changer de thème">
+                <i class="fa fa-moon"></i>
+            </button>
+            <!-- Notifications -->
+       <div class="notif-container">
+    <i class="fa fa-bell notif-icon" id="notif-btn"></i>
+    <span class="notif-badge" id="notif-badge"></span>
+    <ul class="notif-popup" id="notif-popup"></ul>
+</div>
+
+
+        </div>
     </div>
 
     <div class="main-content">
         <div class="dashboard-title">Bienvenue sur votre espace RH</div>
-<div class="dashboard-cards">
-    <div class="card">
-        <div class="card-icon"><i class="fa fa-calendar-check"></i></div>
-        <div class="card-title">Demandes en attente</div>
-        <div class="card-value" th:text="${demandesEnAttente}">0</div>
-    </div>
-  <div class="card">
-<div class="card-icon"><i class="fa-solid fa-circle-xmark"></i></div>
-        <div class="card-title">Demandes Refuses</div>
-        <div class="card-value" th:text="${demandesRefuses}">0</div>
-    </div>
-    <div class="card">
-        <div class="card-icon"><i class="fa fa-check-circle"></i></div>
-        <div class="card-title">Demandes validées</div>
-        <div class="card-value" th:text="${demandesValidees}">0</div>
-    </div>
-
-    <div class="card">
-        <div class="card-icon"><i class="fa fa-history"></i></div>
-        <div class="card-title">Historique</div>
-        <div class="card-value" th:text="${historique}">0</div>
-    </div>
-</div>
-
+        <div class="dashboard-cards">
+            <div class="card"><div class="card-icon"><i class="fa fa-calendar-check"></i></div><div class="card-title">Demandes en attente</div><div class="card-value" th:text="${demandesEnAttente}">0</div></div>
+            <div class="card"><div class="card-icon"><i class="fa-solid fa-circle-xmark"></i></div><div class="card-title">Demandes Refusées</div><div class="card-value" th:text="${demandesRefuses}">0</div></div>
+            <div class="card"><div class="card-icon"><i class="fa fa-check-circle"></i></div><div class="card-title">Demandes validées</div><div class="card-value" th:text="${demandesValidees}">0</div></div>
+            <div class="card"><div class="card-icon"><i class="fa fa-history"></i></div><div class="card-title">Historique</div><div class="card-value" th:text="${historique}">0</div></div>
+        </div>
     </div>
 </div>
 
 <script>
+    // Theme toggle
     const toggleBtn = document.getElementById('theme-toggle');
     const body = document.body;
 
     if (localStorage.getItem('theme') === 'dark') {
         body.classList.add('dark-theme');
-        toggleBtn.innerHTML = '<i class="fa fa-sun"></i>';
+        toggleBtn.querySelector('i').classList.replace('fa-moon','fa-sun');
     }
 
     toggleBtn.addEventListener('click', () => {
         body.classList.toggle('dark-theme');
         const isDark = body.classList.contains('dark-theme');
-        toggleBtn.innerHTML = isDark ? '<i class="fa fa-sun"></i>' : '<i class="fa fa-moon"></i>';
+        const icon = toggleBtn.querySelector('i');
+        if (isDark) icon.classList.replace('fa-moon','fa-sun');
+        else icon.classList.replace('fa-sun','fa-moon');
         localStorage.setItem('theme', isDark ? 'dark' : 'light');
     });
+
+    // Notifications popup
+    const notifBtn = document.getElementById('notif-btn');
+    const notifPopup = document.getElementById('notif-popup');
+    const notifBadge = document.getElementById('notif-badge');
+
+    // Toggle popup
+    notifBtn.addEventListener('click', () => {
+        notifPopup.style.display = notifPopup.style.display === 'block' ? 'none' : 'block';
+    });
+
+    // Charger notifications depuis le backend
+    function chargerNotifications() {
+        fetch('/rh/notifications')
+            .then(res => res.json())
+            .then(notifs => {
+                notifPopup.innerHTML = '';
+
+                if (notifs && notifs.length > 0) {
+                    notifBadge.style.display = 'flex';
+                    notifBadge.textContent = notifs.length;
+
+                    notifs.forEach(notif => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `
+                            🔔 <b>${notif.demandeur.nom} ${notif.demandeur.prenom}</b> a demandé un congé du 
+                            ${notif.dateDebut} au ${notif.dateFin} 
+                            <span class="notif-time">${notif.dateSoumission} ${notif.heureSoumission}</span>`;
+                        notifPopup.appendChild(li);
+                    });
+                } else {
+                    notifBadge.style.display = 'none';
+                    const li = document.createElement('li');
+                    li.textContent = "Aucune nouvelle notification";
+                    notifPopup.appendChild(li);
+                }
+            })
+            .catch(err => console.error('Erreur chargement notifications:', err));
+    }
+
+    // Vérification toutes les 5 secondes
+    setInterval(chargerNotifications, 5000);
+    chargerNotifications();
 </script>
 
 </body>

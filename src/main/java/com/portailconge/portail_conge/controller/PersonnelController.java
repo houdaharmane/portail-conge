@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -243,7 +244,7 @@ public class PersonnelController {
 
         demandeConge.setDemandeur(personnel);
         demandeConge.setStatut(StatutDemande.EN_ATTENTE_RESPONSABLE);
-        demandeConge.setDateSoumission(LocalDate.now());
+        demandeConge.setDateSoumission(LocalDateTime.now());
         demandeCongeRepository.save(demandeConge);
 
         model.addAttribute("dashboardUrl", "/personnel/dashboard");
