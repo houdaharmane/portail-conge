@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.portailconge.portail_conge.model.DemandeConge;
+import com.portailconge.portail_conge.model.PdfGenerator;
 import com.portailconge.portail_conge.model.StatutDemande;
 import com.portailconge.portail_conge.model.Utilisateur;
 import com.portailconge.portail_conge.repository.DepartementRepository;
@@ -14,6 +15,7 @@ import com.portailconge.portail_conge.repository.UtilisateurRepository;
 import jakarta.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -153,9 +155,27 @@ public class DirecteurController {
         }
 
         demandeCongeRepository.findById(id).ifPresent(demande -> {
-            // Vérifier que la demande est en attente du directeur
             if (demande.getStatut() == StatutDemande.EN_ATTENTE_DIRECTEUR) {
-                demande.setStatut(StatutDemande.APPROUVEE_DIRECTEUR); // approuvée par le directeur
+                demande.setStatut(StatutDemande.APPROUVEE_DIRECTEUR);
+
+                try {
+                    byte[] pdfBytes = PdfGenerator.generateCongePdf(demande, "Titre de Congé");
+
+                    // Définir un nom de fichier unique
+                    String nomFichier = "Titre_Conge_" + demande.getId() + ".pdf";
+                    demande.setTitreConge(nomFichier);
+
+                    // Sauvegarder dans un dossier local "conges"
+                    java.nio.file.Path path = java.nio.file.Paths.get("./conges/");
+                    if (!java.nio.file.Files.exists(path)) {
+                        java.nio.file.Files.createDirectories(path);
+                    }
+                    java.nio.file.Files.write(path.resolve(nomFichier), pdfBytes);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
                 demandeCongeRepository.save(demande);
             }
         });
@@ -233,6 +253,21 @@ public class DirecteurController {
         model.addAttribute("activePage", "historique");
 
         return "historique-directeur";
+    }
+
+    @GetMapping("/conge/download/{id}")
+    public ResponseEntity<byte[]> telechargerPdf(@PathVariable Long id) throws Exception {
+        DemandeConge demande = demandeCongeRepository.findById(id).orElse(null);
+        if (demande == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        byte[] pdfBytes = PdfGenerator.generateCongePdf(demande, "Titre de Congé");
+
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=\"Titre_Conge_" + demande.getId() + ".pdf\"")
+                .contentType(org.springframework.http.MediaType.APPLICATION_PDF)
+                .body(pdfBytes);
     }
 
 }

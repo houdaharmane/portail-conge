@@ -45,7 +45,7 @@ public class DemandeConge {
     @Enumerated(EnumType.STRING)
     private StatutFiche statutFiche;
 
-    private String destinataireActuel; // email ou role actuel
+    private String destinataireActuel;
 
     // Champs temporaires pour affichage formaté
     @Transient
@@ -56,6 +56,27 @@ public class DemandeConge {
 
     @Transient
     private String dateSoumissionFormatee;
+    private String titreConge;
+
+    public String getTitreConge() {
+        return titreConge;
+    }
+
+    public void setTitreConge(String titreConge) {
+        this.titreConge = titreConge;
+    }
+
+    // Champ temporaire pour afficher le bouton "Télécharger Titre"
+    @Transient
+    private boolean titreVisible;
+
+    public boolean isTitreVisible() {
+        return titreVisible;
+    }
+
+    public void setTitreVisible(boolean titreVisible) {
+        this.titreVisible = titreVisible;
+    }
 
     // -------------------- Enum --------------------
     public enum StatutFiche {

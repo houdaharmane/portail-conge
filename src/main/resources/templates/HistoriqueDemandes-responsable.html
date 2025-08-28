@@ -295,6 +295,11 @@
    title="Télécharger la fiche PDF">
     <i class="fa fa-file-pdf"></i>
 </a>
+<a th:if="${demande.titreVisible}"
+   th:href="@{/demandes/telecharger-titre/{id}(id=${demande.id})}" 
+   class="btn btn-success btn-sm">
+    <i class="fa fa-file-pdf"></i> 
+</a>
 
                     </div>
                 </div>

@@ -1,8 +1,8 @@
 package com.portailconge.portail_conge.controller;
 
-import com.portailconge.portail_conge.model.CongePdfGenerator;
 import com.portailconge.portail_conge.model.DemandeConge;
 import com.portailconge.portail_conge.model.Departement;
+import com.portailconge.portail_conge.model.PdfGenerator;
 import com.portailconge.portail_conge.model.Personnel;
 import com.portailconge.portail_conge.model.StatutDemande;
 import com.portailconge.portail_conge.model.Utilisateur;
@@ -49,8 +49,6 @@ public class PersonnelController {
 
     @Autowired
     private CongeAdministratifService congeService;
-    @Autowired
-    private CongePdfGenerator congePdfGenerator;
 
     @GetMapping("/ajouter")
     public String afficherFormulaireAjout(Model model, HttpSession session) {
@@ -269,25 +267,50 @@ public class PersonnelController {
         return ResponseEntity.ok(solde);
     }
 
-    @GetMapping("/demande/{id}/fiche-pdf")
-    public ResponseEntity<byte[]> genererFichePdf(@PathVariable("id") Long demandeId) throws IOException {
+    @GetMapping("/demande/{id}/titre-conge")
+    public ResponseEntity<byte[]> genererTitreConge(@PathVariable("id") Long demandeId, HttpSession session) {
+        // Vérifier l'utilisateur connecté
+        Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
+        if (utilisateur == null) {
+            return ResponseEntity.status(403).build(); // pas connecté
+        }
+
         // Récupérer la demande
         DemandeConge demande = demandeCongeRepository.findById(demandeId)
                 .orElseThrow(() -> new RuntimeException("Demande non trouvée"));
 
-        byte[] pdf;
-        try {
-            // Toujours générer le PDF, même si non approuvée
-            pdf = congePdfGenerator.genererFichePdf(demande, demande.getDemandeur());
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Erreur lors de la génération du PDF");
+        // Vérifier que la demande est approuvée par le directeur
+        if (demande.getStatut() != StatutDemande.APPROUVEE_DIRECTEUR) {
+            return ResponseEntity.status(403).build();
         }
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=FicheConge_" + demandeId + ".pdf")
-                .header(HttpHeaders.CONTENT_TYPE, "application/pdf")
-                .body(pdf);
+        // Vérifier que l'utilisateur est autorisé : demandeur, RH ou DIRECTEUR
+        boolean autorise = demande.getDemandeur().getId() == utilisateur.getId()
+                || "RH".equalsIgnoreCase(utilisateur.getRole())
+                || "DIRECTEUR".equalsIgnoreCase(utilisateur.getRole());
+
+        if (!autorise) {
+            return ResponseEntity.status(403).build();
+        }
+
+        try {
+            String titrePdf = "Titre de congé";
+            byte[] pdf = PdfGenerator.generateCongePdf(demande, titrePdf);
+
+            if (pdf == null) {
+                return ResponseEntity.status(500).build();
+            }
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=TitreConge_" + demande.getId() + ".pdf")
+                    .header(HttpHeaders.CONTENT_TYPE, "application/pdf")
+                    .body(pdf);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).build();
+        }
     }
 
 }

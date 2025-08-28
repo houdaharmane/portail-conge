@@ -227,6 +227,16 @@
                         <a th:href="@{/personnel/demande/{id}/fiche-pdf(id=${demande.id})}" class="pdf-btn" title="Télécharger PDF">
                             <i class="fa fa-file-pdf"></i>
                         </a>
+                        
+    <!-- Bouton titre de congé seulement si approuvée par le directeur -->
+ <a th:if="${demande.statut.name() == 'APPROUVEE_DIRECTEUR'}"
+   th:href="@{/personnel/demande/{id}/titre-conge(id=${demande.id})}" 
+   class="pdf-btn" 
+   title="Télécharger le titre de congé">
+    <i class="fa fa-file-pdf"></i>
+</a>
+
+
                     </div>
                 </div>
             </div>
