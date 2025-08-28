@@ -22,6 +22,17 @@ public class Utilisateur {
         this.photo = photo;
     }
 
+    private String signatureImagePath;
+
+    // ===== Getters et setters =====
+    public String getSignatureImagePath() {
+        return signatureImagePath;
+    }
+
+    public void setSignatureImagePath(String signatureImagePath) {
+        this.signatureImagePath = signatureImagePath;
+    }
+
     private String photoUrl;
     private String matricule;
     private String nom;

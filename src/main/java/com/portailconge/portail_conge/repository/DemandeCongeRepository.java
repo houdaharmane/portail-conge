@@ -70,7 +70,10 @@ public interface DemandeCongeRepository extends JpaRepository<DemandeConge, Long
         Page<DemandeConge> findByDemandeurAndStatutIn(Utilisateur demandeur, List<StatutDemande> statuts,
                         Pageable pageable);
 
-        @Query("SELECT d FROM DemandeConge d WHERE d.demandeur.departement = :departement AND d.statut = :statut AND d.demandeur.role = 'PERSONNEL'")
+        @Query("SELECT d FROM DemandeConge d " +
+                        "WHERE d.demandeur.departement = :departement " +
+                        "AND d.statut = :statut " +
+                        "AND d.demandeur.role = 'PERSONNEL'")
         List<DemandeConge> findDemandesEnAttentePersonnelByDepartement(@Param("departement") Departement departement,
                         @Param("statut") StatutDemande statut);
 
@@ -99,5 +102,17 @@ public interface DemandeCongeRepository extends JpaRepository<DemandeConge, Long
         List<DemandeConge> findByLuParRHFalse();
 
         List<DemandeConge> findByDemandeurRoleAndLuParRHFalse(String role);
+
+        @Query("SELECT d FROM DemandeConge d " +
+                        "WHERE (:role IS NULL OR d.demandeur.role = :role) " +
+                        "AND (:matricule IS NULL OR d.demandeur.matricule LIKE %:matricule%)")
+        Page<DemandeConge> findByRoleAndMatricule(@Param("role") String role,
+                        @Param("matricule") String matricule,
+                        Pageable pageable);
+
+        // Dans DemandeCongeRepository
+        int countByStatutAndDemandeur_Departement(StatutDemande statut, Departement departement);
+
+        List<DemandeConge> findByDemandeur_Departement(Departement departement);
 
 }

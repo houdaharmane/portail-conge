@@ -8,11 +8,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
+import jakarta.persistence.Transient;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-
-import jakarta.persistence.Transient;
 
 @Entity
 public class DemandeConge {
@@ -23,7 +22,7 @@ public class DemandeConge {
 
     private LocalDate dateDebut;
     private LocalDate dateFin;
-    private int duree; // durée en jours
+    private int duree; // Durée en jours
 
     @ManyToOne
     private Utilisateur demandeur;
@@ -40,7 +39,15 @@ public class DemandeConge {
     @Column(name = "date_soumission")
     private LocalDateTime dateSoumission;
 
-    // Champs temporaires pour l'affichage formaté
+    private String fonction;
+    private String lieuDate;
+
+    @Enumerated(EnumType.STRING)
+    private StatutFiche statutFiche;
+
+    private String destinataireActuel; // email ou role actuel
+
+    // Champs temporaires pour affichage formaté
     @Transient
     private String dateDebutFormatee;
 
@@ -49,6 +56,14 @@ public class DemandeConge {
 
     @Transient
     private String dateSoumissionFormatee;
+
+    // -------------------- Enum --------------------
+    public enum StatutFiche {
+        EN_ATTENTE_RESPONSABLE,
+        SIGNE_RESPONSABLE,
+        EN_ATTENTE_DIRECTEUR,
+        SIGNE_DIRECTEUR
+    }
 
     // -------------------- Constructeurs --------------------
     public DemandeConge() {
@@ -125,6 +140,38 @@ public class DemandeConge {
 
     public void setDateSoumission(LocalDateTime dateSoumission) {
         this.dateSoumission = dateSoumission;
+    }
+
+    public String getFonction() {
+        return fonction;
+    }
+
+    public void setFonction(String fonction) {
+        this.fonction = fonction;
+    }
+
+    public String getLieuDate() {
+        return lieuDate;
+    }
+
+    public void setLieuDate(String lieuDate) {
+        this.lieuDate = lieuDate;
+    }
+
+    public StatutFiche getStatutFiche() {
+        return statutFiche;
+    }
+
+    public void setStatutFiche(StatutFiche statutFiche) {
+        this.statutFiche = statutFiche;
+    }
+
+    public String getDestinataireActuel() {
+        return destinataireActuel;
+    }
+
+    public void setDestinataireActuel(String destinataireActuel) {
+        this.destinataireActuel = destinataireActuel;
     }
 
     public String getDateDebutFormatee() {

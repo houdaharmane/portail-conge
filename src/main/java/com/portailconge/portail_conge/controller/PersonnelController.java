@@ -1,5 +1,6 @@
 package com.portailconge.portail_conge.controller;
 
+import com.portailconge.portail_conge.model.CongePdfGenerator;
 import com.portailconge.portail_conge.model.DemandeConge;
 import com.portailconge.portail_conge.model.Departement;
 import com.portailconge.portail_conge.model.Personnel;
@@ -48,6 +49,8 @@ public class PersonnelController {
 
     @Autowired
     private CongeAdministratifService congeService;
+    @Autowired
+    private CongePdfGenerator congePdfGenerator;
 
     @GetMapping("/ajouter")
     public String afficherFormulaireAjout(Model model, HttpSession session) {
@@ -264,6 +267,27 @@ public class PersonnelController {
         int solde = congeService.calculerSoldeTotalDisponible(utilisateur, annee);
 
         return ResponseEntity.ok(solde);
+    }
+
+    @GetMapping("/demande/{id}/fiche-pdf")
+    public ResponseEntity<byte[]> genererFichePdf(@PathVariable("id") Long demandeId) throws IOException {
+        // Récupérer la demande
+        DemandeConge demande = demandeCongeRepository.findById(demandeId)
+                .orElseThrow(() -> new RuntimeException("Demande non trouvée"));
+
+        byte[] pdf;
+        try {
+            // Toujours générer le PDF, même si non approuvée
+            pdf = congePdfGenerator.genererFichePdf(demande, demande.getDemandeur());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Erreur lors de la génération du PDF");
+        }
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=FicheConge_" + demandeId + ".pdf")
+                .header(HttpHeaders.CONTENT_TYPE, "application/pdf")
+                .body(pdf);
     }
 
 }

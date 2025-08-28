@@ -24,11 +24,15 @@ public class UtilisateurService {
 
     // Méthode pour trouver un utilisateur par matricule (ou username)
     public Utilisateur findByUsername(String username) {
-        // Supposons que le matricule est unique et sert de username
         return utilisateurRepository.findByMatricule(username);
     }
 
     public int getNombrePersonnels() {
         return utilisateurRepository.countByRole("PERSONNEL");
+    }
+
+    // Nouvelle méthode pour récupérer le directeur
+    public Utilisateur getDirecteur() {
+        return utilisateurRepository.findByRole("DIRECTEUR");
     }
 }

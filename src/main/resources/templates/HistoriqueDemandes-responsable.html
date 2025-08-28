@@ -30,7 +30,7 @@
             margin: 0;
             font-family: 'Segoe UI', Arial, sans-serif;
             display: flex;
-            height: 100vh;
+            min-height: 100vh;
             background: var(--bg-color);
             color: var(--text-color);
         }
@@ -42,7 +42,7 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            height: 120vh; 
+            height: 100vh; 
             box-shadow: 2px 0 12px var(--card-shadow);
         }
 
@@ -134,10 +134,10 @@
             color: #0074C7;
         }
 
-        /* Cartes historique */
+        /* --- Cartes historique en petites cartes côte à côte --- */
         .historique-cartes {
             display: flex;
-            flex-direction: column;
+            flex-wrap: wrap;
             gap: 20px;
             padding-top: 6px;
         }
@@ -145,10 +145,12 @@
         .demande-carte {
             background-color: var(--card-bg);
             color: var(--text-color);
-            padding: 20px;
+            padding: 15px;
             border-radius: 12px;
             box-shadow: 0 4px 12px var(--card-shadow);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
+            width: calc(33.33% - 13.33px);
+            box-sizing: border-box;
         }
 
         .demande-carte:hover {
@@ -163,6 +165,11 @@
             margin-bottom: 10px;
         }
 
+        .demande-carte p {
+            font-size: 14px;
+            margin: 4px 0;
+        }
+
         .badge {
             background-color: #0074C7;
             color: white;
@@ -174,6 +181,19 @@
 
         .dark-theme .badge {
             background-color: #3385ff;
+        }
+
+        /* Bouton PDF */
+        .pdf-btn {
+            color: #d9534f;
+            font-size: 18px;
+            text-decoration: none;
+            transition: transform 0.2s;
+        }
+
+        .pdf-btn:hover {
+            transform: scale(1.2);
+            color: #c12e2a;
         }
 
         .active-page {
@@ -205,6 +225,19 @@
             color: white !important;
             pointer-events: none;
         }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .demande-carte {
+                width: calc(50% - 10px);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .demande-carte {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -215,30 +248,26 @@
         <div class="sidebar-header">
             <img src="/img/modepbg.png" alt="Logo MODEP" class="sidebar-logo">
         </div>
-          <nav>
-    <a th:href="@{/dashboard-responsable}" th:classappend="${activePage == 'dashboard'} ? ' active'" class="sidebar-link">
-        <i class="fa fa-home"></i> <span>Tableau de bord</span>
-    </a>
- <a th:href="@{/demandes-a-traiter}" th:classappend="${activePage == 'demandesATraiter'} ? ' active'" class="sidebar-link">
-  <i class="fa fa-wallet"></i> <span>Demandes à traiter</span>
-</a>
-<a th:href="@{/responsable/conge/demande}" th:classappend="${activePage == 'demandeConge'} ? ' active'" class="sidebar-link">
-    <i class="fa fa-plane-departure"></i> <span>Demande de congé</span>
-</a>
-
-    <a th:href="@{/profil-responsable}" th:classappend="${activePage == 'profil'} ? ' active'" class="sidebar-link">
-        <i class="fa fa-user"></i> <span>Mon profil</span>
-    </a>
-<a th:href="@{/responsable/historique-demandes-personnel}" th:classappend="${activePage == 'historiqueDemandesPersonnel'} ? ' active'" class="sidebar-link">
-    <i class="fa fa-history"></i> <span>Historique du personnel</span>
-</a>
-
-<a th:href="@{/responsable/historique-demandes-responsable}" th:classappend="${activePage == 'historiqueDemandesResponsable'} ? ' active'" class="sidebar-link">
-    <i class="fa fa-history"></i> <span>Historique du responsable</span>
-</a>
-
-
-</nav>
+        <nav>
+            <a th:href="@{/dashboard-responsable}" th:classappend="${activePage == 'dashboard'} ? ' active'" class="sidebar-link">
+                <i class="fa fa-home"></i> <span>Tableau de bord</span>
+            </a>
+            <a th:href="@{/demandes-a-traiter}" th:classappend="${activePage == 'demandesATraiter'} ? ' active'" class="sidebar-link">
+                <i class="fa fa-wallet"></i> <span>Demandes à traiter</span>
+            </a>
+            <a th:href="@{/responsable/conge/demande}" th:classappend="${activePage == 'demandeConge'} ? ' active'" class="sidebar-link">
+                <i class="fa fa-plane-departure"></i> <span>Demande de congé</span>
+            </a>
+            <a th:href="@{/profil-responsable}" th:classappend="${activePage == 'profil'} ? ' active'" class="sidebar-link">
+                <i class="fa fa-user"></i> <span>Mon profil</span>
+            </a>
+            <a th:href="@{/responsable/historique-demandes-personnel}" th:classappend="${activePage == 'historiqueDemandesPersonnel'} ? ' active'" class="sidebar-link">
+                <i class="fa fa-history"></i> <span>Historique du personnel</span>
+            </a>
+            <a th:href="@{/responsable/historique-demandes-responsable}" th:classappend="${activePage == 'historiqueDemandesResponsable'} ? ' active'" class="sidebar-link">
+                <i class="fa fa-history"></i> <span>Mes demandes</span>
+            </a>
+        </nav>
     </div>
     <div class="sidebar-footer">
         <a href="/logout" class="sidebar-link"><i class="fa fa-sign-out-alt"></i> Déconnexion</a>
@@ -254,12 +283,20 @@
     </div>
 
     <div class="main-content">
-
         <div class="historique-cartes">
             <div class="demande-carte" th:each="demande : ${demandes}">
-                <div class="demande-info">
+                <div class="demande-info" style="display: flex; justify-content: space-between; align-items: center;">
                     <strong th:text="${demande.demandeur.nom + ' ' + demande.demandeur.prenom}">Nom Prénom</strong>
-                    <span th:text="${demande.statut}" class="badge">Statut</span>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span th:text="${demande.statut}" class="badge">Statut</span>
+                        <!-- Bouton PDF visible uniquement si approuvée -->
+<a th:href="@{/personnel/demande/{id}/fiche-pdf(id=${demande.id})}"
+   class="pdf-btn"
+   title="Télécharger la fiche PDF">
+    <i class="fa fa-file-pdf"></i>
+</a>
+
+                    </div>
                 </div>
                 <p>
                     Du <span th:text="${#temporals.format(demande.dateDebut, 'dd/MM/yyyy')}">01/08/2025</span>
@@ -291,7 +328,6 @@
                 </li>
             </ul>
         </div>
-
     </div>
 </div>
 

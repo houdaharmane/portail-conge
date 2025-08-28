@@ -34,116 +34,131 @@
         }
 
         /* Sidebar */
-       /* Sidebar */
-.sidebar {
-    position: fixed;
-    z-index: 100;
-    width: 240px;
-    background-color: var(--sidebar-bg);
-    color: var(--link-color);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    min-height: 100vh;
-    box-shadow: 2px 0 12px var(--card-shadow);
-    transition: all 0.3s ease;
-}
+        .sidebar {
+            position: fixed;
+            z-index: 100;
+            width: 240px;
+            background-color: var(--sidebar-bg);
+            color: var(--link-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 100vh;
+            box-shadow: 2px 0 12px var(--card-shadow);
+            transition: all 0.3s ease;
+        }
 
-.sidebar-header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 32px 0 18px 0;
-}
+        .sidebar-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 32px 0 18px 0;
+        }
 
-.sidebar-logo {
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
-    object-fit: cover;
-    background: #fff; 
-    box-shadow: 0 2px 8px #fff2;
-    margin-bottom: 10px;
-    transition: all 0.3s ease;
-}
+        .sidebar-logo {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #fff; 
+            box-shadow: 0 2px 8px #fff2;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
 
-.dark-theme .sidebar-logo {
-    background: #2a2a2a; 
-    box-shadow: 0 2px 8px #0005;
-}
+        .dark-theme .sidebar-logo {
+            background: #2a2a2a; 
+            box-shadow: 0 2px 8px #0005;
+        }
 
-.sidebar-menu {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
 
-.sidebar-link {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 20px;
-    text-decoration: none;
-    color: var(--link-color);
-    font-weight: 600;
-    font-size: 14px;
-    border-radius: 6px;
-    transition: all 0.2s ease;
-}
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            text-decoration: none;
+            color: var(--link-color);
+            font-weight: 600;
+            font-size: 14px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
 
-.sidebar-link i {
-    font-size: 20px;
-    min-width: 20px;
-}
+        .sidebar-link i {
+            font-size: 20px;
+            min-width: 20px;
+        }
 
-.sidebar-link:hover,
-.sidebar-link.active {
-    background: rgba(255, 255, 255, 0.15);
-    border-left: 4px solid #fff;
-}
+        .sidebar-link:hover,
+        .sidebar-link.active {
+            background: rgba(255, 255, 255, 0.15);
+            border-left: 4px solid #fff;
+        }
 
-.sidebar-footer {
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
+        .sidebar-footer {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
 
-.sidebar-footer .sidebar-link {
-    padding: 10px 20px;
-    font-size: 14px;
-    border-radius: 6px;
-}
+        .sidebar-footer .sidebar-link {
+            padding: 10px 20px;
+            font-size: 14px;
+            border-radius: 6px;
+        }
 
-.sidebar-footer .sidebar-link:hover {
-    background: rgba(255, 255, 255, 0.15);
-}
+        .sidebar-footer .sidebar-link:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
 
-/* Responsive sidebar - optional */
-@media (max-width: 768px) {
-    .sidebar {
-        width: 60px;
-    }
-    .sidebar-link span {
-        display: none;
-    }
-    .sidebar-logo {
-        width: 50px;
-        height: 50px;
-    }
-}
+        .main-container {
+            margin-left: 240px; 
+            flex: 1;
+            overflow-y: auto; 
+            min-height: 100vh;
+        }        
 
+        .header { 
+            height: 60px; 
+            background-color: var(--header-bg); 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            padding: 0 20px; 
+            border-bottom: 1px solid #ccc; 
+            box-shadow: 0 2px 8px var(--card-shadow); 
+        }
 
-.main-container {
-    margin-left: 240px; /* espace pour la sidebar fixe */
-    flex: 1;
-    overflow-y: auto; /* permet de scroller si contenu trop long */
-    min-height: 100vh;
-}        .header { height: 60px; background-color: var(--header-bg); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; border-bottom: 1px solid #ccc; box-shadow: 0 2px 8px var(--card-shadow); }
-        .profil-btn { color: #0074C7; padding: 6px 14px; border-radius: 6px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 6px; }
-        .theme-toggle-btn { background: none; border: none; font-size: 20px; color: #0074C7; cursor: pointer; }
+        .profil-btn { 
+            color: #0074C7; 
+            padding: 6px 14px; 
+            border-radius: 6px; 
+            font-weight: 600; 
+            text-decoration: none; 
+            display: flex; 
+            align-items: center; 
+            gap: 6px; 
+        }
 
-        .main-content { margin-top: 60px; padding: 20px 40px; }
+        .theme-toggle-btn { 
+            background: none; 
+            border: none; 
+            font-size: 20px; 
+            color: #0074C7; 
+            cursor: pointer; 
+        }
+
+        .main-content { 
+            margin-top: 60px; 
+            padding: 20px 40px; 
+        }
 
         /* Filtre */
         .filter-form { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
@@ -160,9 +175,20 @@
 
         /* Statuts */
         .demande-status { font-weight: 600; text-transform: uppercase; padding: 4px 10px; border-radius: 20px; font-size: 13px; text-align: center; }
-        .status-approved { background-color: #28a74533; color: #28a745; }   /* vert */
-        .status-refused { background-color: #dc354533; color: #dc3545; }   /* rouge */
-        .status-pending { background-color: #ffc10733; color: #ffc107; }   /* jaune */
+        .status-approved { background-color: #28a74533; color: #28a745; }   
+        .status-refused { background-color: #dc354533; color: #dc3545; }   
+        .status-pending { background-color: #ffc10733; color: #ffc107; }
+
+        /* PDF bouton */
+        .pdf-btn {
+            color: #d32f2f;
+            font-size: 18px;
+            text-decoration: none;
+            margin-left: 10px;
+        }
+        .pdf-btn:hover {
+            color: #b71c1c;
+        }
 
         .dark-theme .demande-card { background: #2a2a2a; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
         .dark-theme .demande-status.status-approved { background-color: #1b621f33; color: #28a745; }
@@ -176,7 +202,7 @@
         <div class="sidebar-header">
             <img src="/img/modepbg.png" alt="Logo MODEP" class="sidebar-logo">
         </div>
-    <nav>
+        <nav>
             <a th:href="@{/dashboard-rh}" class="sidebar-link"><i class="fa fa-home"></i> Tableau de bord</a>
             <a th:href="@{/personnel/ajouter}" class="sidebar-link"><i class="fa fa-users"></i> Ajout des utilisateurs</a>
             <a th:href="@{/rh/utilisateurs}" class="sidebar-link"><i class="fa fa-user-cog"></i> Gestion des utilisateurs</a>
@@ -224,11 +250,24 @@
                     <div class="demande-role" th:text="'Rôle: ' + ${demande.demandeur.role}">Rôle</div>
                     <div class="demande-dates" th:text="'Du ' + ${#temporals.format(demande.dateDebut,'dd/MM/yyyy')} + ' au ' + ${#temporals.format(demande.dateFin,'dd/MM/yyyy')}">Dates</div>
                 </div>
-                <div class="demande-status" th:text="${demande.statut}" 
-                     th:classappend="${demande.statut.name() == 'APPROUVEE_RH'} ? ' status-approved' : 
-                                      (${demande.statut.name() == 'REFUSEE'} ? ' status-refused' : 
-                                      (${demande.statut.name() == 'EN_ATTENTE_DIRECTEUR'} ? ' status-pending' : ''))">
-                    Statut
+                <div>
+                    <div class="demande-status"
+                         th:text="${demande.statut.name() == 'APPROUVEE_RH' or demande.statut.name() == 'APPROUVEE_DIRECTEUR' ? 'Approuvée' :
+                                  (demande.statut.name() == 'REFUSEE' ? 'Refusée' :
+                                  (demande.statut.name() == 'EN_ATTENTE_DIRECTEUR' ? 'En attente' : demande.statut.name()))}"
+                         th:classappend="${demande.statut.name() == 'APPROUVEE_RH' or demande.statut.name() == 'APPROUVEE_DIRECTEUR' ? ' status-approved' :
+                                          (demande.statut.name() == 'REFUSEE' ? ' status-refused' :
+                                          (demande.statut.name() == 'EN_ATTENTE_DIRECTEUR' ? ' status-pending' : ''))}">
+                    </div>
+
+                    <!-- Bouton PDF -->
+                       <a th:if="${demande.demandeur.role == 'RH'}"
+       th:href="@{/personnel/demande/{id}/fiche-pdf(id=${demande.id})}" 
+       class="pdf-btn" 
+       title="Télécharger PDF">
+        <i class="fa fa-file-pdf"></i>
+    </a>
+
                 </div>
             </div>
         </div>

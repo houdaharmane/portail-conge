@@ -351,10 +351,13 @@ public class RhController {
         List<StatutDemande> statutsHistoriqueRh = List.of(
                 StatutDemande.APPROUVEE_RH,
                 StatutDemande.REFUSEE,
+                StatutDemande.APPROUVEE_DIRECTEUR,
                 StatutDemande.EN_ATTENTE_DIRECTEUR);
 
         List<DemandeConge> demandesHistorique = demandeCongeRepository.findByStatutIn(statutsHistoriqueRh);
+        List<DemandeConge> demandesRh = demandeCongeRepository.findByDemandeur_Departement(rh.getDepartement());
 
+        model.addAttribute("demandesRh", demandesRh);
         model.addAttribute("rh", rh);
         model.addAttribute("demandes", demandesHistorique);
         model.addAttribute("activePage", "historiqueDemandesRh");
@@ -433,10 +436,17 @@ public class RhController {
             return "redirect:/login";
         }
 
-        List<DemandeConge> demandes = demandeCongeRepository.findByStatutAndDemandeurRole(StatutDemande.EN_ATTENTE,
-                "RESPONSABLE");
+        // Récupérer toutes les demandes en attente des responsables
+        List<DemandeConge> demandes = demandeCongeRepository.findByStatutAndDemandeurRole(
+                StatutDemande.EN_ATTENTE, "RESPONSABLE");
+
+        // Récupérer tous les départements
+        List<Departement> departements = departementRepository.findAll();
+
         model.addAttribute("demandesResponsable", demandes);
+        model.addAttribute("departements", departements);
         model.addAttribute("rh", rh);
+
         return "rh-demandes-responsable";
     }
 
@@ -473,12 +483,10 @@ public class RhController {
         if (rh == null || !"RH".equals(rh.getRole())) {
             return "redirect:/login";
         }
-
         demandeCongeRepository.findById(id).ifPresent(demande -> {
             demande.setStatut(StatutDemande.EN_ATTENTE_DIRECTEUR);
             demandeCongeRepository.save(demande);
         });
-
         return "redirect:/rh/demandes-responsable";
     }
 
@@ -553,4 +561,5 @@ public class RhController {
                 .toList();
 
     }
+
 }

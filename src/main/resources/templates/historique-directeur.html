@@ -118,6 +118,13 @@
                      th:classappend="${demande.statut.name() == 'APPROUVEE' or demande.statut.name() == 'APPROUVEE_DIRECTEUR'} ? 'status-approved' : 'status-refused'">
                     Statut
                 </div>
+                    <a th:if="${demande.demandeur.role == 'DIRECTEUR'}"
+       th:href="@{/personnel/demande/{id}/fiche-pdf(id=${demande.id})}" 
+       class="pdf-btn" 
+       title="Télécharger PDF">
+        <i class="fa fa-file-pdf"></i>
+    </a>
+
             </div>
         </div>
     </div>
