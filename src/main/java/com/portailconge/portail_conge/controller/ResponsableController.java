@@ -1,5 +1,6 @@
 package com.portailconge.portail_conge.controller;
 
+import com.portailconge.portail_conge.model.CongePdfGenerator;
 import com.portailconge.portail_conge.model.DemandeConge;
 import com.portailconge.portail_conge.model.Departement;
 import com.portailconge.portail_conge.model.PdfGenerator;
@@ -26,6 +27,8 @@ public class ResponsableController {
 
     @Autowired
     private DemandeCongeRepository demandeCongeRepository;
+    @Autowired
+    private CongePdfGenerator congePdfGenerator;
 
     // ---------------- Dashboard ----------------
     @GetMapping("/dashboard-responsable")
@@ -150,7 +153,7 @@ public class ResponsableController {
         if (utilisateur == null || !"RESPONSABLE".equals(utilisateur.getRole()))
             return "redirect:/login";
 
-        int pageSize = 3;
+        int pageSize = 9;
         Pageable pageable = PageRequest.of(page, pageSize);
 
         List<StatutDemande> statutsHistorique = List.of(
@@ -177,6 +180,46 @@ public class ResponsableController {
         model.addAttribute("activePage", "historiqueDemandesResponsable");
 
         return "HistoriqueDemandes-responsable";
+    }
+
+    @GetMapping("/responsable/historique-demandes-personnel")
+    public String afficherHistoriqueDemandesPersonnel(HttpSession session, Model model,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) String matricule,
+            @RequestParam(required = false) String role) {
+
+        Utilisateur responsable = (Utilisateur) session.getAttribute("utilisateur");
+        if (responsable == null || !"RESPONSABLE".equals(responsable.getRole())) {
+            return "redirect:/login";
+        }
+
+        int pageSize = 3;
+        Pageable pageable = PageRequest.of(page, pageSize);
+
+        Page<DemandeConge> demandesPage;
+
+        if ((matricule == null || matricule.isEmpty()) && (role == null || role.isEmpty())) {
+            demandesPage = demandeCongeRepository.findByDemandeur_Departement(responsable.getDepartement(), pageable);
+        } else {
+            demandesPage = demandeCongeRepository
+                    .findByDemandeur_DepartementAndDemandeur_MatriculeContainsAndDemandeur_RoleContains(
+                            responsable.getDepartement(),
+                            matricule != null ? matricule : "",
+                            role != null ? role : "",
+                            pageable);
+        }
+
+        List<DemandeConge> demandes = demandesPage.getContent();
+        formaterDatesDemandes(demandes);
+
+        model.addAttribute("demandes", demandes);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", demandesPage.getTotalPages());
+        model.addAttribute("activePage", "historiqueDemandesPersonnel");
+        model.addAttribute("matricule", matricule);
+        model.addAttribute("role", role);
+
+        return "historique-demandes-personnel";
     }
 
     // ---------------- Profil ----------------
@@ -240,4 +283,31 @@ public class ResponsableController {
                     demande.getDateSoumission() != null ? demande.getDateSoumission().format(dateTimeFormatter) : "-");
         }
     }
+    // ---------------- Télécharger fiche PDF ----------------
+
+    @GetMapping("/personnel/demande/{id}/fiche-pdf")
+    public ResponseEntity<byte[]> telechargerFichePdf(@PathVariable Long id, HttpSession session) {
+        Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
+        if (utilisateur == null) {
+            return ResponseEntity.status(403).build();
+        }
+
+        DemandeConge demande = demandeCongeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Demande non trouvée"));
+
+        try {
+            byte[] pdf = congePdfGenerator.genererFichePdf(demande, utilisateur);
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=FicheConge_" + demande.getId() + ".pdf")
+                    .header(HttpHeaders.CONTENT_TYPE, "application/pdf")
+                    .body(pdf);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).build();
+        }
+    }
+
 }

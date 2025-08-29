@@ -2,6 +2,7 @@ package com.portailconge.portail_conge.controller;
 
 import com.portailconge.portail_conge.model.DemandeConge;
 import com.portailconge.portail_conge.model.Departement;
+import com.portailconge.portail_conge.model.PdfGenerator;
 import com.portailconge.portail_conge.model.StatutDemande;
 import com.portailconge.portail_conge.model.Utilisateur;
 import com.portailconge.portail_conge.repository.UtilisateurRepository;
@@ -18,11 +19,13 @@ import java.io.IOException;
 import java.time.LocalDate;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.Map;
+import org.springframework.http.MediaType;
 
 @Controller
 public class RhController {
@@ -560,6 +563,36 @@ public class RhController {
                 })
                 .toList();
 
+    }
+
+    @GetMapping("/rh/demande/{id}/titre-conge")
+    @ResponseBody
+    public ResponseEntity<byte[]> telechargerTitreConge(@PathVariable Long id) {
+        DemandeConge demande = demandeCongeRepository.findById(id).orElse(null);
+        if (demande == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        try {
+            // Génération du PDF via PdfGenerator
+            String titrePdf = "Titre de congé"; // Tu peux le rendre dynamique si besoin
+            byte[] pdfBytes = PdfGenerator.generateCongePdf(demande, titrePdf);
+
+            if (pdfBytes == null) {
+                return ResponseEntity.badRequest().build();
+            }
+
+            return ResponseEntity.ok()
+                    .header("Content-Disposition",
+                            "attachment; filename=\"TitreDeConge_" + demande.getDemandeur().getMatricule() + ".pdf\"")
+                    .contentLength(pdfBytes.length)
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(pdfBytes);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).build();
+        }
     }
 
 }

@@ -289,12 +289,14 @@
                     <strong th:text="${demande.demandeur.nom + ' ' + demande.demandeur.prenom}">Nom Prénom</strong>
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <span th:text="${demande.statut}" class="badge">Statut</span>
-                        <!-- Bouton PDF visible uniquement si approuvée -->
+                        <!-- Fiche demande de conge -->
 <a th:href="@{/personnel/demande/{id}/fiche-pdf(id=${demande.id})}"
    class="pdf-btn"
    title="Télécharger la fiche PDF">
     <i class="fa fa-file-pdf"></i>
 </a>
+                        <!-- Fiche titre de conge -->
+
 <a th:if="${demande.titreVisible}"
    th:href="@{/demandes/telecharger-titre/{id}(id=${demande.id})}" 
    class="btn btn-success btn-sm">

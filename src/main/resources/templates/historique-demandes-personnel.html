@@ -33,18 +33,21 @@
             height: 100vh;
             background: var(--bg-color);
             color: var(--text-color);
+            overflow: hidden;
         }
 
         .sidebar {
-            width: 240px;
-            background-color: var(--sidebar-bg);
-            color: var(--sidebar-text);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            height: 117vh;
-            box-shadow: 2px 0 12px var(--card-shadow);
-        }
+    width: 240px;
+    background-color: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100vh;
+    box-shadow: 2px 0 12px var(--card-shadow);
+    position: fixed; 
+}
+
 
         .sidebar-header {
             display: flex;
@@ -98,6 +101,7 @@
             flex: 1;
             display: flex;
             flex-direction: column;
+            margin-left: 240px;
         }
 
 .header {
@@ -105,10 +109,10 @@
     background-color: var(--header-bg);
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 0 20px;
+justify-content: flex-start;    padding: 0 20px;
     border-bottom: 1px solid #ccc;
     box-shadow: 0 2px 8px #e9953d11;
+
 }
 
 .header a {
@@ -137,11 +141,26 @@
 .dark-theme .theme-toggle-btn {
     color: #f0f0f0;
 }
-        .main-content {
-            flex: 1;
-            padding: 40px;
-            background-color: var(--bg-color);
-        }
+.main-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden; 
+}
+
+.main-content {
+    flex: 1;
+    padding: 40px;
+    background-color: var(--bg-color);
+    overflow-y: auto; 
+    scrollbar-width: none;
+}
+
+        .main-content::-webkit-scrollbar {
+         display: none; 
+}
+
 
         h1 {
             color: #0074C7;
@@ -193,6 +212,64 @@
         color: white !important;
         pointer-events: none;
     }
+/* Conteneur du filtre */
+.filters {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+/* Champs texte et select */
+.filters input[type="text"],
+.filters select {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.filters input[type="text"]:focus,
+.filters select:focus {
+    border-color: #0074C7;
+    box-shadow: 0 0 4px #0074C7;
+}
+
+/* Bouton filtrer */
+.filters button {
+    padding: 8px 16px;
+    background-color: #0074C7;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.filters button:hover {
+    background-color: #005fa3;
+    transform: translateY(-1px);
+}
+
+/* Adaptation pour le thème sombre */
+.dark-theme .filters input[type="text"],
+.dark-theme .filters select {
+    background-color: #2c2c3a;
+    border: 1px solid #555;
+    color: #f0f0f0;
+}
+
+.dark-theme .filters button {
+    background-color: #3385ff;
+}
+
+.dark-theme .filters button:hover {
+    background-color: #0066ff;
+}
     </style>
 </head>
 <body>
@@ -240,13 +317,28 @@
     </div>
 
     <div class="main-content">
+<div class="filters" style="margin-bottom: 20px; display: flex; gap: 10px;">
+    <form th:action="@{/responsable/historique-demandes-personnel}" method="get" style="display: flex; gap: 10px;">
+        <input type="text" name="matricule" placeholder="Filtrer par matricule"
+               th:value="${matricule != null} ? ${matricule} : ''" style="padding: 6px;"/>
+       
+        <button type="submit" style="background-color: #0074C7; color: white; border: none; padding: 6px 12px; border-radius: 4px;">Filtrer</button>
+ <!-- Bouton Réinitialiser -->
+        <a th:href="@{/responsable/historique-demandes-personnel}"
+           style="background-color: #ccc; color: #000; padding: 6px 12px; border-radius: 4px; text-decoration: none;">Réinitialiser</a>
+    </form></div>
+
 
         <div class="historique-cartes">
             <div class="demande-carte" th:each="demande : ${demandes}">
-                <div class="demande-info">
-                    <strong th:text="${demande.demandeur.nom + ' ' + demande.demandeur.prenom}">Nom Prénom</strong>
-                    <span th:text="${demande.statut}" class="badge">Statut</span>
-                </div>
+               <div class="demande-info">
+    <div>
+        <strong th:text="${demande.demandeur.nom + ' ' + demande.demandeur.prenom}">Nom Prénom</strong><br>
+        <span th:text="${demande.demandeur.matricule}" style="font-size: 13px; color: #555;">Matricule</span>
+    </div>
+    <span th:text="${demande.statut}" class="badge">Statut</span>
+</div>
+
                 <p>
                     Du <span th:text="${#temporals.format(demande.dateDebut, 'dd/MM/yyyy')}">01/08/2025</span>
                     au <span th:text="${#temporals.format(demande.dateFin, 'dd/MM/yyyy')}">10/08/2025</span>
@@ -261,29 +353,30 @@
         </div>
 
         <!-- Pagination -->
-        <div class="pagination" style="margin-top: 30px; text-align: center;">
-            <ul style="list-style: none; display: inline-flex; gap: 8px; padding: 0;">
-                <li th:if="${currentPage > 0}">
-                    <a th:href="@{/responsable/historique-demandes-personnel(page=${currentPage - 1})}"
-                       style="padding: 6px 12px; border: 1px solid #0074C7; color: #0074C7; text-decoration: none; border-radius: 4px;">
-                       Précédent
-                    </a>
-                </li>
-                <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
-                    <a th:href="@{/responsable/historique-demandes-personnel(page=${i})}"
-                       th:text="${i + 1}"
-                       th:classappend="${i == currentPage} ? ' active-page'"
-                       style="padding: 6px 12px; border: 1px solid #0074C7; color: #0074C7; text-decoration: none; border-radius: 4px;">
-                    </a>
-                </li>
-                <li th:if="${currentPage < totalPages - 1}">
-                    <a th:href="@{/responsable/historique-demandes-personnel(page=${currentPage + 1})}"
-                       style="padding: 6px 12px; border: 1px solid #0074C7; color: #0074C7; text-decoration: none; border-radius: 4px;">
-                       Suivant
-                    </a>
-                </li>
-            </ul>
-        </div>
+<div class="pagination" style="margin-top: 30px; text-align: center;">
+    <ul style="list-style: none; display: inline-flex; gap: 8px; padding: 0;">
+        <li th:if="${currentPage > 0}">
+            <a th:href="@{/responsable/historique-demandes-personnel(page=${currentPage - 1}, matricule=${matricule})}"
+               style="padding: 6px 12px; border: 1px solid #0074C7; color: #0074C7; text-decoration: none; border-radius: 4px;">
+               Précédent
+            </a>
+        </li>
+        <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+            <a th:href="@{/responsable/historique-demandes-personnel(page=${i}, matricule=${matricule})}"
+               th:text="${i + 1}"
+               th:classappend="${i == currentPage} ? ' active-page'"
+               style="padding: 6px 12px; border: 1px solid #0074C7; color: #0074C7; text-decoration: none; border-radius: 4px;">
+            </a>
+        </li>
+        <li th:if="${currentPage < totalPages - 1}">
+            <a th:href="@{/responsable/historique-demandes-personnel(page=${currentPage + 1}, matricule=${matricule})}"
+               style="padding: 6px 12px; border: 1px solid #0074C7; color: #0074C7; text-decoration: none; border-radius: 4px;">
+               Suivant
+            </a>
+        </li>
+    </ul>
+</div>
+
 
     </div>
 </div>

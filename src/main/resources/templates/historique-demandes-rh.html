@@ -267,6 +267,16 @@
        title="Télécharger PDF">
         <i class="fa fa-file-pdf"></i>
     </a>
+    <!-- Bouton Titre de congé -->
+<a th:if="${(demande.statut.name() == 'APPROUVEE_RH' or demande.statut.name() == 'APPROUVEE_DIRECTEUR') and demande.demandeur.role == 'RH'}"
+   th:href="@{/rh/demande/{id}/titre-conge(id=${demande.id})}"
+   class="pdf-btn"
+   title="Télécharger Titre de congé">
+    <i class="fa fa-file-alt"></i>
+</a>
+
+
+
 
                 </div>
             </div>
