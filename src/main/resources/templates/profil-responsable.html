@@ -18,8 +18,6 @@
             --btn-bg: #0074C7;
             --btn-hover-bg: #005fa3;
             --btn-color: #fff;
-            --alert-bg: #ff4d4d;
-            --alert-color: #fff;
         }
         .dark-theme {
             --bg-color: #1e1e1e;
@@ -33,17 +31,17 @@
             --btn-bg: #3399ff;
             --btn-hover-bg: #267acc;
             --btn-color: #fff;
-            --alert-bg: #ff6666;
-            --alert-color: #fff;
         }
+
         body {
             margin: 0;
             font-family: 'Segoe UI', Arial, sans-serif;
-            display: flex;
-            min-height: 100vh;
             background: var(--bg-color);
             color: var(--text-color);
+            display: flex;
+            min-height: 100vh;
         }
+
         /* Sidebar */
         .sidebar {
             width: 240px;
@@ -52,17 +50,18 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            align-items: stretch;
             min-height: 100vh;
+            position: fixed;
             box-shadow: 2px 0 12px #e9953d22;
-            padding: 0;
         }
+
         .sidebar-header {
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 32px 0 18px 0;
         }
+
         .sidebar-logo {
             width: 90px;
             height: 90px;
@@ -72,16 +71,8 @@
             box-shadow: 0 2px 8px #fff2;
             margin-bottom: 10px;
         }
-        .dark-theme .sidebar-logo {
-            background: #2a2a2a;
-            box-shadow: 0 2px 8px #0005;
-        }
-        nav {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-        .sidebar-link, .sidebar-link:hover, .sidebar-footer .sidebar-link {
+
+        .sidebar-link {
             display: flex;
             align-items: center;
             gap: 14px;
@@ -93,241 +84,148 @@
             border-left: 4px solid transparent;
             transition: background 0.18s, border-left-color 0.18s;
         }
-        .sidebar-link i {
-            font-size: 20px;
-            min-width: 20px;
-        }
+
+        .sidebar-link i { font-size: 20px; }
         .sidebar-link:hover, .sidebar-link.active {
             background: #fff2;
             color: #fff;
             border-left: 4px solid #fff;
         }
-        .sidebar-footer {
-            margin-bottom: 30px;
-        }
-        /* Main container */
-        .main-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            padding: 0 20px;
-            max-width: 960px;
-            margin: 60px auto 40px auto;  
-            box-sizing: border-box;
-            margin-right: 130px;
-        }
-       .header {
-    position: fixed;
-    top: 0;
-    right: 0;
-    left: 240px; 
-    height: 60px;
-    background-color: var(--header-bg);
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    padding: 0 20px;
-    border-bottom: 1px solid #ccc;
-    box-shadow: 0 2px 8px #e9953d11;
-    z-index: 1000;
-}
 
-.main-container {
-    margin-top: 60px; 
-    margin-right: 130px; 
-    max-width: 960px;
-    padding: 0 20px;
-    box-sizing: border-box;
-}
+        .sidebar-footer { margin-bottom: 30px; }
 
-        .header a {
-            text-decoration: none;
-            color: var(--primary-color);
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 240px;
+            height: 60px;
+            width: calc(100% - 240px);
+            background-color: var(--header-bg);
             display: flex;
+            justify-content: flex-end;
             align-items: center;
-            font-weight: 600;
-            font-size: 17px;
+            padding: 0 20px;
+            border-bottom: 1px solid #ccc;
+            box-shadow: 0 2px 8px #e9953d11;
+            z-index: 1000;
         }
-        .header a i {
-            margin-right: 8px;
-            font-size: 24px;
-        }
-        .dark-theme .header {
-            background-color: #2a2a2a;
-            border-bottom: 1px solid #444;
-        }
-        .dark-theme .header a {
-            color: #66aaff;
-        }
-        .dark-theme .theme-toggle-btn {
-            color: #f0f0f0;
-        }
+
         .theme-toggle-btn {
             background: none;
             border: none;
             font-size: 20px;
             color: var(--primary-color);
             cursor: pointer;
+            margin-right:30px;
         }
-        /* Profil header */
+
+        .dark-theme .theme-toggle-btn { color: var(--text-color); }
+
+        /* Main content */
+        .main-container {
+            margin-left: 240px;
+            padding: 20px;
+            margin-top: 60px;
+            width: calc(100% - 240px);
+        }
+
+        .main-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+
         .profile-header {
             display: flex;
             align-items: center;
             gap: 24px;
             flex-wrap: wrap;
-            margin-bottom: 30px;
-            margin-top: -10px;
         }
+
         .profile-img-wrapper {
-            position: relative;
-            width: 160px;
-            height: 160px;
-            cursor: pointer;
+            width: 180px;
+            height: 180px;
             border-radius: 50%;
-            overflow: hidden; 
-            margin-top: 30px;
-            background-color: #f0f0f0;
+            overflow: hidden;
+            border: 3px solid var(--primary-color);
             box-shadow: 0 0 8px var(--primary-color);
-            margin-right: 20px;
         }
+
         .profile-img-wrapper img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            display: block;
-            margin-top: -20px;
         }
+
         .profile-nav-info {
             flex-grow: 1;
-            min-width: 200px;
         }
+
         .profile-nav-info h3.user-name {
             font-size: 28px;
             font-weight: 700;
             margin: 0 0 8px;
             color: var(--primary-color);
         }
-        .address {
+
+        .profile-nav-info p.address {
             font-size: 16px;
             color: var(--text-color);
-        }
-        .address p, .address span {
             margin: 0;
-            display: inline;
         }
-        /* Main Content */
-        .main-bd {
+
+        .form-rows-horizontal {
             display: flex;
-            gap: 40px;
             flex-wrap: wrap;
+            gap: 20px;
         }
-        .left-side {
-            flex: none;
-            width: 650px;
-            background: var(--card-bg);
-            padding: 24px;
-            border-radius: 12px;
-            box-shadow: 0 2px 12px var(--card-shadow);
-        }
-        .profile-side p {
-            margin: 12px 0;
-            font-size: 15px;
-            color: var(--text-color);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .profile-side p i {
-            color: var(--primary-color);
-            min-width: 18px;
-            font-size: 18px;
-        }
-        /* Form Styles */
-        form fieldset {
-            border: none;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-        form legend {
-            font-size: 20px;
-            font-weight: bold;
-            color: var(--primary-color);
-            margin-bottom: 10px;
-        }
+
         .form-row {
             display: flex;
-            align-items: center;
-            margin-bottom: 12px;
+            flex-direction: column;
+            flex: 1 1 200px;
         }
+
         .form-row label {
-            width: 150px; 
-            font-weight: bold;
-            margin-right: 10px;
-            color: var(--text-color);
+            font-weight: 600;
+            margin-bottom: 4px;
         }
-        .form-row input[type="text"],
-        .form-row input[type="email"],
-        .form-row textarea,
-        .form-row input[type="file"] {
-            flex: 1;
-            padding: 8px 10px;
+
+        .form-row input {
+            padding: 6px 8px;
+            border-radius: 6px;
             border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: var(--card-bg);
+            background: var(--card-bg);
             color: var(--text-color);
-            font-size: 15px;
-            resize: vertical;
-            font-family: inherit;
-            transition: border 0.2s ease-in-out;
         }
-        .form-row input:focus,
-        .form-row textarea:focus {
-            border-color: var(--primary-color);
-            outline: none;
-            box-shadow: 0 0 0 2px #7749f822;
+
+        .profile-btn {
+            margin-top: 20px;
+            display: flex;
+            gap: 12px;
         }
-        textarea[disabled], input[disabled] {
-            background-color: #eee;
-            color: #555;
-        }
-        /* Responsive */
-        @media (max-width: 768px) {
-            .main-container {
-                margin: 20px 15px;
-                max-width: 100%;
-                padding: 0 15px;
-            }
-            .profile-header {
-                justify-content: center;
-            }
-            .main-bd {
-                flex-direction: column;
-                gap: 20px;
-            }
-            .left-side {
-                width: 100%;
-                padding: 20px;
-            }
-        }
+
         .profile-btn button {
+            padding: 8px 16px;
             background-color: var(--btn-bg);
             color: var(--btn-color);
             border: none;
-            padding: 10px 20px;
-            font-weight: 600;
-            font-size: 16px;
             border-radius: 6px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
-            display: inline-flex;
+            font-weight: 600;
+            display: flex;
             align-items: center;
             gap: 8px;
         }
-        .profile-btn button:hover {
-            background-color: var(--btn-hover-bg);
+
+        .profile-btn button:hover { background-color: var(--btn-hover-bg); }
+
+        @media (max-width: 768px) {
+            .profile-header { justify-content: center; }
+            .form-row { flex: 1 1 100%; }
         }
     </style>
 </head>
@@ -335,7 +233,7 @@
 <div class="sidebar">
     <div>
         <div class="sidebar-header">
-            <img src="/img/modepbg.png" alt="Logo MODEP" class="sidebar-logo">
+            <img src="/img/modepbg.png" alt="Logo MODEP" class="sidebar-logo"/>
         </div>
     <nav>
     <a th:href="@{/dashboard-responsable}" th:classappend="${activePage == 'dashboard'} ? ' active'" class="sidebar-link">
@@ -361,185 +259,138 @@
 
 
 </nav>
+
     </div>
     <div class="sidebar-footer">
-        <a href="/logout" class="sidebar-link"><i class="fa fa-sign-out-alt"></i> <span>Déconnexion</span></a>
+        <a href="/logout" class="sidebar-link"><i class="fa fa-sign-out-alt"></i> Déconnexion</a>
     </div>
 </div>
 
 <div class="main-container">
     <div class="header">
-        <button id="theme-toggle" class="theme-toggle-btn" title="Changer de thème">
-            <i class="fa fa-moon"></i>
-        </button>
+        <button id="theme-toggle" class="theme-toggle-btn"><i class="fa fa-moon"></i></button>
     </div>
-    <div class="profile-header">
-        <div class="profile-img-wrapper">
-            <img th:src="@{/personnel/photo/{id}(id=${utilisateur.id})}" 
-                 src="/img/default-avatar.png"
-                 alt="Photo Profil" 
-                 id="profileImage" />
-            <input type="file" id="imageUploadInput" name="photo" accept="image/*" style="display:none;" />
-        </div>
-        <div class="profile-nav-info">
-            <h3 class="user-name" th:text="${utilisateur.prenom} + ' ' + ${utilisateur.nom}">Nom Prénom</h3>
-            <div class="address">
-                <p th:text="${utilisateur.departement != null} ? ${utilisateur.departement.nom} : ''">Département</p>
-                <span th:text="${utilisateur.role}">Rôle</span>
+
+    <div class="main-content">
+        <div class="profile-header">
+            <div class="profile-img-wrapper">
+                <img th:src="@{/personnel/photo/{id}(id=${utilisateur.id})}" alt="Profile Image" id="profileImage"/>
+            </div>
+            <div class="profile-nav-info">
+                <h3 class="user-name" th:text="${utilisateur.prenom} + ' ' + ${utilisateur.nom}">Nom Prénom</h3>
+                <p class="address" th:text="${utilisateur.departement != null} ? ${utilisateur.departement.nom} : ''">Département</p>
             </div>
         </div>
-    </div>
 
-    <div class="main-bd">
-        <div class="left-side profile-side">
-            <!-- FORMULAIRE LECTURE SEULE -->
-            <form id="form-view" th:action="@{/personnel/modifier}" method="post">
-                <fieldset>
-                    <legend>Informations personnelles</legend>
+        <form id="form-view" th:action="@{/personnel/modifier}" method="post" enctype="multipart/form-data">
+            <fieldset>
+                <legend>Informations personnelles</legend>
+                <div class="form-rows-horizontal">
                     <div class="form-row">
                         <label>Matricule :</label>
-                        <input type="text" name="matricule" th:value="${utilisateur.matricule}" disabled />
+                        <input type="text" th:value="${utilisateur.matricule}" disabled name="matricule"/>
                     </div>
                     <div class="form-row">
                         <label>Prénom :</label>
-                        <input type="text" name="prenom" th:value="${utilisateur.prenom}" disabled />
+                        <input type="text" th:value="${utilisateur.prenom}" disabled name="prenom"/>
                     </div>
                     <div class="form-row">
                         <label>Nom :</label>
-                        <input type="text" name="nom" th:value="${utilisateur.nom}" disabled />
+                        <input type="text" th:value="${utilisateur.nom}" disabled name="nom"/>
                     </div>
                     <div class="form-row">
                         <label>Département :</label>
-                        <input type="text" name="departement" th:value="${utilisateur.departement.nom}" disabled />
+                        <input type="text" th:value="${utilisateur.departement.nom}" disabled name="departement"/>
                     </div>
                     <div class="form-row">
                         <label>Rôle :</label>
-                        <input type="text" name="role" th:value="${utilisateur.role}" disabled />
+                        <input type="text" th:value="${utilisateur.role}" disabled name="role"/>
                     </div>
                     <div class="form-row">
-                        <label for="cin-view">CIN :</label>
-                        <input type="text" id="cin-view" name="cin" th:value="${utilisateur.cin}" disabled />
-                    </div>
-                    <div class="form-row">
-                        <label>Email :</label>
-                        <input type="email" name="email" th:value="${utilisateur.email}" disabled />
-                    </div>
-                    <div class="form-row">
-                        <label>Téléphone :</label>
-                        <input type="text" name="telephone" th:value="${utilisateur.telephone}" disabled />
-                    </div>
-                    <div class="profile-btn">
-                        <button type="button" id="btn-edit"><i class="fa fa-edit"></i> Modifier</button>
-                    </div>
-                </fieldset>
-            </form>
-
-            <!-- FORMULAIRE ÉDITION -->
-            <form id="form-edit" th:action="@{/personnel/modifier}" method="post" enctype="multipart/form-data" style="display:none;">
-                <fieldset>
-                    <legend>Modifier les informations</legend>
-                    <div class="form-row">
-                        <label for="imageUploadInput">Photo de profil :</label>
-                        <input type="file" id="imageUploadInput" name="photo" accept="image/*" />
-                    </div>
-                    <div class="form-row">
-                        <label>Matricule :</label>
-                        <input type="text" name="matricule" th:value="${utilisateur.matricule}" required />
-                    </div>
-                    <div class="form-row">
-                        <label>Prénom :</label>
-                        <input type="text" name="prenom" th:value="${utilisateur.prenom}" required />
-                    </div>
-                    <div class="form-row">
-                        <label>Nom :</label>
-                        <input type="text" name="nom" th:value="${utilisateur.nom}" required />
-                    </div>
-                    <div class="form-row">
-                        <label>Département :</label>
-                        <input type="text" name="departement" th:value="${utilisateur.departement.nom}" disabled />
-                    </div>
-                    <div class="form-row">
-                        <label>Rôle :</label>
-                        <input type="text" name="role" th:value="${utilisateur.role}" disabled />
-                    </div>
-                    <div class="form-row">
-                        <label for="cin-edit">CIN :</label>
-                        <input type="text" id="cin-edit" name="cin" th:value="${utilisateur.cin}" required />
+                        <label>CIN :</label>
+                        <input type="text" th:value="${utilisateur.cin}" disabled name="cin"/>
                     </div>
                     <div class="form-row">
                         <label>Email :</label>
-                        <input type="email" name="email" th:value="${utilisateur.email}" required />
+                        <input type="email" th:value="${utilisateur.email}" disabled name="email"/>
                     </div>
                     <div class="form-row">
                         <label>Téléphone :</label>
-                        <input type="text" name="telephone" th:value="${utilisateur.telephone}" required />
+                        <input type="text" th:value="${utilisateur.telephone}" disabled name="telephone"/>
                     </div>
-                    <div class="profile-btn">
-                        <button type="submit"><i class="fa fa-save"></i> Enregistrer</button>
-                        <button type="button" id="btn-cancel"><i class="fa fa-times"></i> Annuler</button>
+                    <div class="form-row">
+                        <label>Photo :</label>
+                        <input type="file" name="photo" id="photo" accept="image/*" disabled/>
                     </div>
-                </fieldset>
-            </form>
-        </div>
+                </div>
+                <div class="profile-btn">
+                    <button type="button" id="btn-edit"><i class="fa fa-edit"></i> Modifier</button>
+                    <button type="submit" id="btn-save" style="display:none;"><i class="fa fa-save"></i> Enregistrer</button>
+                    <button type="button" id="btn-cancel" style="display:none;"><i class="fa fa-times"></i> Annuler</button>
+                </div>
+            </fieldset>
+        </form>
     </div>
 </div>
 
 <script>
-    const themeToggleBtn = document.getElementById('theme-toggle');
-    const themeIcon = themeToggleBtn.querySelector('i');
+const themeToggleBtn = document.getElementById('theme-toggle');
+const body = document.body;
 
-    function applyTheme(theme) {
-        if (theme === 'dark') {
-            document.body.classList.add('dark-theme');
-            themeIcon.classList.remove('fa-moon');
-            themeIcon.classList.add('fa-sun');
-        } else {
-            document.body.classList.remove('dark-theme');
-            themeIcon.classList.remove('fa-sun');
-            themeIcon.classList.add('fa-moon');
-        }
+// Thème clair/sombre
+document.addEventListener('DOMContentLoaded', () => {
+    const theme = localStorage.getItem('theme');
+    if (theme === 'dark') {
+        body.classList.add('dark-theme');
+        themeToggleBtn.querySelector('i').classList.replace('fa-moon', 'fa-sun');
     }
+});
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        applyTheme(savedTheme);
-    });
+themeToggleBtn.addEventListener('click', () => {
+    body.classList.toggle('dark-theme');
+    const icon = themeToggleBtn.querySelector('i');
+    if (body.classList.contains('dark-theme')) {
+        icon.classList.replace('fa-moon','fa-sun');
+        localStorage.setItem('theme','dark');
+    } else {
+        icon.classList.replace('fa-sun','fa-moon');
+        localStorage.setItem('theme','light');
+    }
+});
 
-    themeToggleBtn.addEventListener('click', () => {
-        const isDark = document.body.classList.toggle('dark-theme');
-        localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        applyTheme(isDark ? 'dark' : 'light');
-    });
+// Edition formulaire
+const btnEdit = document.getElementById('btn-edit');
+const btnSave = document.getElementById('btn-save');
+const btnCancel = document.getElementById('btn-cancel');
+const form = document.getElementById('form-view');
+const inputs = form.querySelectorAll('input');
 
-    const btnEdit = document.getElementById('btn-edit');
-    const btnCancel = document.getElementById('btn-cancel');
-    const formView = document.getElementById('form-view');
-    const formEdit = document.getElementById('form-edit');
-    const imageUploadInput = document.getElementById('imageUploadInput');
-    const profileImage = document.getElementById('profileImage');
+btnEdit.addEventListener('click', () => {
+    inputs.forEach(i => i.removeAttribute('disabled'));
+    btnEdit.style.display = 'none';
+    btnSave.style.display = 'inline-flex';
+    btnCancel.style.display = 'inline-flex';
+});
 
-    btnEdit.addEventListener('click', () => {
-        formView.style.display = 'none';
-        formEdit.style.display = 'block';
-    });
+btnCancel.addEventListener('click', () => {
+    inputs.forEach(i => i.setAttribute('disabled', true));
+    btnEdit.style.display = 'inline-flex';
+    btnSave.style.display = 'none';
+    btnCancel.style.display = 'none';
+    form.reset();
+});
 
-    btnCancel.addEventListener('click', () => {
-        formEdit.style.display = 'none';
-        formView.style.display = 'block';
-    });
-
-    imageUploadInput.addEventListener('change', () => {
-        const file = imageUploadInput.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = e => profileImage.src = e.target.result;
-            reader.readAsDataURL(file);
-        }
-    });
-
-    profileImage.addEventListener('click', () => {
-        imageUploadInput.click();
-    });
+// Prévisualisation photo
+const profileImage = document.getElementById('profileImage');
+const photoInput = document.getElementById('photo');
+photoInput.addEventListener('change', () => {
+    const file = photoInput.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = e => profileImage.src = e.target.result;
+        reader.readAsDataURL(file);
+    }
+});
 </script>
 </body>
 </html>

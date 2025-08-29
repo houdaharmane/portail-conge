@@ -27,6 +27,7 @@ public class AuthController {
         utilisateur.setTelephone(dto.getTelephone());
         utilisateur.setEmail(dto.getEmail());
         utilisateur.setRole(dto.getRole());
+
         Departement dept = new Departement();
         dept.setId(dto.getDepartement());
         utilisateur.setDepartement(dept);

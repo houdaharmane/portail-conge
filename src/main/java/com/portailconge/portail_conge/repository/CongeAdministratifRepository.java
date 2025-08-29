@@ -15,4 +15,6 @@ public interface CongeAdministratifRepository extends JpaRepository<CongeAdminis
     List<CongeAdministratif> findByUtilisateurAndAnneeAndStatut(Utilisateur utilisateur, int annee,
             StatutDemande statut);
 
+    List<CongeAdministratif> findByUtilisateurAndStatut(Utilisateur utilisateur, StatutDemande statut);
+
 }

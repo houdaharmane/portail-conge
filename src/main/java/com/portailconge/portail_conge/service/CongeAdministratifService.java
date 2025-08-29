@@ -18,9 +18,9 @@ public class CongeAdministratifService {
         this.congeRepo = congeRepo;
     }
 
-    // Méthode principale : calcule le solde total disponible pour une année donnée
+    // Calcul du solde total disponible pour une année donnée
     public int calculerSoldeTotalDisponible(Utilisateur utilisateur, int annee) {
-        int anneeDebut = 2025; // Choisis ton année de départ (première année de suivi)
+        int anneeDebut = 2025; // année de départ
 
         if (annee < anneeDebut) {
             return 0;
@@ -31,24 +31,23 @@ public class CongeAdministratifService {
         for (int anneeCourante = anneeDebut; anneeCourante <= annee; anneeCourante++) {
             int congesPris = calculerJoursPrisConfirmes(utilisateur, anneeCourante);
             int soldeAnnee = 30 - congesPris; // solde annuel = 30 - congés pris cette année
-
-            // Solde total disponible cumulatif
-            soldeTotalPrecedent = soldeTotalPrecedent + soldeAnnee;
+            soldeTotalPrecedent += soldeAnnee;
         }
 
         return Math.max(soldeTotalPrecedent, 0);
     }
 
-    // Retourne la somme des jours pris confirmés dans une année (à adapter selon
-    // ton modèle)
+    // Retourne le total des jours pris confirmés dans une année
     public int calculerJoursPrisConfirmes(Utilisateur utilisateur, int annee) {
-        // Ici on filtre uniquement les congés confirmés (exemple avec le statut
-        // APPROUVEE)
-        List<CongeAdministratif> conges = congeRepo.findByUtilisateurAndAnneeAndStatut(utilisateur, annee,
-                StatutDemande.APPROUVEE);
+        List<CongeAdministratif> conges = congeRepo.findByUtilisateurAndAnneeAndStatut(
+                utilisateur, annee, StatutDemande.APPROUVEE);
         return conges.stream()
                 .mapToInt(CongeAdministratif::getJoursPris)
                 .sum();
     }
 
+    // Retourne la liste des congés confirmés d'un utilisateur
+    public List<CongeAdministratif> getCongesByUtilisateur(Utilisateur utilisateur) {
+        return congeRepo.findByUtilisateurAndStatut(utilisateur, StatutDemande.APPROUVEE);
+    }
 }

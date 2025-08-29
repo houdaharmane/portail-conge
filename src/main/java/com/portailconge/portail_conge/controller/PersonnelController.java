@@ -1,32 +1,26 @@
 package com.portailconge.portail_conge.controller;
 
 import com.portailconge.portail_conge.model.DemandeConge;
-import com.portailconge.portail_conge.model.Departement;
-import com.portailconge.portail_conge.model.PdfGenerator;
-import com.portailconge.portail_conge.model.Personnel;
 import com.portailconge.portail_conge.model.StatutDemande;
 import com.portailconge.portail_conge.model.Utilisateur;
-import com.portailconge.portail_conge.repository.DepartementRepository;
 import com.portailconge.portail_conge.repository.DemandeCongeRepository;
 import com.portailconge.portail_conge.repository.UtilisateurRepository;
-import com.portailconge.portail_conge.service.AuthService;
 import com.portailconge.portail_conge.service.UtilisateurService;
-import com.portailconge.portail_conge.service.CongeAdministratifService;
+import com.portailconge.portail_conge.service.CongeService;
 
 import jakarta.servlet.http.HttpSession;
-
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.Year;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Controller
 @RequestMapping("/personnel")
@@ -42,116 +36,56 @@ public class PersonnelController {
     private UtilisateurRepository utilisateurRepository;
 
     @Autowired
-    private DepartementRepository departementRepository;
+    private CongeService congeService; // Pour DemandeConge
 
-    @Autowired
-    private AuthService authService;
-
-    @Autowired
-    private CongeAdministratifService congeService;
-
-    @GetMapping("/ajouter")
-    public String afficherFormulaireAjout(Model model, HttpSession session) {
-        Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
-        if (rh == null || !"RH".equals(rh.getRole())) {
-            return "redirect:/login";
-        }
-
-        model.addAttribute("rh", rh);
-        model.addAttribute("departements", departementRepository.findAll());
-        model.addAttribute("personnel", new Personnel());
-
-        return "ajouter-personnel";
-    }
-
-    @PostMapping("/ajouter")
-    public String ajouterPersonnel(
-            @RequestParam String matricule,
-            @RequestParam String nom,
-            @RequestParam String prenom,
-            @RequestParam("numero") String telephone,
-            @RequestParam String email,
-            @RequestParam String role,
-            @RequestParam Integer departement,
-            @RequestParam String cin,
-            @RequestParam String motDePasse,
-            @RequestParam Integer soldeConge,
-            HttpSession session,
-            RedirectAttributes redirectAttributes) {
-
-        Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
-        if (rh == null || !"RH".equals(rh.getRole())) {
-            return "redirect:/login";
-        }
-
-        try {
-            Utilisateur utilisateur = new Utilisateur();
-            utilisateur.setMatricule(matricule);
-            utilisateur.setNom(nom);
-            utilisateur.setPrenom(prenom);
-            utilisateur.setTelephone(telephone);
-            utilisateur.setEmail(email);
-            utilisateur.setRole(role);
-
-            Departement dept = new Departement();
-            dept.setId(departement);
-            utilisateur.setDepartement(dept);
-
-            utilisateur.setCin(cin);
-            utilisateur.setMotDePasse(motDePasse);
-            utilisateur.setSoldeConge(soldeConge);
-
-            Personnel personnel = new Personnel();
-            personnel.setNom(nom);
-            personnel.setPrenom(prenom);
-            personnel.setMatricule(matricule);
-            personnel.setTelephone(telephone);
-            personnel.setEmail(email);
-            personnel.setCin(cin);
-            personnel.setDepartementId(departement);
-            personnel.setUtilisateur(utilisateur);
-
-            authService.creerUtilisateurEtPersonnel(utilisateur, personnel);
-
-            redirectAttributes.addFlashAttribute("success", "Personnel ajouté avec succès !");
-        } catch (Exception e) {
-            e.printStackTrace();
-            redirectAttributes.addFlashAttribute("error", "Erreur lors de l'ajout du personnel.");
-        }
-
-        return "redirect:/personnel/ajouter";
-    }
-
+    // ==================== DASHBOARD ====================
     @GetMapping("/dashboard")
     public String showDashboard(Model model, HttpSession session) {
-        Utilisateur utilisateurSession = (Utilisateur) session.getAttribute("utilisateur");
-        if (utilisateurSession == null) {
-            return "redirect:/login";
-        }
-
-        Utilisateur utilisateur = utilisateurRepository.findById(utilisateurSession.getId())
-                .orElse(null);
+        // Récupérer l'utilisateur depuis la session
+        Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
         if (utilisateur == null) {
             return "redirect:/login";
         }
 
-        int annee = LocalDate.now().getYear();
-        int congesAnnuels = 30; // Toujours 30
+        // Recharger l'utilisateur depuis la base
+        utilisateur = utilisateurRepository.findById(utilisateur.getId())
+                .orElse(utilisateur);
 
-        // Congés consommés confirmés cette année
+        int annee = Year.now().getValue();
+
+        // Récupérer les congés via le service (DemandeConge)
+        List<DemandeConge> conges = congeService.getCongesByUtilisateur(utilisateur);
+
+        // Calculer les jours pris confirmés et le solde
         int congesConsommes = congeService.calculerJoursPrisConfirmes(utilisateur, annee);
+        int soldeDisponible = congeService.calculerSoldeTotalDisponible(utilisateur, annee);
+        int congesAnnuels = 30;
 
-        // Solde total disponible cumulatif (en tenant compte du report)
-        int soldeTotal = congeService.calculerSoldeTotalDisponible(utilisateur, annee);
+        // Formater les dates pour affichage
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
+        for (DemandeConge d : conges) {
+            if (d.getDateDebut() != null)
+                d.setDateDebutFormatee(d.getDateDebut().format(dateFormatter));
+            if (d.getDateFin() != null)
+                d.setDateFinFormatee(d.getDateFin().format(dateFormatter));
+            if (d.getDateSoumission() != null)
+                d.setDateSoumissionFormatee(d.getDateSoumission().format(dateTimeFormatter));
+        }
+
+        // Ajouter les attributs au modèle
+        model.addAttribute("utilisateur", utilisateur);
+        model.addAttribute("conges", conges);
         model.addAttribute("congesAnnuels", congesAnnuels);
         model.addAttribute("congesConsommes", congesConsommes);
-        model.addAttribute("soldeTotal", soldeTotal);
-
+        model.addAttribute("soldeTotal", soldeDisponible);
         model.addAttribute("activePage", "dashboard");
+
         return "dashboard-personnel";
     }
 
+    // ==================== PROFIL ====================
     @GetMapping("/profil-personnel")
     public String showProfil(HttpSession session, Model model) {
         Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
@@ -206,18 +140,7 @@ public class PersonnelController {
         return "profil-personnel";
     }
 
-    @GetMapping("/photo/{id}")
-    @ResponseBody
-    public ResponseEntity<byte[]> getPhotoProfil(@PathVariable("id") int utilisateurId) {
-        Utilisateur utilisateur = utilisateurService.findById(utilisateurId);
-        if (utilisateur == null || utilisateur.getPhoto() == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_TYPE, "image/jpeg")
-                .body(utilisateur.getPhoto());
-    }
-
+    // ==================== DEMANDE CONGE ====================
     @GetMapping("/demande-conge-personnel")
     public String afficherFormulaireCongePersonnel(Model model, HttpSession session) {
         Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
@@ -252,65 +175,14 @@ public class PersonnelController {
         return "ConfirmationDemande";
     }
 
-    @GetMapping("/solde-conge")
-    public ResponseEntity<Integer> getSoldeConge(@RequestParam Long utilisateurId) {
-        Integer id = Math.toIntExact(utilisateurId);
-
-        Utilisateur utilisateur = utilisateurRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
-
-        int annee = LocalDate.now().getYear();
-
-        // Utilise la méthode cumulée ici
-        int solde = congeService.calculerSoldeTotalDisponible(utilisateur, annee);
-
-        return ResponseEntity.ok(solde);
-    }
-
-    @GetMapping("/demande/{id}/titre-conge")
-    public ResponseEntity<byte[]> genererTitreConge(@PathVariable("id") Long demandeId, HttpSession session) {
-        // Vérifier l'utilisateur connecté
-        Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
-        if (utilisateur == null) {
-            return ResponseEntity.status(403).build(); // pas connecté
+    @GetMapping("/photo/{id}")
+    @ResponseBody
+    public byte[] afficherPhoto(@PathVariable Integer id) { // <-- Integer ici
+        Utilisateur utilisateur = utilisateurRepository.findById(id).orElse(null);
+        if (utilisateur != null && utilisateur.getPhoto() != null) {
+            return utilisateur.getPhoto();
         }
-
-        // Récupérer la demande
-        DemandeConge demande = demandeCongeRepository.findById(demandeId)
-                .orElseThrow(() -> new RuntimeException("Demande non trouvée"));
-
-        // Vérifier que la demande est approuvée par le directeur
-        if (demande.getStatut() != StatutDemande.APPROUVEE_DIRECTEUR) {
-            return ResponseEntity.status(403).build();
-        }
-
-        // Vérifier que l'utilisateur est autorisé : demandeur, RH ou DIRECTEUR
-        boolean autorise = demande.getDemandeur().getId() == utilisateur.getId()
-                || "RH".equalsIgnoreCase(utilisateur.getRole())
-                || "DIRECTEUR".equalsIgnoreCase(utilisateur.getRole());
-
-        if (!autorise) {
-            return ResponseEntity.status(403).build();
-        }
-
-        try {
-            String titrePdf = "Titre de congé";
-            byte[] pdf = PdfGenerator.generateCongePdf(demande, titrePdf);
-
-            if (pdf == null) {
-                return ResponseEntity.status(500).build();
-            }
-
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION,
-                            "attachment; filename=TitreConge_" + demande.getId() + ".pdf")
-                    .header(HttpHeaders.CONTENT_TYPE, "application/pdf")
-                    .body(pdf);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).build();
-        }
+        return new byte[0];
     }
 
 }

@@ -1,32 +1,25 @@
 package com.portailconge.portail_conge.controller;
 
-import com.portailconge.portail_conge.model.CongePdfGenerator;
-import com.portailconge.portail_conge.model.DemandeConge;
-import com.portailconge.portail_conge.model.Departement;
-import com.portailconge.portail_conge.model.PdfGenerator;
-import com.portailconge.portail_conge.model.StatutDemande;
-import com.portailconge.portail_conge.model.Utilisateur;
+import com.portailconge.portail_conge.model.*;
 import com.portailconge.portail_conge.repository.DemandeCongeRepository;
-
-import java.time.format.DateTimeFormatter;
-import java.util.List;
 import jakarta.servlet.http.HttpSession;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
 @Controller
 public class ResponsableController {
 
     @Autowired
     private DemandeCongeRepository demandeCongeRepository;
+
     @Autowired
     private CongePdfGenerator congePdfGenerator;
 
@@ -36,18 +29,16 @@ public class ResponsableController {
         Utilisateur responsable = (Utilisateur) session.getAttribute("utilisateur");
         if (responsable == null)
             return "redirect:/login";
-
         if (!"RESPONSABLE".equals(responsable.getRole()) && !"PERSONNEL".equals(responsable.getRole()))
             return "redirect:/login";
 
+        // Comptage des congés pour le graphique
         int congesEnAttente = demandeCongeRepository
                 .countByStatutAndDemandeur_Departement(StatutDemande.EN_ATTENTE_RESPONSABLE,
                         responsable.getDepartement());
-
         int congesValides = demandeCongeRepository
                 .countByStatutAndDemandeur_Departement(StatutDemande.APPROUVEE_RESP,
                         responsable.getDepartement());
-
         int congesRefuses = demandeCongeRepository
                 .countByStatutAndDemandeur_Departement(StatutDemande.REFUSEE_RESP,
                         responsable.getDepartement());
@@ -57,10 +48,39 @@ public class ResponsableController {
         model.addAttribute("congesRefuses", congesRefuses);
         model.addAttribute("utilisateur", responsable);
 
+        // ----------------- LOGIQUE DES SOLDES -----------------
+        // Récupérer toutes les demandes validées pour le département
+        List<DemandeConge> congesValidesUtilisateur = demandeCongeRepository
+                .findByStatutAndDemandeur(StatutDemande.APPROUVEE_DIRECTEUR, responsable);
+
+        int soldeTotal = 0; // Total de jours accordés (peut venir d'une configuration par rôle)
+        int soldeConsomme = 0; // Somme des jours déjà pris
+        int soldeDisponible = 0; // soldeTotal - soldeConsomme
+
+        // Supposons que chaque utilisateur a un solde annuel de 24 jours
+        soldeTotal = 30;
+
+        // Calcul du solde consommé
+        for (DemandeConge demande : congesValidesUtilisateur) {
+            if (demande.getDateDebut() != null && demande.getDateFin() != null) {
+                int jours = (int) java.time.temporal.ChronoUnit.DAYS.between(
+                        demande.getDateDebut(), demande.getDateFin()) + 1;
+                if (jours > 0)
+                    soldeConsomme += jours;
+            }
+        }
+
+        soldeDisponible = soldeTotal - soldeConsomme;
+
+        model.addAttribute("soldeTotal", soldeTotal);
+        model.addAttribute("soldeConsomme", soldeConsomme);
+        model.addAttribute("soldeDisponible", soldeDisponible);
+        // -------------------------------------------------------
+
         return "dashboard-responsable";
     }
 
-    // ---------------- Soumission de demande (Responsable) ----------------
+    // ---------------- Soumission de demande ----------------
     @GetMapping("/responsable/conge/demande")
     public String afficherFormulaireDemande(Model model, HttpSession session) {
         Utilisateur responsable = (Utilisateur) session.getAttribute("utilisateur");
@@ -85,7 +105,6 @@ public class ResponsableController {
         demandeConge.setDemandeur(responsable);
         demandeConge.setStatut(StatutDemande.EN_ATTENTE);
         demandeConge.setDateSoumission(java.time.LocalDateTime.now());
-
         demandeCongeRepository.save(demandeConge);
 
         model.addAttribute("dashboardUrl", "/dashboard-responsable");
@@ -100,20 +119,12 @@ public class ResponsableController {
             return "redirect:/login";
 
         Departement departement = responsable.getDepartement();
-        List<DemandeConge> demandes = demandeCongeRepository.findDemandesEnAttentePersonnelByDepartement(
-                departement, StatutDemande.EN_ATTENTE_RESPONSABLE);
+        List<DemandeConge> demandes = demandeCongeRepository
+                .findDemandesEnAttentePersonnelByDepartement(departement, StatutDemande.EN_ATTENTE_RESPONSABLE);
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        for (DemandeConge demande : demandes) {
-            if (demande.getDateDebut() != null)
-                demande.setDateDebutFormatee(demande.getDateDebut().format(formatter));
-            if (demande.getDateFin() != null)
-                demande.setDateFinFormatee(demande.getDateFin().format(formatter));
-        }
-
+        formaterDatesDemandes(demandes);
         model.addAttribute("demandes", demandes);
         model.addAttribute("activePage", "demandesATraiter");
-
         return "demandesATraiter";
     }
 
@@ -123,11 +134,10 @@ public class ResponsableController {
         if (responsable == null || !"RESPONSABLE".equals(responsable.getRole()))
             return "redirect:/login";
 
-        DemandeConge demande = demandeCongeRepository.findById(id).orElse(null);
-        if (demande != null) {
-            demande.setStatut(StatutDemande.APPROUVEE_RESP);
-            demandeCongeRepository.save(demande);
-        }
+        demandeCongeRepository.findById(id).ifPresent(d -> {
+            d.setStatut(StatutDemande.APPROUVEE_RESP);
+            demandeCongeRepository.save(d);
+        });
         return "redirect:/demandes-a-traiter";
     }
 
@@ -137,11 +147,10 @@ public class ResponsableController {
         if (responsable == null || !"RESPONSABLE".equals(responsable.getRole()))
             return "redirect:/login";
 
-        DemandeConge demande = demandeCongeRepository.findById(id).orElse(null);
-        if (demande != null) {
-            demande.setStatut(StatutDemande.REFUSEE_RESP);
-            demandeCongeRepository.save(demande);
-        }
+        demandeCongeRepository.findById(id).ifPresent(d -> {
+            d.setStatut(StatutDemande.REFUSEE_RESP);
+            demandeCongeRepository.save(d);
+        });
         return "redirect:/demandes-a-traiter";
     }
 
@@ -162,23 +171,19 @@ public class ResponsableController {
                 StatutDemande.EN_ATTENTE_RH, StatutDemande.APPROUVEE_RH, StatutDemande.REFUSEE_RH,
                 StatutDemande.EN_ATTENTE_DIRECTEUR, StatutDemande.APPROUVEE_DIRECTEUR, StatutDemande.REFUSEE_DIRECTEUR);
 
-        Page<DemandeConge> demandesPage = demandeCongeRepository.findByDemandeurAndStatutIn(utilisateur,
-                statutsHistorique, pageable);
+        Page<DemandeConge> demandesPage = demandeCongeRepository
+                .findByDemandeurAndStatutIn(utilisateur, statutsHistorique, pageable);
 
-        // Calcul de titreVisible pour chaque demande
         List<DemandeConge> demandes = demandesPage.getContent();
-        for (DemandeConge d : demandes) {
-            d.setTitreVisible(d.getStatut() != null && d.getStatut().name().equalsIgnoreCase("APPROUVEE_DIRECTEUR"));
-        }
+        for (DemandeConge d : demandes)
+            d.setTitreVisible(d.getStatut() == StatutDemande.APPROUVEE_DIRECTEUR);
 
-        // Formatage des dates
         formaterDatesDemandes(demandes);
 
         model.addAttribute("demandes", demandes);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", demandesPage.getTotalPages());
         model.addAttribute("activePage", "historiqueDemandesResponsable");
-
         return "HistoriqueDemandes-responsable";
     }
 
@@ -189,15 +194,13 @@ public class ResponsableController {
             @RequestParam(required = false) String role) {
 
         Utilisateur responsable = (Utilisateur) session.getAttribute("utilisateur");
-        if (responsable == null || !"RESPONSABLE".equals(responsable.getRole())) {
+        if (responsable == null || !"RESPONSABLE".equals(responsable.getRole()))
             return "redirect:/login";
-        }
 
         int pageSize = 3;
         Pageable pageable = PageRequest.of(page, pageSize);
 
         Page<DemandeConge> demandesPage;
-
         if ((matricule == null || matricule.isEmpty()) && (role == null || role.isEmpty())) {
             demandesPage = demandeCongeRepository.findByDemandeur_Departement(responsable.getDepartement(), pageable);
         } else {
@@ -233,34 +236,51 @@ public class ResponsableController {
         return "profil-responsable";
     }
 
-    // ---------------- Générer PDF ----------------
+    // ---------------- Génération PDF ----------------
     @GetMapping("/demandes/telecharger-titre/{id}")
     public ResponseEntity<byte[]> telechargerTitre(@PathVariable Long id, HttpSession session) {
-        // Récupération de l'utilisateur connecté
         Utilisateur responsable = (Utilisateur) session.getAttribute("utilisateur");
-        if (responsable == null || !"RESPONSABLE".equals(responsable.getRole())) {
+        if (responsable == null || !"RESPONSABLE".equals(responsable.getRole()))
             return ResponseEntity.status(403).build();
-        }
 
-        // Récupération de la demande de congé
         DemandeConge demande = demandeCongeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Demande non trouvée"));
 
-        // Vérifier si le responsable a le droit de télécharger (même département)
         if (!demande.getDemandeur().getDepartement().getId()
                 .equals(responsable.getDepartement().getId())) {
             return ResponseEntity.status(403).build();
         }
 
         try {
-            // Générer le PDF avec titre dynamique
             String titrePdf = "Titre de congé";
             byte[] pdf = PdfGenerator.generateCongePdf(demande, titrePdf);
 
-            // Retourner le PDF avec nom de fichier correct
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION,
                             "attachment; filename=TitreConge_" + demande.getId() + ".pdf")
+                    .header(HttpHeaders.CONTENT_TYPE, "application/pdf")
+                    .body(pdf);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).build();
+        }
+    }
+
+    @GetMapping("/personnel/demande/{id}/fiche-pdf")
+    public ResponseEntity<byte[]> telechargerFichePdf(@PathVariable Long id, HttpSession session) {
+        Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
+        if (utilisateur == null)
+            return ResponseEntity.status(403).build();
+
+        DemandeConge demande = demandeCongeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Demande non trouvée"));
+
+        try {
+            byte[] pdf = congePdfGenerator.genererFichePdf(demande, utilisateur);
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=FicheConge_" + demande.getId() + ".pdf")
                     .header(HttpHeaders.CONTENT_TYPE, "application/pdf")
                     .body(pdf);
         } catch (Exception e) {
@@ -277,37 +297,9 @@ public class ResponsableController {
         for (DemandeConge demande : demandes) {
             demande.setDateDebutFormatee(
                     demande.getDateDebut() != null ? demande.getDateDebut().format(dateFormatter) : "-");
-            demande.setDateFinFormatee(
-                    demande.getDateFin() != null ? demande.getDateFin().format(dateFormatter) : "-");
+            demande.setDateFinFormatee(demande.getDateFin() != null ? demande.getDateFin().format(dateFormatter) : "-");
             demande.setDateSoumissionFormatee(
                     demande.getDateSoumission() != null ? demande.getDateSoumission().format(dateTimeFormatter) : "-");
         }
     }
-    // ---------------- Télécharger fiche PDF ----------------
-
-    @GetMapping("/personnel/demande/{id}/fiche-pdf")
-    public ResponseEntity<byte[]> telechargerFichePdf(@PathVariable Long id, HttpSession session) {
-        Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
-        if (utilisateur == null) {
-            return ResponseEntity.status(403).build();
-        }
-
-        DemandeConge demande = demandeCongeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Demande non trouvée"));
-
-        try {
-            byte[] pdf = congePdfGenerator.genererFichePdf(demande, utilisateur);
-
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION,
-                            "attachment; filename=FicheConge_" + demande.getId() + ".pdf")
-                    .header(HttpHeaders.CONTENT_TYPE, "application/pdf")
-                    .body(pdf);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).build();
-        }
-    }
-
 }

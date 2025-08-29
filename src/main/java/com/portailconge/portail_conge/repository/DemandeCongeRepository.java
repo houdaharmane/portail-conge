@@ -120,4 +120,8 @@ public interface DemandeCongeRepository extends JpaRepository<DemandeConge, Long
         Page<DemandeConge> findByDemandeur_DepartementAndDemandeur_MatriculeContainsAndDemandeur_RoleContains(
                         Departement departement, String matricule, String role, Pageable pageable);
 
+        List<DemandeConge> findByStatutAndDemandeur_Departement(StatutDemande statut, Departement departement);
+
+        List<DemandeConge> findByStatutAndDemandeur(StatutDemande statut, Utilisateur demandeur);
+
 }
