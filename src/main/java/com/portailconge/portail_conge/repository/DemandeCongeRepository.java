@@ -124,4 +124,33 @@ public interface DemandeCongeRepository extends JpaRepository<DemandeConge, Long
 
         List<DemandeConge> findByStatutAndDemandeur(StatutDemande statut, Utilisateur demandeur);
 
+        @Query("SELECT d FROM DemandeConge d WHERE d.demandeur = :demandeur AND d.statut = :statut AND YEAR(d.dateDebut) = :annee")
+        List<DemandeConge> findByDemandeurAndStatutAndAnnee(@Param("demandeur") Utilisateur demandeur,
+                        @Param("statut") StatutDemande statut,
+                        @Param("annee") int annee);
+
+        int countByDemandeurAndStatut(Utilisateur demandeur, StatutDemande statut);
+
+        @Query("SELECT d FROM DemandeConge d WHERE d.demandeur = :directeur AND d.statut = 'APPROUVEE_DIRECTEUR' AND YEAR(d.dateDebut) = :annee")
+        List<DemandeConge> findCongesApprouvesParDirecteur(@Param("directeur") Utilisateur directeur,
+                        @Param("annee") int annee);
+
+        @Query("SELECT d FROM DemandeConge d WHERE d.demandeur = :demandeur AND d.statut = :statut AND FUNCTION('YEAR', d.dateDebut) = :annee")
+        List<DemandeConge> findApprovedByDemandeurAndYear(@Param("demandeur") Utilisateur demandeur,
+                        @Param("statut") StatutDemande statut,
+                        @Param("annee") int annee);
+
+        @Query("SELECT d FROM DemandeConge d " +
+                        "WHERE d.statut = :statut " +
+                        "AND FUNCTION('YEAR', d.dateDebut) = :annee")
+        List<DemandeConge> findApprovedByStatusAndYear(@Param("statut") StatutDemande statut,
+                        @Param("annee") int annee);
+
+        @Query("SELECT d FROM DemandeConge d WHERE d.demandeur = :demandeur " +
+                        "AND d.statut = :statut " +
+                        "AND YEAR(d.dateDebut) = :annee")
+        List<DemandeConge> findByDemandeurAndStatutAndYear(@Param("demandeur") Utilisateur demandeur,
+                        @Param("statut") StatutDemande statut,
+                        @Param("annee") int annee);
+
 }

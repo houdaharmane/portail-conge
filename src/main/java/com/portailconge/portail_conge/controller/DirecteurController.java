@@ -1,6 +1,7 @@
 package com.portailconge.portail_conge.controller;
 
 import java.io.IOException;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,25 +36,54 @@ public class DirecteurController {
 
     @GetMapping("/dashboard-directeur")
     public String dashboardDirecteur(HttpSession session, Model model) {
-        Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
-        if (utilisateur == null || !"DIRECTEUR".equals(utilisateur.getRole())) {
+        Utilisateur directeur = (Utilisateur) session.getAttribute("utilisateur");
+        if (directeur == null || !"DIRECTEUR".equals(directeur.getRole())) {
             return "redirect:/login";
         }
 
-        // Statistiques dynamiques
-        long totalDemandes = demandeCongeRepository.count();
-        long demandesEnAttente = demandeCongeRepository.countByStatut(StatutDemande.EN_ATTENTE_DIRECTEUR);
-        long demandesApprouvees = demandeCongeRepository.countByStatut(StatutDemande.APPROUVEE_DIRECTEUR);
-        long tauxAcceptation = totalDemandes == 0 ? 0 : Math.round((double) demandesApprouvees / totalDemandes * 100);
+        int congesAnnuels = 30; // nombre de jours annuels
+        int annee = java.time.LocalDate.now().getYear();
 
-        model.addAttribute("directeur", utilisateur);
+        // Récupérer les demandes approuvées du directeur pour l'année en cours
+        List<DemandeConge> demandesApprouvees = demandeCongeRepository
+                .findByDemandeurAndStatutAndYear(directeur, StatutDemande.APPROUVEE, annee);
+
+        // Calculer le nombre total de jours consommés
+        long congesConsommes = demandesApprouvees.stream()
+                .filter(d -> d.getDateDebut() != null && d.getDateFin() != null)
+                .mapToLong(d -> ChronoUnit.DAYS.between(d.getDateDebut(), d.getDateFin()) + 1)
+                .sum();
+
+        long soldeTotal = congesAnnuels - congesConsommes;
+
+        // Statistiques pour le graphique
+        int totalDemandes = demandeCongeRepository.findByDemandeur(directeur).size();
+
+        // Compter les demandes en attente pour ce directeur
+        int demandesEnAttente = demandeCongeRepository
+                .findByDemandeurAndStatutIn(directeur, List.of(StatutDemande.EN_ATTENTE_DIRECTEUR))
+                .size();
+
+        int demandesApprouveesCount = demandesApprouvees.size();
+
+        long tauxAcceptation = totalDemandes == 0 ? 0
+                : Math.round((double) demandesApprouveesCount / totalDemandes * 100);
+
+        // Ajouter les attributs au modèle
+        model.addAttribute("directeur", directeur);
         model.addAttribute("activePage", "dashboard");
+
+        model.addAttribute("congesAnnuels", congesAnnuels);
+        model.addAttribute("congesConsommes", congesConsommes);
+        model.addAttribute("soldeTotal", soldeTotal);
+
         model.addAttribute("totalDemandes", totalDemandes);
         model.addAttribute("demandesEnAttente", demandesEnAttente);
-        model.addAttribute("demandesApprouvees", demandesApprouvees);
+        model.addAttribute("demandesApprouvees", demandesApprouveesCount);
         model.addAttribute("tauxAcceptation", tauxAcceptation);
 
-        session.setAttribute("utilisateurConnecteId", utilisateur.getId());
+        session.setAttribute("utilisateurConnecteId", directeur.getId());
+
         return "dashboard-directeur";
     }
 

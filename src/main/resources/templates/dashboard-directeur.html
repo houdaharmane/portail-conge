@@ -16,7 +16,6 @@
             --card-shadow: #e9953d22;
             --sidebar-bg: #0074C7;
             --link-color: #fff;
-            
         }
 
         .dark-theme {
@@ -117,47 +116,47 @@
             flex-direction: column;
         }
 
-      .header {
-    height: 60px;
-    background-color: var(--header-bg);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 20px;
-    border-bottom: 1px solid #ccc;
-    box-shadow: 0 2px 8px #e9953d11;
-    position: fixed;
-    left: 240px;
-    width: calc(100% - 240px);
-}
+        .header {
+            height: 60px;
+            background-color: var(--header-bg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            border-bottom: 1px solid #ccc;
+            box-shadow: 0 2px 8px #e9953d11;
+            position: fixed;
+            left: 240px;
+            width: calc(100% - 240px);
+        }
 
-.header a {
-    text-decoration: none;
-    color: #0074C7;
-    display: flex;
-    align-items: center;
-    font-weight: 600;
-    font-size: 17px;
-}
+        .header a {
+            text-decoration: none;
+            color: #0074C7;
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            font-size: 17px;
+        }
 
-.header a i {
-    margin-right: 8px;
-    font-size: 24px;
-}
+        .header a i {
+            margin-right: 8px;
+            font-size: 24px;
+        }
 
-.theme-toggle-btn {
-    background: none;
-    border: none;
-    font-size: 20px;
-    color: #0074C7;
-    cursor: pointer;
-    margin-right: 30px;
-    right: 10px;
-}
+        .theme-toggle-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #0074C7;
+            cursor: pointer;
+            margin-right: 30px;
+            right: 10px;
+        }
 
-.dark-theme .theme-toggle-btn {
-    color: #f0f0f0;
-}
+        .dark-theme .theme-toggle-btn {
+            color: #f0f0f0;
+        }
 
         .main-content {
             flex: 1;
@@ -165,56 +164,9 @@
             flex-direction: column;
             justify-content: flex-start;
             align-items: center;
-            padding: 40px 0;
             background-color: var(--bg-color);
             margin-left: 240px;
-            padding: 0 40px;
-            margin-top: 60px;
-        }
-
-        .dashboard-title {
-            font-size: 28px;
-            color: #0074C7;
-            font-weight: 700;
-            margin-bottom: 18px;
-        }
-
-        .dashboard-cards {
-            display: flex;
-            gap: 24px;
-            margin-top: 40px;
-            flex-wrap: wrap;
-        }
-
-        .card {
-            background: var(--card-bg);
-            border-radius: 14px;
-            box-shadow: 0 2px 10px var(--card-shadow);
-            min-width: 170px;
-            padding: 32px 24px;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .card-icon {
-            font-size: 32px;
-            color: #0074C7;
-            margin-bottom: 10px;
-        }
-
-        .card-title {
-            font-size: 17px;
-            font-weight: 600;
-            color: var(--text-color);
-            margin-bottom: 4px;
-        }
-
-        .card-value {
-            font-size: 22px;
-            color: #0074C7;
-            font-weight: 700;
+            padding: 100px 40px 40px 40px;
         }
 
         @media (max-width: 900px) {
@@ -223,22 +175,57 @@
                 gap: 18px;
             }
         }
-        .sidebar-logo {
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
-    object-fit: cover;
-    background: #fff; 
-    box-shadow: 0 2px 8px #fff2;
-    margin-bottom: 10px;
-}
+          /* Cartes solde congés - disposition en ligne */
+        .conge-summary {
+            max-width: 900px;
+            margin: 0 auto 60px auto;
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
 
-/* Mode sombre */
-.dark-theme .sidebar-logo {
-    background: #2a2a2a; 
-    box-shadow: 0 2px 8px #0005;
-}
-   
+        .conge-card {
+            background: var(--card-bg);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border-radius: 15px;
+            padding: 25px 30px;
+            flex: 1;
+            text-align: center;
+            transition: transform 0.3s ease;
+            cursor: default;
+        }
+
+        .conge-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .conge-card h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #0074C7;
+        }
+
+        .conge-card p {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 0 0 8px;
+            color: var(--text-color);
+        }
+
+        .conge-card small {
+            font-size: 14px;
+            color: #666;
+        }
+
+        @media (max-width: 900px) {
+            .conge-summary {
+                flex-direction: column;
+                gap: 18px;
+                margin-bottom: 40px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -248,21 +235,20 @@
         <div class="sidebar-header">
             <img src="/img/modepbg.png" alt="Logo MODEP" class="sidebar-logo">
         </div>
-<nav>
-    <a th:href="@{/dashboard-directeur}" th:classappend="${activePage == 'dashboard'} ? ' active'" class="sidebar-link">
-        <i class="fa fa-home"></i> <span>Tableau de bord</span>
-    </a>
-    <a th:href="@{/demandes-finales}" th:classappend="${activePage == 'validationFinale'} ? ' active'" class="sidebar-link">
-        <i class="fa fa-check-double"></i> <span>Demandes à valider</span>
-    </a>
-    <a th:href="@{/directeur/historique}" th:classappend="${activePage == 'historique'} ? ' active'" class="sidebar-link">
-        <i class="fa fa-history"></i> <span>Historique</span>
-    </a>
-    <a th:href="@{/directeur/demande-conge}" th:classappend="${activePage == 'demandeConge'} ? ' active'" class="sidebar-link">
-        <i class="fa fa-plane-departure"></i> <span>Demande de congé</span>
-    </a>
-</nav>
-
+        <nav>
+            <a th:href="@{/dashboard-directeur}" th:classappend="${activePage == 'dashboard'} ? ' active'" class="sidebar-link">
+                <i class="fa fa-home"></i> <span>Tableau de bord</span>
+            </a>
+            <a th:href="@{/demandes-finales}" th:classappend="${activePage == 'validationFinale'} ? ' active'" class="sidebar-link">
+                <i class="fa fa-check-double"></i> <span>Demandes à valider</span>
+            </a>
+            <a th:href="@{/directeur/historique}" th:classappend="${activePage == 'historique'} ? ' active'" class="sidebar-link">
+                <i class="fa fa-history"></i> <span>Historique</span>
+            </a>
+            <a th:href="@{/directeur/demande-conge}" th:classappend="${activePage == 'demandeConge'} ? ' active'" class="sidebar-link">
+                <i class="fa fa-plane-departure"></i> <span>Demande de congé</span>
+            </a>
+        </nav>
     </div>
     <div class="sidebar-footer">
         <a href="/logout" class="sidebar-link"><i class="fa fa-sign-out-alt"></i> <span>Déconnexion</span></a>
@@ -281,34 +267,30 @@
     </div>
 
     <div class="main-content">
-        <div class="dashboard-cards">
-            <div class="card">
-                <div class="card-icon"><i class="fa fa-file-alt"></i></div>
-                <div class="card-title">Total des demandes</div>
-<div class="card-value" th:text="${totalDemandes}">0</div>
+         <!-- Solde des congés -->
+        <div class="conge-summary" aria-label="Solde des congés">
+            <div class="conge-card">
+                <h3>Congés annuels</h3>
+                <p th:text="${congesAnnuels} + ' jours'">30 jours</p>
+                <small>Solde annuel normal</small>
             </div>
-            <div class="card">
-                <div class="card-icon"><i class="fa fa-user-clock"></i></div>
-                <div class="card-title">En attente validation finale</div>
-<div class="card-value" th:text="${demandesEnAttente}">0</div>
+            <div class="conge-card">
+                <h3>Congés consommés</h3>
+<p th:text="${congesConsommes} + ' jours'">10 jours</p>
+                <small>Cette année</small>
             </div>
-            <div class="card">
-                <div class="card-icon"><i class="fa fa-check-circle"></i></div>
-                <div class="card-title">Demandes approuvées</div>
-                <div class="card-value" th:text="${demandesApprouvees}">0</div>
-            </div>
-            <div class="card">
-                <div class="card-icon"><i class="fa fa-chart-pie"></i></div>
-                <div class="card-title">Taux d’acceptation</div>
-<div class="card-value" th:text="${tauxAcceptation + '%'}">0%</div>
+            <div class="conge-card">
+                <h3>Solde total disponible</h3>
+                <p th:text="${soldeTotal} + ' jours'">50 jours</p>
+                <small>Année prochaine</small>
             </div>
         </div>
-        <div class="dashboard-chart" style="width: 100%; max-width: 1000px; margin-top: 40px;">
-    <canvas id="demandesChart"></canvas>
-</div>
-
+        <div class="dashboard-chart" style="width: 100%; max-width: 1000px;">
+            <canvas id="demandesChart"></canvas>
+        </div>
     </div>
 </div>
+
 <script th:inline="javascript">
     // Theme toggle
     const toggleBtn = document.getElementById('theme-toggle');
@@ -333,7 +315,7 @@
 
     const ctx = document.getElementById('demandesChart').getContext('2d');
     const demandesChart = new Chart(ctx, {
-        type: 'bar', // ou 'line', 'pie', etc.
+        type: 'bar',
         data: {
             labels: ['Total', 'En attente', 'Approuvées'],
             datasets: [{
@@ -341,13 +323,29 @@
                 data: [total, attente, approuvees],
                 backgroundColor: ['#0074C7', '#FFA500', '#28A745'],
                 borderRadius: 6,
-                barThickness: 30
+                barThickness: 50
             }]
         },
         options: {
             responsive: true,
             plugins: {
-                legend: { display: false },
+                legend: {
+                    display: true,
+                    position: 'bottom',
+                    labels: {
+                        generateLabels: (chart) => {
+                            const colors = ['#0074C7', '#FFA500', '#28A745'];
+                            const labels = ['Total', 'En attente', 'Approuvées'];
+                            return labels.map((label, i) => ({
+                                text: label,
+                                fillStyle: colors[i],
+                                strokeStyle: colors[i],
+                                hidden: false,
+                                index: i
+                            }));
+                        }
+                    }
+                },
                 tooltip: { enabled: true }
             },
             scales: {

@@ -47,18 +47,17 @@ public class RhController {
             return "redirect:/login";
         }
 
-        // Comptage mis à jour
+        // Comptage des demandes
         long demandesEnAttente = demandeCongeRepository.countByStatutIn(List.of(
                 StatutDemande.EN_ATTENTE,
-                StatutDemande.EN_ATTENTE_DIRECTEUR)); // inclut celles envoyées au directeur
+                StatutDemande.EN_ATTENTE_DIRECTEUR));
 
         long demandesRefuses = demandeCongeRepository.countByStatut(StatutDemande.REFUSEE);
 
-        long demandesValidees = demandeCongeRepository.countByStatutIn(List.of(
-                StatutDemande.APPROUVEE_RH,
-                StatutDemande.APPROUVEE_DIRECTEUR)); // inclut celles validées par le directeur
+        // Comptage des demandes approuvées par le directeur **du RH connecté**
+        long demandesValidees = demandeCongeRepository.countByDemandeurAndStatut(rh, StatutDemande.APPROUVEE_DIRECTEUR);
 
-        // Historique
+        // Historique des demandes RH
         List<StatutDemande> statutsHistoriqueRh = List.of(
                 StatutDemande.APPROUVEE_RH,
                 StatutDemande.APPROUVEE_DIRECTEUR,
@@ -69,6 +68,18 @@ public class RhController {
         // Notifications des nouvelles demandes du directeur
         List<DemandeConge> notifications = demandeCongeRepository.findByDemandeurRoleAndLuParRHFalse("DIRECTEUR");
 
+        // Calcul des congés
+        int congesAnnuels = 30; // à adapter selon RH
+        int congesConsommes = demandeCongeRepository.findByDemandeur_Departement(rh.getDepartement())
+                .stream()
+                .filter(d -> d.getStatut() == StatutDemande.APPROUVEE_DIRECTEUR
+                        || d.getStatut() == StatutDemande.APPROUVEE_RH)
+                .mapToInt(DemandeConge::getDuree)
+                .sum();
+
+        int soldeTotal = congesAnnuels - congesConsommes;
+
+        // Ajout au modèle
         model.addAttribute("rh", rh);
         model.addAttribute("email", rh.getEmail());
         model.addAttribute("role", rh.getRole());
@@ -81,6 +92,10 @@ public class RhController {
 
         model.addAttribute("notifications", notifications);
         model.addAttribute("notificationsCount", notifications.size());
+
+        model.addAttribute("congesAnnuels", congesAnnuels);
+        model.addAttribute("congesConsommes", congesConsommes);
+        model.addAttribute("soldeTotal", soldeTotal);
 
         return "dashboard-rh";
     }
