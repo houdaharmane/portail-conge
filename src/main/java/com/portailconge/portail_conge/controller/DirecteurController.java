@@ -300,4 +300,87 @@ public class DirecteurController {
                 .body(pdfBytes);
     }
 
+    // Télécharger la fiche de congé (PDF) pour directeur
+    @GetMapping("/conge/download/fiche/{id}")
+    public ResponseEntity<byte[]> telechargerFicheConge(@PathVariable Long id, HttpSession session) {
+        DemandeConge demande = demandeCongeRepository.findById(id).orElse(null);
+        if (demande == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
+        if (utilisateur == null) {
+            return ResponseEntity.status(403).build();
+        }
+
+        boolean estDemandeur = demande.getDemandeur().getId() == utilisateur.getId();
+        boolean estDirecteur = "DIRECTEUR".equals(utilisateur.getRole());
+        boolean estApprouvee = demande.getStatut() == StatutDemande.APPROUVEE_DIRECTEUR;
+
+        if (!estDemandeur && !(estDirecteur && estApprouvee)) {
+            return ResponseEntity.status(403).build();
+        }
+
+        byte[] pdfBytes;
+        try {
+            String titrePdf = estDirecteur ? "Fiche de congé Directeur" : "Fiche de congé";
+            pdfBytes = PdfGenerator.generateCongePdf(demande, titrePdf);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Erreur lors de la génération du PDF".getBytes());
+        }
+
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=\"Fiche_Conge_" + demande.getId() + ".pdf\"")
+                .contentType(org.springframework.http.MediaType.APPLICATION_PDF)
+                .body(pdfBytes);
+    }
+
+    // Télécharger le titre de congé (PDF) pour directeur
+    @GetMapping("/conge/download/titre/{id}")
+    public ResponseEntity<byte[]> telechargerTitreConge(@PathVariable Long id, HttpSession session) {
+        DemandeConge demande = demandeCongeRepository.findById(id).orElse(null);
+        System.out.println("Demande : " + demande);
+        System.out.println("Debut : " + demande.getDateDebut());
+        System.out.println("Fin : " + demande.getDateFin());
+        System.out.println("Demandeur : " + demande.getDemandeur());
+        System.out.println("Titre : " + demande.getTitreConge());
+
+        Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
+        if (utilisateur == null) {
+            return ResponseEntity.status(403).build();
+        }
+
+        boolean estDemandeur = demande.getDemandeur().getId() == utilisateur.getId();
+        boolean estDirecteur = "DIRECTEUR".equals(utilisateur.getRole());
+        boolean estApprouvee = demande.getStatut() == StatutDemande.APPROUVEE_DIRECTEUR;
+
+        // Autorisation : demandeur ou directeur si la demande est approuvée
+        if (!estDemandeur && !(estDirecteur && estApprouvee)) {
+            return ResponseEntity.status(403).build();
+        }
+
+        // Vérifier que les champs nécessaires sont présents
+        if (demande.getDemandeur() == null || demande.getDateDebut() == null || demande.getDateFin() == null) {
+            return ResponseEntity.status(500).body("Impossible de générer le PDF : données manquantes".getBytes());
+        }
+
+        byte[] pdfBytes;
+        try {
+            String titrePdf = estDirecteur ? "Titre de Congé Directeur" : "Titre de Congé";
+            pdfBytes = PdfGenerator.generateCongePdf(demande, titrePdf);
+            if (pdfBytes == null || pdfBytes.length == 0) {
+                return ResponseEntity.status(500).body("Erreur : PDF vide".getBytes());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Erreur lors de la génération du PDF".getBytes());
+        }
+
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=\"Titre_Conge_" + demande.getId() + ".pdf\"")
+                .contentType(org.springframework.http.MediaType.APPLICATION_PDF)
+                .body(pdfBytes);
+    }
+
 }

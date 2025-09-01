@@ -1,20 +1,16 @@
 package com.portailconge.portail_conge.model;
 
-import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Paragraph;
 
 import java.io.ByteArrayOutputStream;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 public class PdfGenerator {
 
     public static byte[] generateCongePdf(DemandeConge demande, String titrePdf) throws Exception {
-        if (demande.getStatut() != StatutDemande.APPROUVEE_DIRECTEUR) {
+        if (demande == null) {
             return null;
         }
 
@@ -22,16 +18,6 @@ public class PdfGenerator {
         PdfWriter writer = new PdfWriter(baos);
         PdfDocument pdfDoc = new PdfDocument(writer);
         Document document = new Document(pdfDoc);
-
-        // Logo
-        String logoPath = "src/main/resources/static/img/modepbg.png";
-        try {
-            Image logo = new Image(ImageDataFactory.create(logoPath)).scaleToFit(100, 100);
-            document.add(logo);
-        } catch (Exception e) {
-            System.out.println("Logo non trouvé : " + logoPath);
-        }
-        document.add(new Paragraph("\n"));
 
         // Titre dynamique
         Paragraph title = new Paragraph(titrePdf).setBold().setFontSize(18);
@@ -68,14 +54,8 @@ public class PdfGenerator {
         // Dates et durée
         document.add(new Paragraph("Date début : " + demande.getDateDebut()));
         document.add(new Paragraph("Date fin : " + demande.getDateFin()));
-        document.add(new Paragraph("Durée : " + demande.getDuree() + " jours"));
-
-        // Date du jour
-        String dateDuJour = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-        document.add(new Paragraph("Date : " + dateDuJour));
-
-        // Statut
-        document.add(new Paragraph("Statut : " + demande.getStatut()));
+        document.add(
+                new Paragraph("Est autorisé à prendre un congé administratif de : " + demande.getDuree() + " jours"));
 
         document.close();
         return baos.toByteArray();
