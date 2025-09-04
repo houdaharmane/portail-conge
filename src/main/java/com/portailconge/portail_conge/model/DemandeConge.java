@@ -57,6 +57,8 @@ public class DemandeConge {
     @Transient
     private String dateSoumissionFormatee;
     private String titreConge;
+    @ManyToOne
+    private Utilisateur responsable;
 
     public String getTitreConge() {
         return titreConge;
@@ -145,6 +147,14 @@ public class DemandeConge {
 
     public void setStatut(StatutDemande statut) {
         this.statut = statut;
+    }
+
+    public Utilisateur getResponsable() {
+        return responsable;
+    }
+
+    public void setResponsable(Utilisateur responsable) {
+        this.responsable = responsable;
     }
 
     public Boolean getLuParRH() {

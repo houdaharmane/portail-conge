@@ -554,6 +554,20 @@ body.dark-theme .day.taken {
 </select>
 
 </div>
+ <!-- NOUVEAU CHAMP: Sélection de l'intérimaire responsable -->
+  <div class="form-group">
+    <label for="interimaireResponsable">Intérimaire responsable :</label>
+  <label for="responsable">Choisir le responsable :</label>
+<select name="responsableId" class="form-control" required>
+    <option value="">-- Sélectionnez un responsable --</option>
+    <option th:each="resp : ${responsables}" th:value="${resp.id}" th:text="${resp.nom} + ' ' + ${resp.prenom}"></option>
+</select>
+
+
+    <small class="form-text text-muted">
+        Sélectionnez un responsable qui gérera les demandes de congé pendant votre absence.
+    </small>
+</div>
         <div class="form-group">
             <label>Durée demandée :</label>
 <input type="text" name="duree" id="dureeDemande" class="form-control" readonly />

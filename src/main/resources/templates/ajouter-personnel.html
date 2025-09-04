@@ -461,16 +461,17 @@
             </div>
 <!-- Conteneur des messages -->
 <div id="message-container" style="position: fixed; top: 20px; right: 20px; width: 320px; z-index: 9999;">
-    <div th:if="${error}" class="alert alert-danger" role="alert" id="error-message" style="display: none;">
+    <div th:if="${error}" class="alert alert-danger" role="alert" id="error-message">
         <span th:text="${error}"></span>
     </div>
 
-    <div th:if="${success}" class="alert alert-success" role="alert" id="success-message" style="display: none;">
-        Personnel ajouté avec succès.
-    </div>
+  <div th:if="${message}" class="alert alert-success" role="alert" id="success-message">
+    <span th:text="${message}"></span>
 </div>
 
-<form th:action="@{/personnel/ajouter}" method="post" th:object="${personnel}"  autocomplete="off">
+</div>
+
+<form th:action="@{/rh/personnel/ajouter}" method="post" th:object="${utilisateur}" autocomplete="off">
                 <!-- Étape 1 -->
                 <div class="step-form active" id="step1">
                     <div class="form-group">
@@ -496,7 +497,7 @@
                 <div class="step-form" id="step2">
                     <div class="form-group">
                         <label for="numero">Numéro de téléphone</label>
-                        <input type="text" id="numero" name="numero" required />
+                        <input type="text" id="telephone" name="telephone" required />
                     </div>
                     <div class="form-group">
                         <label for="email">Email</label>
@@ -524,7 +525,6 @@
   <select id="role" name="role" required>
     <option value="">-- Choisir un rôle --</option>
     <option value="PERSONNEL">Personnel</option>
-    <option value="RH">RH</option>
     <option value="RESPONSABLE">Responsable</option>
     <option value="DIRECTEUR">Directeur</option>
   </select>
@@ -533,12 +533,13 @@
                     </div>
                     <div class="form-group">
                         <label for="departement">Département</label>
-      <select name="departement" required>
+      <select name="departementId" required>
   <option value="">-- Choisir un département --</option>
   <th:block th:each="dept : ${departements}">
     <option th:value="${dept.id}" th:text="${dept.nom}"></option>
   </th:block>
 </select>
+
 
                     </div>
                     <div class="step-footer">

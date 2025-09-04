@@ -23,6 +23,15 @@ public class Utilisateur {
     }
 
     private String signatureImagePath;
+    private Boolean responsableRh = false; // false par défaut
+
+    public Boolean getResponsableRh() {
+        return responsableRh;
+    }
+
+    public void setResponsableRh(Boolean responsableRh) {
+        this.responsableRh = responsableRh;
+    }
 
     // ===== Getters et setters =====
     public String getSignatureImagePath() {

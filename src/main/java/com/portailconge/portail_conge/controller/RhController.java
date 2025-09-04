@@ -185,28 +185,67 @@ public class RhController {
         }
     }
 
+    // GET : afficher le formulaire
+    @GetMapping("/rh/personnel/ajouter")
+    public String afficherFormulaireAjoutUtilisateur(Model model, HttpSession session) {
+        Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
+        if (rh == null || !"RH".equals(rh.getRole())) {
+            return "redirect:/login";
+        }
+        model.addAttribute("rh", rh);
+
+        model.addAttribute("utilisateur", new Utilisateur());
+        model.addAttribute("departements", departementRepository.findAll()); // pour le dropdown
+        model.addAttribute("activePage", "utilisateurs");
+        return "ajouter-personnel";
+    }
+
+    // POST : traiter le formulaire
     @PostMapping("/rh/personnel/ajouter")
     public String ajouterUtilisateur(
+
             @RequestParam String nom,
             @RequestParam String prenom,
             @RequestParam String email,
-            @RequestParam("fonction") String fonction,
             @RequestParam String motDePasse,
             @RequestParam String role,
+            @RequestParam String cin,
+            @RequestParam String matricule,
+            @RequestParam Integer soldeConge,
+            @RequestParam String telephone,
             @RequestParam Integer departementId,
-            Model model) {
+            Model model,
+            HttpSession session) {
+
+        Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
+        if (rh == null || !"RH".equals(rh.getRole())) {
+            return "redirect:/login";
+        }
 
         Utilisateur utilisateur = new Utilisateur();
         utilisateur.setNom(nom);
         utilisateur.setPrenom(prenom);
         utilisateur.setEmail(email);
-        utilisateur.setRole(role); // Ici on affecte bien le rôle choisi
+        utilisateur.setRole(role);
         utilisateur.setMotDePasse(motDePasse);
-        departementRepository.findById(departementId).ifPresent(utilisateur::setDepartement);
+        utilisateur.setCin(cin);
+        utilisateur.setMatricule(matricule);
+        utilisateur.setSoldeConge(soldeConge);
+        utilisateur.setTelephone(telephone);
+
+        // récupérer le département
+        Departement departement = departementRepository.findById(departementId).orElse(null);
+        utilisateur.setDepartement(departement);
 
         utilisateurRepository.save(utilisateur);
 
-        return "redirect:/personnel/liste";
+        model.addAttribute("message", "Utilisateur ajouté avec succès !");
+        model.addAttribute("utilisateur", new Utilisateur());
+        model.addAttribute("departements", departementRepository.findAll());
+        model.addAttribute("rh", rh);
+        model.addAttribute("activePage", "utilisateurs");
+
+        return "ajouter-personnel";
     }
 
     // Nouvelle méthode pour servir la photo
@@ -220,22 +259,26 @@ public class RhController {
     @GetMapping("/rh/conge/demande")
     public String afficherFormulaireDemande(HttpSession session, Model model) {
         Utilisateur rhSession = (Utilisateur) session.getAttribute("utilisateur");
-
         if (rhSession == null || !"RH".equals(rhSession.getRole())) {
             return "redirect:/login";
         }
 
-        Utilisateur rh = utilisateurRepository.findById(rhSession.getId())
-                .orElse(rhSession);
-
+        Utilisateur rh = utilisateurRepository.findById(rhSession.getId()).orElse(rhSession);
         model.addAttribute("rh", rh);
         model.addAttribute("activePage", "demandeConge");
-        return "demande_conge";
+
+        // Utilisez la méthode insensible à la casse
+        List<Utilisateur> responsables = utilisateurRepository.findAllResponsablesLike("RESPONSABLE");
+        System.out.println("Responsables trouvés : " + responsables.size());
+        responsables.forEach(r -> System.out.println(r.getNom() + " | Role: " + r.getRole()));
+        model.addAttribute("responsables", responsables);
+        return "demande-conge";
     }
 
     @PostMapping("/rh/conge/demande")
     public String soumettreDemandeInteresse(
             @RequestParam("utilisateurId") Integer utilisateurId,
+            @RequestParam("responsableId") Integer responsableId, // ID du responsable choisi
             @RequestParam("matricule") String matricule,
             @RequestParam("nomPrenom") String nomPrenom,
             @RequestParam("fonction") String fonction,
@@ -246,18 +289,21 @@ public class RhController {
             Model model,
             HttpSession session) {
 
+        // Vérifier que l'utilisateur RH est connecté
         Utilisateur rh = utilisateurRepository.findById(utilisateurId).orElse(null);
         if (rh == null || !"RH".equalsIgnoreCase(rh.getRole())) {
             return "redirect:/login";
         }
 
-        // Validation simple
-        if (matricule == null || matricule.isEmpty() || departementId == null) {
-            model.addAttribute("error", "Matricule et département obligatoires.");
+        // Charger le responsable sélectionné
+        Utilisateur responsable = utilisateurRepository.findById(responsableId).orElse(null);
+        if (responsable == null) {
+            model.addAttribute("error", "Responsable introuvable.");
             model.addAttribute("rh", rh);
-            return "demande-conge"; // retourne le formulaire avec l'erreur
+            return "demande-conge";
         }
 
+        // Validation de la durée
         int duree;
         try {
             duree = Integer.parseInt(dureeStr);
@@ -269,6 +315,7 @@ public class RhController {
             return "demande-conge";
         }
 
+        // Conversion des dates
         LocalDate dateDebut;
         try {
             dateDebut = LocalDate.parse(dateDebutStr);
@@ -282,9 +329,10 @@ public class RhController {
         try {
             dateFin = LocalDate.parse(dateFinStr);
         } catch (Exception e) {
-            dateFin = dateDebut.plusDays(duree - 1);
+            dateFin = dateDebut.plusDays(duree - 1); // calcul automatique si dateFin invalide
         }
 
+        // Vérifier le département
         Departement departement = departementRepository.findById(departementId).orElse(null);
         if (departement == null) {
             model.addAttribute("error", "Département invalide.");
@@ -292,38 +340,24 @@ public class RhController {
             return "demande-conge";
         }
 
-        // Création de la demande
+        // Création de la demande de congé
         DemandeConge demande = new DemandeConge();
         demande.setDemandeur(rh);
+        demande.setResponsable(responsable); // <-- IMPORTANT : stocker le responsable
         demande.setDuree(duree);
         demande.setDateDebut(dateDebut);
         demande.setDateFin(dateFin);
         demande.setDepartement(departement);
         demande.setStatut(StatutDemande.EN_ATTENTE_DIRECTEUR);
 
+        // Sauvegarder dans la base
         demandeCongeRepository.save(demande);
 
-        // Préparation de la page de confirmation
+        // Préparer la page de confirmation
         model.addAttribute("rh", rh);
         model.addAttribute("message", "Demande enregistrée et envoyée au directeur avec succès.");
-        model.addAttribute("dashboardUrl", "/dashboard");
-        System.out.println("Redirection vers ConfirmationDemande pour RH : " + rh.getNom());
-        // Déterminer le dashboard en fonction du rôle
-        String dashboardUrl;
-        switch (rh.getRole()) {
-            case "RH":
-                dashboardUrl = "/dashboard-rh";
-                break;
-            case "RESPONSABLE":
-                dashboardUrl = "/dashboard-responsable";
-                break;
-            case "DIRECTEUR":
-                dashboardUrl = "/dashboard-directeur";
-                break;
-            default:
-                dashboardUrl = "/login";
-        }
-        model.addAttribute("dashboardUrl", dashboardUrl);
+        model.addAttribute("dashboardUrl", "/dashboard-rh");
+
         return "ConfirmationDemande";
     }
 

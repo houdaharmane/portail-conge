@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <title>RH Dashboard - Demande de congé avancée</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script src="https://apis.google.com/js/api.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
@@ -410,6 +411,33 @@ select.form-control {
     background-position: right 10px center;
     background-size: 16px;
 }
+
+/* Style pour le nouveau champ intérimaire */
+.form-group select.form-control {
+    border: 1px solid #ccc;
+    padding: 10px 15px;
+    height: 45px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    font-size: 16px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg fill='gray' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 16px;
+}
+
+.help-text {
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+    font-style: italic;
+}
+
+.dark-theme .help-text {
+    color: #aaa;
+}
     </style>
 </head>
 <body>
@@ -421,7 +449,7 @@ select.form-control {
         </div>
              <nav>
             <a th:href="@{/dashboard-rh}" class="sidebar-link"><i class="fa fa-home"></i> Tableau de bord</a>
-            <a th:href="@{/personnel/ajouter}" class="sidebar-link"><i class="fa fa-users"></i> Ajout des utilisateurs</a>
+            <a th:href="@{/rh/personnel/ajouter}" class="sidebar-link"><i class="fa fa-users"></i> Ajout des utilisateurs</a>
             <a th:href="@{/rh/utilisateurs}" class="sidebar-link"><i class="fa fa-user-cog"></i> Gestion des utilisateurs</a>
             <a th:href="@{/rh/demandes-responsable}" class="sidebar-link"><i class="fa fa-user-check"></i> Demandes du Responsable</a>
             <a th:href="@{/rh/demandes-approuvees}" class="sidebar-link"><i class="fa fa-check-circle"></i> Demandes des employés</a>
@@ -496,7 +524,6 @@ select.form-control {
             <label>Nom et Prénom :</label>
 <input type="text" name="nomPrenom" class="form-control" 
        th:value="|${rh.nom} ${rh.prenom}|" />
-
         </div>
        <div class="form-group">
     <label>Fonction :</label>
@@ -513,8 +540,25 @@ select.form-control {
   <option value="4" th:selected="${rh.departement != null and rh.departement.id == 4}">Comptabilité</option>
   <option value="5" th:selected="${rh.departement != null and rh.departement.id == 5}">Affiliation</option>
 </select>
-
 </div>
+
+      <!-- NOUVEAU CHAMP: Sélection de l'intérimaire responsable -->
+  <div class="form-group">
+    <label for="interimaireResponsable">Intérimaire responsable :</label>
+  <label for="responsable">Choisir le responsable :</label>
+<select name="responsableId" class="form-control" required>
+    <option value="">-- Sélectionnez un responsable --</option>
+    <option th:each="resp : ${responsables}" th:value="${resp.id}" th:text="${resp.nom} + ' ' + ${resp.prenom}"></option>
+</select>
+
+
+    <small class="form-text text-muted">
+        Sélectionnez un responsable qui gérera les demandes de congé pendant votre absence.
+    </small>
+</div>
+
+
+
         <div class="form-group">
             <label>Durée demandée :</label>
 <input type="text" name="duree" id="dureeDemande" class="form-control" readonly />
@@ -530,21 +574,6 @@ select.form-control {
 
  <button type="submit" >Confirmer</button>
 </form>
-<!--
-<div id="recapitulatif" style="display:none; margin-top:30px;">
-    <h2>Récapitulatif de la demande</h2>
-    <p><strong>Matricule :</strong> <span id="recap-matricule"></span></p>
-    <p><strong>Nom et Prénom :</strong> <span id="recap-nomPrenom"></span></p>
-    <p><strong>Fonction :</strong> <span id="recap-fonction"></span></p>
-    <p><strong>Département :</strong> <span id="recap-departement"></span></p>
-    <p><strong>Durée demandée :</strong> <span id="recap-duree"></span></p>
-    <p><strong>Du :</strong> <span id="recap-dateDu"></span></p>
-    <p><strong>Au :</strong> <span id="recap-dateAu"></span></p>
-
-    <button id="btnConfirm">Confirmer</button>
-    <button id="btnBackToForm">Retour</button>
-</div>
--->
 </div>
 </div>
         
@@ -818,8 +847,8 @@ document.getElementById('back-to-calendar').addEventListener('click', () => {
     const submitBtn = document.querySelector('#congeForm button[type="submit"]');
     if(submitBtn) submitBtn.style.display = 'inline-block';
 });
-</script>
 
+</script>
 
 </body>
 </html>

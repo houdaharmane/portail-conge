@@ -61,4 +61,5 @@ public class CongeService {
         int consommes = calculerJoursPrisConfirmes(utilisateur, annee);
         return Math.max(CONGES_ANNUELS - consommes, 0);
     }
+
 }

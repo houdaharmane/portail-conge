@@ -52,7 +52,11 @@ public class LoginController {
             case "PERSONNEL":
                 return "redirect:/dashboard";
             case "RH":
-                return "redirect:/dashboard-rh";
+                if (Boolean.TRUE.equals(utilisateur.getResponsableRh())) {
+                    return "redirect:/dashboard-personnel"; // Interface spécifique Responsable RH
+                } else {
+                    return "redirect:/dashboard-rh"; // Interface normale du personnel
+                }
             case "RESPONSABLE":
                 return "redirect:/dashboard-responsable";
             case "DIRECTEUR":

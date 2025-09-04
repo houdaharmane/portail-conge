@@ -2,6 +2,8 @@ package com.portailconge.portail_conge.repository;
 
 import com.portailconge.portail_conge.model.Utilisateur;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -22,6 +24,12 @@ public interface UtilisateurRepository extends JpaRepository<Utilisateur, Intege
     // Compter le nombre d'utilisateurs par rôle (ex: PERSONNEL)
     int countByRole(String role);
 
-    // Optionnel : récupérer tous les utilisateurs d'un rôle
-    List<Utilisateur> findAllByRole(String role);
+    List<Utilisateur> findAllByRoleIgnoreCase(String role);
+
+    @Query("SELECT u FROM Utilisateur u WHERE UPPER(u.role) = UPPER('RESPONSABLE')")
+    List<Utilisateur> findAllResponsables();
+
+    @Query("SELECT u FROM Utilisateur u WHERE UPPER(u.role) LIKE %:role%")
+    List<Utilisateur> findAllResponsablesLike(@Param("role") String role);
+
 }

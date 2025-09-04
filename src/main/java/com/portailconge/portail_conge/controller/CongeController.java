@@ -39,6 +39,9 @@ public class CongeController {
         // Utilisateur fictif pour test
         Utilisateur rh = utilisateurRepository.findById(1).orElse(null);
         model.addAttribute("rh", rh);
+        // Récupérer tous les utilisateurs avec le rôle "RESPONSABLE"
+        List<Utilisateur> responsables = utilisateurRepository.findAllByRoleIgnoreCase("RESPONSABLE");
+        model.addAttribute("responsables", responsables);
 
         return "demande-conge";
     }
@@ -108,4 +111,5 @@ public class CongeController {
 
         return "redirect:/conge/historique-responsable";
     }
+
 }
