@@ -24,11 +24,15 @@ public class PdfGenerator {
         document.add(title.setMarginLeft(150));
         document.add(new Paragraph("\n"));
 
-        // Nom et prénom
+        // Nom, prénom et matricule
         if (demande.getDemandeur() != null) {
+            document.add(new Paragraph("Matricule : " + demande.getDemandeur().getMatricule()));
+
             document.add(new Paragraph("Nom : " + demande.getDemandeur().getNom()));
             document.add(new Paragraph("Prénom : " + demande.getDemandeur().getPrenom()));
         } else {
+            document.add(new Paragraph("Matricule : "));
+
             document.add(new Paragraph("Nom : "));
             document.add(new Paragraph("Prénom : "));
         }
@@ -55,7 +59,7 @@ public class PdfGenerator {
         document.add(new Paragraph("Date début : " + demande.getDateDebut()));
         document.add(new Paragraph("Date fin : " + demande.getDateFin()));
         document.add(
-                new Paragraph("Est autorisé à prendre un congé administratif de : " + demande.getDuree() + " jours"));
+                new Paragraph("Est autorisé à prendre un congé administratif de : " + demande.getDuree() + " jours"));
 
         document.close();
         return baos.toByteArray();

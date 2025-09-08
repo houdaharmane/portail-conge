@@ -2,6 +2,7 @@ package com.portailconge.portail_conge.controller;
 
 import com.portailconge.portail_conge.model.DemandeConge;
 import com.portailconge.portail_conge.model.Departement;
+import com.portailconge.portail_conge.model.PdfGenerator;
 import com.portailconge.portail_conge.model.StatutDemande;
 import com.portailconge.portail_conge.model.Utilisateur;
 import com.portailconge.portail_conge.repository.DemandeCongeRepository;
@@ -12,12 +13,16 @@ import jakarta.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
 @Controller
 @RequestMapping("/personnel/conges")
@@ -104,4 +109,28 @@ public class DemandeCongeController {
 
         return "Demandes-personnel";
     }
+
+    @GetMapping("/demande/{id}/titre-conge")
+    public ResponseEntity<byte[]> genererTitreConge(@PathVariable Long id) {
+        DemandeConge demande = demandeCongeRepository.findById(id).orElse(null);
+        if (demande == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        try {
+            byte[] pdfBytes = PdfGenerator.generateCongePdf(demande, "Titre-de-Congé");
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("inline", "Titre-de-Congé.pdf");
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(pdfBytes);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
 }

@@ -94,20 +94,21 @@
         <!-- Filtre -->
         <div class="filter-form">
             <input type="text" id="filter-matricule" placeholder="Filtrer par matricule">
-            <select id="filter-role">
-                <option value="">Tous les départements</option>
-                <option value="DIRECTEUR">Directeur</option>
-                <option value="RH">RH</option>
-                <option value="RESPONSABLE">Responsable</option>
-                <option value="PERSONNEL">Personnel</option>
-            </select>
+         <select id="filter-role">
+    <option value="">Tous les départements</option>
+    <option value="DIRECTEUR">Directeur</option>
+    <option value="RESPONSABLE">Responsable</option>
+    <option value="PERSONNEL">Personnel</option>
+</select>
+
         </div>
 
         <!-- Liste des demandes -->
         <div class="demandes-list" id="demandes-list">
-            <div th:each="demande : ${demandes}" class="demande-card" 
-                 th:data-matricule="${demande.demandeur.matricule}" 
-                 th:data-role="${demande.demandeur.role}">
+          <div th:each="demande : ${demandes}" class="demande-card" 
+     th:data-matricule="${demande.demandeur.matricule}" 
+     th:data-role="${demande.demandeur.role == 'RH' ? 'RESPONSABLE' : demande.demandeur.role}">
+
                 <div class="demande-info">
                     <div class="demande-name" th:text="${demande.demandeur.nom} + ' ' + ${demande.demandeur.prenom}">Nom Prénom</div>
                     <div class="demande-matricule" th:text="'Matricule: ' + ${demande.demandeur.matricule}">Matricule</div>

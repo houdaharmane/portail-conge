@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import com.portailconge.portail_conge.repository.UtilisateurRepository;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -19,6 +20,8 @@ public class ResponsableController {
 
     @Autowired
     private DemandeCongeRepository demandeCongeRepository;
+    @Autowired
+    private UtilisateurRepository utilisateurRepository;
 
     @Autowired
     private CongePdfGenerator congePdfGenerator;
@@ -92,18 +95,31 @@ public class ResponsableController {
         model.addAttribute("departementId", responsable.getDepartement().getId());
         model.addAttribute("role", responsable.getRole());
 
+        // --- Ajout pour le champ intérimaire ---
+        List<Utilisateur> responsables = utilisateurRepository.findAllByRoleIgnoreCase("RESPONSABLE");
+        model.addAttribute("responsables", responsables);
+
         return "demandeConge-responsable";
     }
 
     @PostMapping("/responsable/conge/demande/soumettre")
-    public String soumettreDemandeCongeResponsable(@ModelAttribute DemandeConge demandeConge,
+    public String soumettreDemandeCongeResponsable(
+            @ModelAttribute DemandeConge demandeConge,
+            @RequestParam(required = false) Integer interimaireId, // <--- changer Long en Integer
             HttpSession session, Model model) {
+
         Utilisateur responsable = (Utilisateur) session.getAttribute("utilisateur");
         if (responsable == null || !"RESPONSABLE".equals(responsable.getRole()))
             return "redirect:/login";
 
         demandeConge.setDemandeur(responsable);
         demandeConge.setStatut(StatutDemande.EN_ATTENTE);
+
+        if (interimaireId != null) {
+            Utilisateur interimaire = utilisateurRepository.findById(interimaireId).orElse(null);
+            demandeConge.setInterimaire(interimaire);
+        }
+
         demandeConge.setDateSoumission(java.time.LocalDateTime.now());
         demandeCongeRepository.save(demandeConge);
 
@@ -136,6 +152,12 @@ public class ResponsableController {
 
         demandeCongeRepository.findById(id).ifPresent(d -> {
             d.setStatut(StatutDemande.APPROUVEE_RESP);
+            // Si un intérimaire a été choisi, le définir comme responsable temporaire
+            if (d.getInterimaire() != null) {
+                d.setResponsable(d.getInterimaire());
+                d.setStatutFiche(DemandeConge.StatutFiche.EN_ATTENTE_DIRECTEUR);
+                d.setDestinataireActuel(d.getInterimaire().getNom() + " " + d.getInterimaire().getPrenom());
+            }
             demandeCongeRepository.save(d);
         });
         return "redirect:/demandes-a-traiter";
@@ -302,4 +324,5 @@ public class ResponsableController {
                     demande.getDateSoumission() != null ? demande.getDateSoumission().format(dateTimeFormatter) : "-");
         }
     }
+
 }

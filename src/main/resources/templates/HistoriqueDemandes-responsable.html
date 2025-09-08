@@ -238,6 +238,10 @@
                 width: 100%;
             }
         }
+        .demande-carte p strong {
+    color: #555;
+}
+
     </style>
 </head>
 <body>
@@ -284,34 +288,43 @@
 
     <div class="main-content">
         <div class="historique-cartes">
-            <div class="demande-carte" th:each="demande : ${demandes}">
-                <div class="demande-info" style="display: flex; justify-content: space-between; align-items: center;">
-                    <strong th:text="${demande.demandeur.nom + ' ' + demande.demandeur.prenom}">Nom Prénom</strong>
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <span th:text="${demande.statut}" class="badge">Statut</span>
-                        <!-- Fiche demande de conge -->
-<a th:href="@{/personnel/demande/{id}/fiche-pdf(id=${demande.id})}"
-   class="pdf-btn"
-   title="Télécharger la fiche PDF">
-    <i class="fa fa-file-pdf"></i>
-</a>
-                        <!-- Fiche titre de conge -->
+<div class="demande-carte" th:each="demande : ${demandes}">
+    <div class="demande-info" style="display: flex; justify-content: space-between; align-items: center;">
+        <strong th:text="${demande.demandeur.nom + ' ' + demande.demandeur.prenom}">Nom Prénom</strong>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <span th:text="${demande.statut}" class="badge">Statut</span>
 
-<a th:if="${demande.titreVisible}"
-   th:href="@{/demandes/telecharger-titre/{id}(id=${demande.id})}" 
-   class="btn btn-success btn-sm">
-    <i class="fa fa-file-pdf"></i> 
-</a>
+            <!-- PDF Fiche -->
+            <a th:href="@{/personnel/demande/{id}/fiche-pdf(id=${demande.id})}"
+               class="pdf-btn"
+               title="Télécharger la fiche PDF">
+                <i class="fa fa-file-pdf"></i>
+            </a>
 
-                    </div>
-                </div>
-                <p>
-                    Du <span th:text="${#temporals.format(demande.dateDebut, 'dd/MM/yyyy')}">01/08/2025</span>
-                    au <span th:text="${#temporals.format(demande.dateFin, 'dd/MM/yyyy')}">10/08/2025</span>
-                    — <span th:text="${demande.duree}">10</span> jours
-                </p>
-                <p>Soumise le : <span th:text="${demande.dateSoumissionFormatee}"></span></p>
-            </div>
+            <!-- Titre PDF si visible -->
+            <a th:if="${demande.titreVisible}"
+               th:href="@{/demandes/telecharger-titre/{id}(id=${demande.id})}" 
+               class="btn btn-success btn-sm">
+                <i class="fa fa-file-pdf"></i> 
+            </a>
+        </div>
+    </div>
+
+    <!-- Dates et durée -->
+    <p>
+        Du <span th:text="${#temporals.format(demande.dateDebut, 'dd/MM/yyyy')}">01/08/2025</span>
+        au <span th:text="${#temporals.format(demande.dateFin, 'dd/MM/yyyy')}">10/08/2025</span>
+        — <span th:text="${demande.duree}">10</span> jours
+    </p>
+    <p>Soumise le : <span th:text="${demande.dateSoumissionFormatee}"></span></p>
+
+    <!-- Affichage intérimaire -->
+    <p th:if="${demande.interimaire != null}">
+        <strong>Intérimaire :</strong> 
+        <span th:text="${demande.interimaire.nom + ' ' + demande.interimaire.prenom}"></span>
+    </p>
+</div>
+
 
             <div class="demande-carte" th:if="${#lists.isEmpty(demandes)}">
                 <p>Aucune demande historique disponible.</p>

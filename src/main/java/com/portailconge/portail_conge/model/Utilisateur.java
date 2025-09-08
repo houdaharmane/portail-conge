@@ -1,5 +1,7 @@
 package com.portailconge.portail_conge.model;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -33,7 +35,38 @@ public class Utilisateur {
         this.responsableRh = responsableRh;
     }
 
+    @ManyToOne
+    @JoinColumn(name = "interimaire_id")
+    private Utilisateur interimaire; // L’utilisateur qui est intérimaire
+
+    private LocalDate debutInterim;
+    private LocalDate finInterim;
+
     // ===== Getters et setters =====
+    public Utilisateur getInterimaire() {
+        return interimaire;
+    }
+
+    public void setInterimaire(Utilisateur interimaire) {
+        this.interimaire = interimaire;
+    }
+
+    public LocalDate getDebutInterim() {
+        return debutInterim;
+    }
+
+    public void setDebutInterim(LocalDate debutInterim) {
+        this.debutInterim = debutInterim;
+    }
+
+    public LocalDate getFinInterim() {
+        return finInterim;
+    }
+
+    public void setFinInterim(LocalDate finInterim) {
+        this.finInterim = finInterim;
+    }
+
     public String getSignatureImagePath() {
         return signatureImagePath;
     }

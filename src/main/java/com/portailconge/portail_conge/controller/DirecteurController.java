@@ -61,8 +61,7 @@ public class DirecteurController {
 
         // Compter les demandes en attente pour ce directeur
         int demandesEnAttente = demandeCongeRepository
-                .findByDemandeurAndStatutIn(directeur, List.of(StatutDemande.EN_ATTENTE_DIRECTEUR))
-                .size();
+                .countByStatutIn(List.of(StatutDemande.EN_ATTENTE_DIRECTEUR));
 
         int demandesApprouveesCount = demandesApprouvees.size();
 
@@ -78,7 +77,7 @@ public class DirecteurController {
         model.addAttribute("soldeTotal", soldeTotal);
 
         model.addAttribute("totalDemandes", totalDemandes);
-        model.addAttribute("demandesEnAttente", demandesEnAttente);
+        model.addAttribute("demandesEnAttente", demandesEnAttente == 0 ? 0 : demandesEnAttente);
         model.addAttribute("demandesApprouvees", demandesApprouveesCount);
         model.addAttribute("tauxAcceptation", tauxAcceptation);
 

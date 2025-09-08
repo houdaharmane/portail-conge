@@ -1,15 +1,6 @@
 package com.portailconge.portail_conge.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Transient;
-
+import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -47,6 +38,13 @@ public class DemandeConge {
 
     private String destinataireActuel;
 
+    @ManyToOne
+    private Utilisateur responsable;
+
+    // ------------------ Nouveau champ ------------------
+    @ManyToOne
+    private Utilisateur interimaire; // l’intérimaire choisi par le responsable
+
     // Champs temporaires pour affichage formaté
     @Transient
     private String dateDebutFormatee;
@@ -56,29 +54,12 @@ public class DemandeConge {
 
     @Transient
     private String dateSoumissionFormatee;
+
     private String titreConge;
-    @ManyToOne
-    private Utilisateur responsable;
-
-    public String getTitreConge() {
-        return titreConge;
-    }
-
-    public void setTitreConge(String titreConge) {
-        this.titreConge = titreConge;
-    }
 
     // Champ temporaire pour afficher le bouton "Télécharger Titre"
     @Transient
     private boolean titreVisible;
-
-    public boolean isTitreVisible() {
-        return titreVisible;
-    }
-
-    public void setTitreVisible(boolean titreVisible) {
-        this.titreVisible = titreVisible;
-    }
 
     // -------------------- Enum --------------------
     public enum StatutFiche {
@@ -157,6 +138,14 @@ public class DemandeConge {
         this.responsable = responsable;
     }
 
+    public Utilisateur getInterimaire() {
+        return interimaire;
+    }
+
+    public void setInterimaire(Utilisateur interimaire) {
+        this.interimaire = interimaire;
+    }
+
     public Boolean getLuParRH() {
         return luParRH;
     }
@@ -229,4 +218,19 @@ public class DemandeConge {
         this.dateSoumissionFormatee = dateSoumissionFormatee;
     }
 
+    public String getTitreConge() {
+        return titreConge;
+    }
+
+    public void setTitreConge(String titreConge) {
+        this.titreConge = titreConge;
+    }
+
+    public boolean isTitreVisible() {
+        return titreVisible;
+    }
+
+    public void setTitreVisible(boolean titreVisible) {
+        this.titreVisible = titreVisible;
+    }
 }
