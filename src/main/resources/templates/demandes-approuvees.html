@@ -242,7 +242,7 @@
             <a th:href="@{/rh/demandes-responsable}" class="sidebar-link"><i class="fa fa-user-check"></i> Demandes du Responsable</a>
             <a th:href="@{/rh/demandes-approuvees}" class="sidebar-link"><i class="fa fa-check-circle"></i> Demandes des employés</a>
             <a th:href="@{/rh/historique-demandes}" class="sidebar-link"><i class="fa fa-history"></i> Historique validations</a>
-            <a th:href="@{/conge/demande}" class="sidebar-link"><i class="fa fa-plane-departure"></i> Demande de congé</a>
+            <a th:href="@{/rh/conge/demande}" class="sidebar-link"><i class="fa fa-plane-departure"></i> Demande de congé</a>
             <a th:href="@{/rh/demandes-directeur}" class="sidebar-link"><i class="fa fa-bell"></i> Demandes directeur </a>
         </nav>
     </div>
@@ -254,11 +254,20 @@
 <!-- Main content -->
 <div class="main-container">
     <div class="header">
-    <a th:href="@{/profil}"><i class="fa fa-user-circle fa-lg"></i> <span th:text="${rh != null} ? ${rh.role} : 'RH'">RH</span></a>
+    <a th:href="@{/profil}"><i class="fa fa-user-circle fa-lg"></i> <span th:text="${rh != null} ? ${rh.role} : 'RESPONSABLE'">RESPONSABLE</span></a>
     <button id="theme-toggle" class="theme-toggle-btn"><i class="fa fa-moon"></i></button>
     </div>
 
     <div class="content">
+      <form th:action="@{/rh/demandes-approuvees}" method="get" style="margin-bottom: 20px; display: flex; gap: 10px;">
+    <input type="text" name="recherche" th:value="${recherche}" placeholder="Chercher par nom ou matricule"
+           style="padding:5px; border-radius:5px; border:1px solid #ccc; flex:1;">
+    <button type="submit" style="padding:5px 12px; border:none; background:#0074C7; color:white; border-radius:5px;">Chercher</button>
+    <a th:href="@{/rh/demandes-approuvees}" 
+       style="padding:5px 12px; background:#6c757d; color:white; border-radius:5px; text-decoration:none;">Réinitialiser</a>
+</form>
+
+
         <div class="card-container">
             <div class="card"
                  th:each="demande : ${demandesApprouvees}"
@@ -296,7 +305,7 @@
 </div>
 
 <script>
- // === Theme toggle ===
+// === Theme toggle ===
 const toggleBtn = document.getElementById('theme-toggle');
 const body = document.body;
 
@@ -320,97 +329,104 @@ const modalStatut = document.getElementById("modalStatut");
 const approveBtn = document.getElementById("approveBtn");
 const rejectBtn = document.getElementById("rejectBtn");
 
+// Liste des cartes et paramètres
+let cards = Array.from(document.querySelectorAll(".card"));
+const cardsPerPage = 6;
+let currentPage = 1;
+
 // Ouvrir modal
-document.querySelectorAll(".card").forEach(card => {
-    card.addEventListener("click", () => {
-        const id = card.dataset.id;
-        const nom = card.dataset.nom;
-        const prenom = card.dataset.prenom;
-        const debut = card.dataset.debut;
-        const fin = card.dataset.fin;
-        const statut = card.dataset.statut;
+function openModal(card) {
+    const id = card.dataset.id;
+    const nom = card.dataset.nom;
+    const prenom = card.dataset.prenom;
+    const debut = card.dataset.debut;
+    const fin = card.dataset.fin;
+    const statut = card.dataset.statut;
 
-        modalNom.textContent = `Employé : ${nom} ${prenom}`;
-        modalDates.textContent = `Du ${debut} au ${fin}`;
-        modalStatut.textContent = `Statut : ${statut}`;
+    modalNom.textContent = `Employé : ${nom} ${prenom}`;
+    modalDates.textContent = `Du ${debut} au ${fin}`;
+    modalStatut.textContent = `Statut : ${statut}`;
 
-        // Stocker l'ID dans les boutons
-        approveBtn.dataset.id = id;
-        rejectBtn.dataset.id = id;
+    approveBtn.dataset.id = id;
+    rejectBtn.dataset.id = id;
 
-        modal.style.display = "flex";
+    modal.style.display = "flex";
+}
+
+// Ajouter click sur chaque carte
+function addCardListeners() {
+    cards.forEach(card => {
+        card.addEventListener("click", () => openModal(card));
     });
-});
+}
+addCardListeners();
 
 // Fermer modal
 function closeModal() {
     modal.style.display = "none";
 }
-
 window.addEventListener("click", (e) => {
     if (e.target === modal) closeModal();
 });
 
-// Mettre à jour le statut dans la card
-function updateCardStatus(id, newStatus) {
-    const card = document.querySelector(`.card[data-id="${id}"]`);
-    if (card) {
-        card.dataset.statut = newStatus;
-        const statutSpan = card.querySelector("p strong + span");
-        if (statutSpan) statutSpan.textContent = newStatus;
-    }
-}
-
-// === Approve / Reject buttons via GET ===
+// === Approve / Reject ===
 function sendAction(id, action) {
     fetch(`/rh/${action}/${id}`) // GET car controller utilise @GetMapping
         .then(response => {
-            if (response.ok) {
-                updateCardStatus(id, action === "accepter" ? "APPROUVEE_RH" : "REFUSEE");
-                closeModal();
-            } else {
-                alert("Erreur lors de l'action");
-            }
+            if (!response.ok) throw new Error("Erreur lors de l'action");
+
+            const card = document.querySelector(`.card[data-id="${id}"]`);
+            if (!card) return;
+
+            const newStatus = action === "accepter" ? "APPROUVEE_RH" : "REFUSEE";
+
+            // Mettre à jour dataset et span statut
+            card.dataset.statut = newStatus;
+            const statutSpan = card.querySelector(".statut-span");
+            if (statutSpan) statutSpan.textContent = newStatus;
+
+            // Supprimer la carte si approuvée/refusée pour RH
+            card.remove();
+            cards = cards.filter(c => c.dataset.id !== id);
+            showPage(currentPage);
+
+            closeModal();
         })
-        .catch(() => alert("Erreur réseau"));
+        .catch(err => alert(err.message));
 }
 
 approveBtn.addEventListener("click", () => {
     const id = approveBtn.dataset.id;
     if (id) sendAction(id, "accepter");
 });
-
 rejectBtn.addEventListener("click", () => {
     const id = rejectBtn.dataset.id;
     if (id) sendAction(id, "refuser");
 });
 
 // === Pagination ===
-const cards = Array.from(document.querySelectorAll(".card"));
-const cardsPerPage = 6;
-let currentPage = 1;
-
-function showPage(page) {
+function showPage(page, list = cards) {
     const start = (page - 1) * cardsPerPage;
     const end = start + cardsPerPage;
-    cards.forEach((card, index) => {
+
+    list.forEach((card, index) => {
         card.style.display = (index >= start && index < end) ? "block" : "none";
     });
-    renderPagination();
+    renderPagination(list, page);
 }
 
-function renderPagination() {
+function renderPagination(list = cards, page = currentPage) {
     const pagination = document.getElementById("pagination");
     pagination.innerHTML = "";
-    const pageCount = Math.ceil(cards.length / cardsPerPage);
+    const pageCount = Math.ceil(list.length / cardsPerPage);
 
     const prevBtn = document.createElement("button");
     prevBtn.textContent = "«";
-    prevBtn.disabled = currentPage === 1;
+    prevBtn.disabled = page === 1;
     prevBtn.addEventListener("click", () => {
         if (currentPage > 1) {
             currentPage--;
-            showPage(currentPage);
+            showPage(currentPage, list);
         }
     });
     pagination.appendChild(prevBtn);
@@ -418,29 +434,41 @@ function renderPagination() {
     for (let i = 1; i <= pageCount; i++) {
         const btn = document.createElement("button");
         btn.textContent = i;
-        if (i === currentPage) btn.classList.add("active");
+        if (i === page) btn.classList.add("active");
         btn.addEventListener("click", () => {
             currentPage = i;
-            showPage(currentPage);
+            showPage(currentPage, list);
         });
         pagination.appendChild(btn);
     }
 
     const nextBtn = document.createElement("button");
     nextBtn.textContent = "»";
-    nextBtn.disabled = currentPage === pageCount;
+    nextBtn.disabled = page === pageCount;
     nextBtn.addEventListener("click", () => {
         if (currentPage < pageCount) {
             currentPage++;
-            showPage(currentPage);
+            showPage(currentPage, list);
         }
     });
     pagination.appendChild(nextBtn);
 }
 
+// === Search / Filtrage ===
+const searchInput = document.querySelector('input[name="recherche"]');
+searchInput.addEventListener('input', () => {
+    const query = searchInput.value.toLowerCase();
+    const filtered = cards.filter(card => {
+        const nom = card.dataset.nom.toLowerCase();
+        const prenom = card.dataset.prenom.toLowerCase();
+        return nom.includes(query) || prenom.includes(query);
+    });
+    currentPage = 1;
+    showPage(currentPage, filtered);
+});
+
 // Affichage initial
 showPage(currentPage);
-
 
 </script>
 

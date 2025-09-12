@@ -130,13 +130,51 @@ public class ResponsableController {
     // ---------------- Afficher demandes à traiter ----------------
     @GetMapping("/demandes-a-traiter")
     public String afficherDemandesATraiter(HttpSession session, Model model) {
-        Utilisateur responsable = (Utilisateur) session.getAttribute("utilisateur");
-        if (responsable == null || !"RESPONSABLE".equals(responsable.getRole()))
+        Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
+        if (utilisateur == null || !"RESPONSABLE".equals(utilisateur.getRole()))
             return "redirect:/login";
 
-        Departement departement = responsable.getDepartement();
+        Departement departement = utilisateur.getDepartement();
+
+        // 1. Récupérer les demandes en attente du personnel
         List<DemandeConge> demandes = demandeCongeRepository
                 .findDemandesEnAttentePersonnelByDepartement(departement, StatutDemande.EN_ATTENTE_RESPONSABLE);
+
+        // 2. Récupérer les congés approuvés des responsables du département
+        List<DemandeConge> congesResponsables = demandeCongeRepository
+                .findByDemandeur_DepartementAndDemandeur_RoleAndStatutIn(
+                        departement, "RESPONSABLE",
+                        List.of(StatutDemande.APPROUVEE_RESP, StatutDemande.APPROUVEE_DIRECTEUR));
+
+        // 3. Vérifier chevauchement et assigner à l’intérimaire si nécessaire
+        for (DemandeConge demande : demandes) {
+            for (DemandeConge congeResp : congesResponsables) {
+                if (congeResp.getInterimaire() != null &&
+                        demande.getDateDebut() != null && demande.getDateFin() != null) {
+
+                    boolean chevauchement = !(demande.getDateFin().isBefore(congeResp.getDateDebut()) ||
+                            demande.getDateDebut().isAfter(congeResp.getDateFin()));
+
+                    if (chevauchement) {
+                        demande.setResponsable(congeResp.getInterimaire());
+                        demande.setDestinataireActuel(congeResp.getInterimaire().getNom() + " " +
+                                congeResp.getInterimaire().getPrenom());
+                        demandeCongeRepository.save(demande);
+                    }
+                }
+            }
+        }
+
+        // 4. Ajouter les demandes pour lesquelles l’utilisateur est intérimaire
+        List<DemandeConge> demandesPourInterimaire = demandeCongeRepository
+                .findByInterimaireAndStatut(utilisateur, StatutDemande.EN_ATTENTE_RESPONSABLE);
+
+        // Fusionner les deux listes
+        for (DemandeConge d : demandesPourInterimaire) {
+            if (!demandes.contains(d)) {
+                demandes.add(d);
+            }
+        }
 
         formaterDatesDemandes(demandes);
         model.addAttribute("demandes", demandes);
@@ -144,6 +182,7 @@ public class ResponsableController {
         return "demandesATraiter";
     }
 
+    // ---------------- Approuver / Rejeter demande ----------------
     @GetMapping("/approuver/{id}")
     public String approuverDemande(@PathVariable Long id, HttpSession session) {
         Utilisateur responsable = (Utilisateur) session.getAttribute("utilisateur");

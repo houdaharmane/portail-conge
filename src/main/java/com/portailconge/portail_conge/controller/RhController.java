@@ -6,7 +6,6 @@ import com.portailconge.portail_conge.model.PdfGenerator;
 import com.portailconge.portail_conge.model.StatutDemande;
 import com.portailconge.portail_conge.model.Utilisateur;
 import com.portailconge.portail_conge.repository.UtilisateurRepository;
-import com.portailconge.portail_conge.service.DemandeService;
 import com.portailconge.portail_conge.repository.DemandeCongeRepository;
 import com.portailconge.portail_conge.repository.DepartementRepository;
 
@@ -26,11 +25,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.Map;
 import org.springframework.http.MediaType;
+import java.util.ArrayList;
+import java.util.Comparator;
 
 @Controller
 public class RhController {
-    @Autowired
-    private DemandeService demandeService;
+
     @Autowired
     private DemandeCongeRepository demandeCongeRepository;
 
@@ -40,24 +40,29 @@ public class RhController {
     @Autowired
     private UtilisateurRepository utilisateurRepository;
 
+    // ---------------- Méthode utilitaire pour vérifier RH ou Responsable
+    // département 1 ----------------
+    private boolean estRH(HttpSession session) {
+        Utilisateur u = (Utilisateur) session.getAttribute("utilisateur");
+        return u != null && ("RH".equals(u.getRole()) ||
+                ("RESPONSABLE".equals(u.getRole()) && u.getDepartement() != null && u.getDepartement().getId() == 1));
+    }
+
     @GetMapping("/dashboard-rh")
     public String rhDashboard(HttpSession session, Model model) {
-        Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
-        if (rh == null || !"RH".equals(rh.getRole())) {
+        if (!estRH(session))
             return "redirect:/login";
-        }
 
-        // Comptage des demandes
+        Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
+
         long demandesEnAttente = demandeCongeRepository.countByStatutIn(List.of(
                 StatutDemande.EN_ATTENTE,
                 StatutDemande.EN_ATTENTE_DIRECTEUR));
 
         long demandesRefuses = demandeCongeRepository.countByStatut(StatutDemande.REFUSEE);
 
-        // Comptage des demandes approuvées par le directeur **du RH connecté**
         long demandesValidees = demandeCongeRepository.countByDemandeurAndStatut(rh, StatutDemande.APPROUVEE_DIRECTEUR);
 
-        // Historique des demandes RH
         List<StatutDemande> statutsHistoriqueRh = List.of(
                 StatutDemande.APPROUVEE_RH,
                 StatutDemande.APPROUVEE_DIRECTEUR,
@@ -65,11 +70,9 @@ public class RhController {
                 StatutDemande.EN_ATTENTE_DIRECTEUR);
         List<DemandeConge> demandesHistorique = demandeCongeRepository.findByStatutIn(statutsHistoriqueRh);
 
-        // Notifications des nouvelles demandes du directeur
         List<DemandeConge> notifications = demandeCongeRepository.findByDemandeurRoleAndLuParRHFalse("DIRECTEUR");
 
-        // Calcul des congés
-        int congesAnnuels = 30; // à adapter selon RH
+        int congesAnnuels = 30;
         int congesConsommes = demandeCongeRepository.findByDemandeur_Departement(rh.getDepartement())
                 .stream()
                 .filter(d -> d.getStatut() == StatutDemande.APPROUVEE_DIRECTEUR
@@ -79,20 +82,16 @@ public class RhController {
 
         int soldeTotal = congesAnnuels - congesConsommes;
 
-        // Ajout au modèle
         model.addAttribute("rh", rh);
         model.addAttribute("email", rh.getEmail());
         model.addAttribute("role", rh.getRole());
         model.addAttribute("activePage", "dashboard");
-
         model.addAttribute("demandesEnAttente", demandesEnAttente);
         model.addAttribute("demandesValidees", demandesValidees);
         model.addAttribute("demandesRefuses", demandesRefuses);
         model.addAttribute("historique", demandesHistorique.size());
-
         model.addAttribute("notifications", notifications);
         model.addAttribute("notificationsCount", notifications.size());
-
         model.addAttribute("congesAnnuels", congesAnnuels);
         model.addAttribute("congesConsommes", congesConsommes);
         model.addAttribute("soldeTotal", soldeTotal);
@@ -103,27 +102,22 @@ public class RhController {
     @GetMapping("/profil")
     public String afficherProfilRH(HttpSession session, Model model,
             @RequestParam(required = false) Boolean modification) {
-        Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
-
-        if (rh == null || !"RH".equals(rh.getRole())) {
+        if (!estRH(session))
             return "redirect:/login";
-        }
 
+        Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
         model.addAttribute("rh", rh);
         model.addAttribute("modification", modification != null && modification);
         model.addAttribute("departements", departementRepository.findAll());
-
         model.addAttribute("activePage", "profil");
+
         return "profil";
     }
 
     @GetMapping("/profil/modifier")
     public String afficherFormulaireModificationProfil(HttpSession session, Model model) {
-        Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
-
-        if (rh == null || !"RH".equals(rh.getRole())) {
+        if (!estRH(session))
             return "redirect:/login";
-        }
 
         model.addAttribute("utilisateur", new Utilisateur());
         model.addAttribute("activePage", "profil");
@@ -134,17 +128,14 @@ public class RhController {
     public String enregistrerProfil(@ModelAttribute("utilisateur") Utilisateur utilisateurModifie,
             @RequestParam("imageFile") MultipartFile imageFile,
             HttpSession session, Model model) {
-        Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
-
-        if (rh == null || !"RH".equals(rh.getRole())) {
+        if (!estRH(session))
             return "redirect:/login";
-        }
 
+        Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
         try {
             rh.setEmail(utilisateurModifie.getEmail());
-            if (utilisateurModifie.getMotDePasse() != null && !utilisateurModifie.getMotDePasse().isEmpty()) {
+            if (utilisateurModifie.getMotDePasse() != null && !utilisateurModifie.getMotDePasse().isEmpty())
                 rh.setMotDePasse(utilisateurModifie.getMotDePasse());
-            }
             rh.setNom(utilisateurModifie.getNom());
             rh.setPrenom(utilisateurModifie.getPrenom());
             rh.setTelephone(utilisateurModifie.getTelephone());
@@ -159,16 +150,7 @@ public class RhController {
             }
 
             if (imageFile != null && !imageFile.isEmpty()) {
-                try {
-                    byte[] bytes = imageFile.getBytes();
-                    rh.setPhoto(bytes);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    model.addAttribute("error", "Erreur lors de la lecture de l'image.");
-                    model.addAttribute("utilisateur", rh);
-                    model.addAttribute("activePage", "profil");
-                    return "profil";
-                }
+                rh.setPhoto(imageFile.getBytes());
             }
 
             utilisateurRepository.save(rh);
@@ -176,7 +158,7 @@ public class RhController {
 
             return "redirect:/profil?modification=true";
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
             model.addAttribute("error", "Erreur lors de la mise à jour du profil.");
             model.addAttribute("utilisateur", rh);
@@ -185,26 +167,23 @@ public class RhController {
         }
     }
 
-    // GET : afficher le formulaire
+    // ---------------- Ajouter un utilisateur ----------------
     @GetMapping("/rh/personnel/ajouter")
     public String afficherFormulaireAjoutUtilisateur(Model model, HttpSession session) {
-        Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
-        if (rh == null || !"RH".equals(rh.getRole())) {
+        if (!estRH(session))
             return "redirect:/login";
-        }
-        model.addAttribute("rh", rh);
 
+        Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
+        model.addAttribute("rh", rh);
         model.addAttribute("utilisateur", new Utilisateur());
-        model.addAttribute("departements", departementRepository.findAll()); // pour le dropdown
+        model.addAttribute("departements", departementRepository.findAll());
         model.addAttribute("activePage", "utilisateurs");
         return "ajouter-personnel";
     }
 
     // POST : traiter le formulaire
     @PostMapping("/rh/personnel/ajouter")
-    public String ajouterUtilisateur(
-
-            @RequestParam String nom,
+    public String ajouterUtilisateur(@RequestParam String nom,
             @RequestParam String prenom,
             @RequestParam String email,
             @RequestParam String motDePasse,
@@ -214,13 +193,12 @@ public class RhController {
             @RequestParam Integer soldeConge,
             @RequestParam String telephone,
             @RequestParam Integer departementId,
-            Model model,
-            HttpSession session) {
+            Model model, HttpSession session) {
+
+        if (!estRH(session))
+            return "redirect:/login";
 
         Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
-        if (rh == null || !"RH".equals(rh.getRole())) {
-            return "redirect:/login";
-        }
 
         Utilisateur utilisateur = new Utilisateur();
         utilisateur.setNom(nom);
@@ -233,7 +211,6 @@ public class RhController {
         utilisateur.setSoldeConge(soldeConge);
         utilisateur.setTelephone(telephone);
 
-        // récupérer le département
         Departement departement = departementRepository.findById(departementId).orElse(null);
         utilisateur.setDepartement(departement);
 
@@ -259,9 +236,8 @@ public class RhController {
     @GetMapping("/rh/conge/demande")
     public String afficherFormulaireDemande(HttpSession session, Model model) {
         Utilisateur rhSession = (Utilisateur) session.getAttribute("utilisateur");
-        if (rhSession == null || !"RH".equals(rhSession.getRole())) {
+        if (!estRH(session))
             return "redirect:/login";
-        }
 
         Utilisateur rh = utilisateurRepository.findById(rhSession.getId()).orElse(rhSession);
         model.addAttribute("rh", rh);
@@ -291,9 +267,8 @@ public class RhController {
 
         // Vérifier que l'utilisateur RH est connecté
         Utilisateur rh = utilisateurRepository.findById(utilisateurId).orElse(null);
-        if (rh == null || !"RH".equalsIgnoreCase(rh.getRole())) {
+        if (!estRH(session))
             return "redirect:/login";
-        }
 
         // Charger le responsable sélectionné
         Utilisateur responsable = utilisateurRepository.findById(responsableId).orElse(null);
@@ -363,11 +338,9 @@ public class RhController {
 
     @PostMapping("/rh/demande/valider")
     public String validerDemande(@RequestParam("id") Long id, HttpSession session) {
-        Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
 
-        if (rh == null || !"RH".equals(rh.getRole())) {
+        if (!estRH(session))
             return "redirect:/login";
-        }
 
         demandeCongeRepository.findById(id).ifPresent(demande -> {
             demande.setStatut(StatutDemande.APPROUVEE_RH);
@@ -379,10 +352,8 @@ public class RhController {
 
     @GetMapping("/rh/refuser/{id}")
     public String refuserDemandeGet(@PathVariable Long id, HttpSession session) {
-        Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
-        if (rh == null || !"RH".equals(rh.getRole())) {
+        if (!estRH(session))
             return "redirect:/login";
-        }
 
         demandeCongeRepository.findById(id).ifPresent(demande -> {
             demande.setStatut(StatutDemande.REFUSEE);
@@ -396,9 +367,8 @@ public class RhController {
     public String afficherHistoriqueRh(HttpSession session, Model model) {
         Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
 
-        if (rh == null || !"RH".equals(rh.getRole())) {
+        if (!estRH(session))
             return "redirect:/login";
-        }
 
         List<StatutDemande> statutsHistoriqueRh = List.of(
                 StatutDemande.APPROUVEE_RH,
@@ -421,9 +391,9 @@ public class RhController {
     @GetMapping("/rh/utilisateurs")
     public String afficherUtilisateurs(HttpSession session, Model model) {
         Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
-        if (rh == null || !"RH".equals(rh.getRole())) {
+        if (!estRH(session))
             return "redirect:/login";
-        }
+
         List<Utilisateur> utilisateurs = utilisateurRepository.findAll();
         model.addAttribute("utilisateurs", utilisateurs);
         model.addAttribute("rh", rh);
@@ -437,9 +407,8 @@ public class RhController {
     public String afficherFormulaireModificationUtilisateur(@PathVariable("id") Integer id, Model model,
             HttpSession session) {
         Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
-        if (rh == null || !"RH".equals(rh.getRole())) {
+        if (!estRH(session))
             return "redirect:/login";
-        }
 
         List<Utilisateur> utilisateurs = utilisateurRepository.findAll();
         Utilisateur utilisateur = utilisateurRepository.findById(id).orElse(null);
@@ -457,9 +426,8 @@ public class RhController {
     public String enregistrerModificationUtilisateur(@ModelAttribute("utilisateur") Utilisateur utilisateurModifie,
             HttpSession session, Model model) {
         Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
-        if (rh == null || !"RH".equals(rh.getRole())) {
+        if (!estRH(session))
             return "redirect:/login";
-        }
 
         Utilisateur utilisateur = utilisateurRepository.findById(utilisateurModifie.getId()).orElse(null);
         if (utilisateur != null) {
@@ -484,9 +452,8 @@ public class RhController {
     public String demandesResponsable(HttpSession session, Model model) {
         Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
 
-        if (rh == null || !"RH".equals(rh.getRole())) {
+        if (!estRH(session))
             return "redirect:/login";
-        }
 
         // Récupérer toutes les demandes en attente des responsables
         List<DemandeConge> demandes = demandeCongeRepository.findByStatutAndDemandeurRole(
@@ -503,17 +470,51 @@ public class RhController {
     }
 
     @GetMapping("/rh/demandes-approuvees")
-    public String demandesApprouvees(HttpSession session, Model model) {
+    public String demandesApprouvees(Model model, HttpSession session) {
         Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
-
-        if (rh == null || !"RH".equals(rh.getRole())) {
+        if (rh == null)
             return "redirect:/login";
-        }
 
-        List<DemandeConge> demandes = demandeService.getDemandesApprouveesParResponsable();
-        model.addAttribute("rh", rh);
+        // Récupérer les demandes approuvées ou en attente pour le RH
+        List<DemandeConge> demandes = demandeCongeRepository.findDemandesApprouveesEtEnAttenteRH();
+
+        // Trier par date de soumission
+        demandes.sort(Comparator.comparing(DemandeConge::getDateSoumission,
+                Comparator.nullsLast(Comparator.naturalOrder())).reversed());
+
         model.addAttribute("demandesApprouvees", demandes);
-        model.addAttribute("activePage", "demandesApprouvees");
+        model.addAttribute("rh", rh);
+        return "demandes-approuvees";
+    }
+
+    @GetMapping("/rh/demandes-a-traiter")
+    public String afficherDemandesPourRh(HttpSession session, Model model) {
+        Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
+        if (rh == null || !"RH".equals(rh.getRole()))
+            return "redirect:/login";
+
+        Departement departementRh = rh.getDepartement();
+
+        // 1. Récupérer les demandes approuvées par d'autres responsables (hors RH)
+        List<DemandeConge> demandesApprouveesAutres = demandeCongeRepository.findDemandesApprouveesAutresResponsables();
+
+        // 2. Récupérer toutes les demandes des personnels du département RH
+        List<DemandeConge> demandesPersonnelRh = demandeCongeRepository
+                .findByDemandeur_DepartementAndDemandeur_Role(departementRh, "PERSONNEL");
+
+        // 3. Fusionner les listes et éviter les doublons
+        List<DemandeConge> toutesDemandes = new ArrayList<>();
+        toutesDemandes.addAll(demandesApprouveesAutres);
+        toutesDemandes.addAll(demandesPersonnelRh);
+
+        // 4. Trier par date de soumission décroissante
+        toutesDemandes.sort(Comparator.comparing(DemandeConge::getDateSoumission,
+                Comparator.nullsLast(Comparator.naturalOrder())).reversed());
+
+        // 5. Ajouter au modèle avec le nom attendu par la vue
+        model.addAttribute("demandesApprouvees", toutesDemandes);
+        model.addAttribute("rh", rh);
+        model.addAttribute("activePage", "demandesRh");
 
         return "demandes-approuvees";
     }
@@ -522,19 +523,18 @@ public class RhController {
     public String demandeConge(Model model, HttpSession session) {
         Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
         System.out.println("Utilisateur en session dans /demande-conge : " + rh);
-        if (rh == null) {
+        if (!estRH(session))
             return "redirect:/login";
-        }
+
         model.addAttribute("rh", rh);
         return "demande-conge";
     }
 
     @GetMapping("/rh/accepter/{id}")
     public String accepterDemande(@PathVariable Long id, HttpSession session) {
-        Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
-        if (rh == null || !"RH".equals(rh.getRole())) {
+        if (!estRH(session))
             return "redirect:/login";
-        }
+
         demandeCongeRepository.findById(id).ifPresent(demande -> {
             demande.setStatut(StatutDemande.EN_ATTENTE_DIRECTEUR);
             demandeCongeRepository.save(demande);
@@ -544,13 +544,14 @@ public class RhController {
 
     @GetMapping("/rh/historique-validations")
     public String historiqueValidations(Model model, HttpSession session) {
-        Utilisateur rh = (Utilisateur) session.getAttribute("utilisateur");
-        if (rh == null || !"RH".equals(rh.getRole())) {
+        if (!estRH(session))
             return "redirect:/login";
-        }
 
-        List<DemandeConge> demandesHistorique = demandeCongeRepository.findByStatut(StatutDemande.EN_ATTENTE_DIRECTEUR);
-        model.addAttribute("demandesHistorique", demandesHistorique);
+        // Récupérer toutes les demandes du responsable RH uniquement
+        List<DemandeConge> demandesRH = demandeCongeRepository.findByDemandeurRole("RH");
+
+        model.addAttribute("demandesHistorique", demandesRH);
+        model.addAttribute("activePage", "historiqueValidations");
 
         return "historique-validations-rh";
     }
@@ -642,6 +643,15 @@ public class RhController {
             e.printStackTrace();
             return ResponseEntity.status(500).build();
         }
+    }
+
+    @PostMapping("/rh/utilisateurs/supprimer")
+    public String supprimerUtilisateur(@RequestParam("id") Integer id, HttpSession session) {
+        if (!estRH(session))
+            return "redirect:/login";
+
+        utilisateurRepository.deleteById(id);
+        return "redirect:/rh/utilisateurs";
     }
 
 }

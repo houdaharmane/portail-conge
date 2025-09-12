@@ -1,16 +1,17 @@
 package com.portailconge.portail_conge.controller;
 
+import com.portailconge.portail_conge.model.DemandeConge;
 import com.portailconge.portail_conge.model.Utilisateur;
 import com.portailconge.portail_conge.repository.UtilisateurRepository;
 import com.portailconge.portail_conge.service.CongeService;
-import com.portailconge.portail_conge.model.DemandeConge;
-
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import jakarta.servlet.http.HttpSession;
 import java.time.Year;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -38,27 +39,18 @@ public class LoginController {
             return "login";
         }
 
-        // Charger l'utilisateur complet depuis la base pour éviter les valeurs null
-        utilisateur = utilisateurRepository.findById(utilisateur.getId()).orElse(null);
-        if (utilisateur == null) {
-            model.addAttribute("error", "Utilisateur introuvable !");
-            return "login";
-        }
-
         session.setAttribute("utilisateur", utilisateur);
 
-        // Redirection vers le dashboard principal selon le rôle
         switch (utilisateur.getRole()) {
             case "PERSONNEL":
-                return "redirect:/dashboard";
-            case "RH":
-                if (Boolean.TRUE.equals(utilisateur.getResponsableRh())) {
-                    return "redirect:/dashboard-personnel"; // Interface spécifique Responsable RH
-                } else {
-                    return "redirect:/dashboard-rh"; // Interface normale du personnel
-                }
+                return "redirect:/dashboard-personnel";
             case "RESPONSABLE":
-                return "redirect:/dashboard-responsable";
+                if (utilisateur.getDepartement().getId() == 1) { // département RH
+                    return "redirect:/dashboard-rh";
+                } else {
+                    return "redirect:/dashboard-responsable";
+                }
+
             case "DIRECTEUR":
                 return "redirect:/dashboard-directeur";
             default:
@@ -67,23 +59,19 @@ public class LoginController {
         }
     }
 
-    @GetMapping("/dashboard")
-    public String showDashboard(Model model, HttpSession session) {
+    @GetMapping("/dashboard-personnel")
+    public String showDashboardPersonnel(Model model, HttpSession session) {
         Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
-        if (utilisateur == null) {
+        if (utilisateur == null)
             return "redirect:/login";
-        }
 
-        // Récupérer les congés de l'utilisateur
         List<DemandeConge> conges = congeService.getCongesByUtilisateur(utilisateur);
         int annee = Year.now().getValue();
 
-        // Calcul des totaux
         int congesConsommes = congeService.calculerJoursPrisConfirmes(utilisateur, annee);
         int soldeDisponible = congeService.calculerSoldeTotalDisponible(utilisateur, annee);
         int congesAnnuels = 30;
 
-        // Formater les dates
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
@@ -109,9 +97,9 @@ public class LoginController {
     @GetMapping("/profil-personnel")
     public String afficherProfil(HttpSession session, Model model) {
         Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
-        if (utilisateur == null) {
+        if (utilisateur == null)
             return "redirect:/login";
-        }
+
         model.addAttribute("utilisateur", utilisateur);
         return "profil-personnel";
     }

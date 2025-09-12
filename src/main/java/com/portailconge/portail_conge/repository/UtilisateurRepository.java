@@ -1,5 +1,6 @@
 package com.portailconge.portail_conge.repository;
 
+import com.portailconge.portail_conge.model.Departement;
 import com.portailconge.portail_conge.model.Utilisateur;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -31,5 +32,7 @@ public interface UtilisateurRepository extends JpaRepository<Utilisateur, Intege
 
     @Query("SELECT u FROM Utilisateur u WHERE UPPER(u.role) LIKE %:role%")
     List<Utilisateur> findAllResponsablesLike(@Param("role") String role);
+
+    List<Utilisateur> findByDepartement(Departement departement);
 
 }

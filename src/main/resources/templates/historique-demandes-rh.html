@@ -71,12 +71,6 @@
             box-shadow: 0 2px 8px #0005;
         }
 
-        .sidebar-menu {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
         .sidebar-link {
             display: flex;
             align-items: center;
@@ -106,16 +100,6 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
-        }
-
-        .sidebar-footer .sidebar-link {
-            padding: 10px 20px;
-            font-size: 14px;
-            border-radius: 6px;
-        }
-
-        .sidebar-footer .sidebar-link:hover {
-            background: rgba(255, 255, 255, 0.15);
         }
 
         .main-container {
@@ -209,7 +193,7 @@
             <a th:href="@{/rh/demandes-responsable}" class="sidebar-link"><i class="fa fa-user-check"></i> Demandes du Responsable</a>
             <a th:href="@{/rh/demandes-approuvees}" class="sidebar-link"><i class="fa fa-check-circle"></i> Demandes des employés</a>
             <a th:href="@{/rh/historique-demandes}" class="sidebar-link"><i class="fa fa-history"></i> Historique validations</a>
-            <a th:href="@{/conge/demande}" class="sidebar-link"><i class="fa fa-plane-departure"></i> Demande de congé</a>
+            <a th:href="@{/rh/conge/demande}" class="sidebar-link"><i class="fa fa-plane-departure"></i> Demande de congé</a>
             <a th:href="@{/rh/demandes-directeur}" class="sidebar-link"><i class="fa fa-bell"></i> Demandes directeur </a>
         </nav>
     </div>
@@ -230,18 +214,21 @@
     <div class="main-content">
         <!-- Filtre -->
         <div class="filter-form">
+            <input type="text" id="filter-nom" placeholder="Filtrer par nom">
             <input type="text" id="filter-matricule" placeholder="Filtrer par matricule">
             <select id="filter-role">
                 <option value="">Tous les rôles</option>
-                <option value="RH">RH</option>
                 <option value="RESPONSABLE">Responsable</option>
+                <option value="RESPONSABLE_RH">Responsable RH</option>
                 <option value="PERSONNEL">Personnel</option>
             </select>
+            <button type="button" id="reset-filters">Réinitialiser</button>
         </div>
 
         <!-- Liste des demandes -->
         <div class="demandes-list" id="demandes-list">
             <div th:each="demande : ${demandes}" class="demande-card" 
+                 th:data-nom="${demande.demandeur.nom} + ' ' + ${demande.demandeur.prenom}"
                  th:data-matricule="${demande.demandeur.matricule}" 
                  th:data-role="${demande.demandeur.role}">
                 <div class="demande-info">
@@ -260,23 +247,23 @@
                                           (demande.statut.name() == 'EN_ATTENTE_DIRECTEUR' ? ' status-pending' : ''))}">
                     </div>
 
-                    <!-- Bouton PDF -->
-                       <a th:if="${demande.demandeur.role == 'RH'}"
-       th:href="@{/personnel/demande/{id}/fiche-pdf(id=${demande.id})}" 
-       class="pdf-btn" 
-       title="Télécharger PDF">
-        <i class="fa fa-file-pdf"></i>
-    </a>
-    <!-- Bouton Titre de congé -->
-<a th:if="${(demande.statut.name() == 'APPROUVEE_RH' or demande.statut.name() == 'APPROUVEE_DIRECTEUR') and demande.demandeur.role == 'RH'}"
+                    <!-- Bouton PDF (toujours pour Responsable RH = role RESPONSABLE + departement.id == 1) -->
+<a th:if="${demande.demandeur.role == 'RESPONSABLE' and demande.demandeur.departement.id == 1}"
+   th:href="@{/personnel/demande/{id}/fiche-pdf(id=${demande.id})}" 
+   class="pdf-btn" 
+   title="Télécharger Demande de congé">
+    <i class="fa fa-file-pdf"></i>
+</a>
+
+<!-- Bouton Titre de congé (seulement si approuvée par directeur ET demandeur = Responsable RH) -->
+<a th:if="${demande.statut.name() == 'APPROUVEE_DIRECTEUR' 
+           and demande.demandeur.role == 'RESPONSABLE' 
+           and demande.demandeur.departement.id == 1}"
    th:href="@{/rh/demande/{id}/titre-conge(id=${demande.id})}"
    class="pdf-btn"
    title="Télécharger Titre de congé">
     <i class="fa fa-file-alt"></i>
 </a>
-
-
-
 
                 </div>
             </div>
@@ -286,19 +273,25 @@
 
 <script>
     // Filtrage dynamique
+    const filterNom = document.getElementById('filter-nom');
     const filterMatricule = document.getElementById('filter-matricule');
     const filterRole = document.getElementById('filter-role');
+    const resetBtn = document.getElementById('reset-filters');
     const demandesList = document.getElementById('demandes-list');
 
     function filterDemandes() {
+        const nomVal = filterNom.value.toLowerCase();
         const matriculeVal = filterMatricule.value.toLowerCase();
         const roleVal = filterRole.value;
 
         Array.from(demandesList.children).forEach(card => {
-            const matricule = card.dataset.matricule.toLowerCase();
+            const nom = card.dataset.nom.toLowerCase();
+            const matricule = (card.dataset.matricule || "").toLowerCase();
             const role = card.dataset.role;
 
-            if (matricule.includes(matriculeVal) && (roleVal === '' || role === roleVal)) {
+            if (nom.includes(nomVal) &&
+                matricule.includes(matriculeVal) &&
+                (roleVal === '' || role === roleVal)) {
                 card.style.display = 'flex';
             } else {
                 card.style.display = 'none';
@@ -306,8 +299,19 @@
         });
     }
 
+    filterNom.addEventListener('input', filterDemandes);
     filterMatricule.addEventListener('input', filterDemandes);
     filterRole.addEventListener('change', filterDemandes);
+
+    // Réinitialiser les filtres
+    resetBtn.addEventListener('click', () => {
+        filterNom.value = '';
+        filterMatricule.value = '';
+        filterRole.value = '';
+        Array.from(demandesList.children).forEach(card => {
+            card.style.display = 'flex';
+        });
+    });
 
     // Thème
     const toggleBtn = document.getElementById('theme-toggle');

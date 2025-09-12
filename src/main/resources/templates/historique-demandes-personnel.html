@@ -344,8 +344,13 @@ justify-content: flex-start;    padding: 0 20px;
                     au <span th:text="${#temporals.format(demande.dateFin, 'dd/MM/yyyy')}">10/08/2025</span>
                     — <span th:text="${demande.duree}">10</span> jours
                 </p>
-                <p>Soumise le : <span th:text="${demande.dateSoumissionFormatee}"></span></p>
-            </div>
+<p>Soumise le : <span th:text="${demande.dateSoumissionFormatee}"></span></p>
+
+<!-- Affichage du validateur si c'est un intérimaire -->
+<p th:if="${demande.interimaire != null}">
+    Validée par intérimaire :
+    <strong th:text="${demande.interimaire.nom + ' ' + demande.interimaire.prenom}">Nom Prénom</strong>
+</p>            </div>
 
             <div class="demande-carte" th:if="${#lists.isEmpty(demandes)}">
                 <p>Aucune demande historique disponible.</p>
@@ -353,29 +358,50 @@ justify-content: flex-start;    padding: 0 20px;
         </div>
 
         <!-- Pagination -->
+<!-- Pagination -->
 <div class="pagination" style="margin-top: 30px; text-align: center;">
     <ul style="list-style: none; display: inline-flex; gap: 8px; padding: 0;">
+
+        <!-- Bouton Précédent -->
         <li th:if="${currentPage > 0}">
             <a th:href="@{/responsable/historique-demandes-personnel(page=${currentPage - 1}, matricule=${matricule})}"
                style="padding: 6px 12px; border: 1px solid #0074C7; color: #0074C7; text-decoration: none; border-radius: 4px;">
-               Précédent
+                Précédent
             </a>
         </li>
-        <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+
+        <!-- Première page + "..." -->
+        <li th:if="${currentPage > 2}">
+            <a th:href="@{/responsable/historique-demandes-personnel(page=0, matricule=${matricule})}"
+               style="padding: 6px 12px; border: 1px solid #0074C7; color: #0074C7; text-decoration: none; border-radius: 4px;">
+                1
+            </a>
+        </li>
+       
+
+        <!-- Pages autour de la page courante -->
+        <li th:each="i : ${#numbers.sequence(currentPage-1, currentPage+1)}"
+            th:if="${i >= 0 and i < totalPages}">
             <a th:href="@{/responsable/historique-demandes-personnel(page=${i}, matricule=${matricule})}"
                th:text="${i + 1}"
                th:classappend="${i == currentPage} ? ' active-page'"
                style="padding: 6px 12px; border: 1px solid #0074C7; color: #0074C7; text-decoration: none; border-radius: 4px;">
             </a>
         </li>
+
+
+       
+
+        <!-- Bouton Suivant -->
         <li th:if="${currentPage < totalPages - 1}">
             <a th:href="@{/responsable/historique-demandes-personnel(page=${currentPage + 1}, matricule=${matricule})}"
                style="padding: 6px 12px; border: 1px solid #0074C7; color: #0074C7; text-decoration: none; border-radius: 4px;">
-               Suivant
+                Suivant
             </a>
         </li>
     </ul>
 </div>
+
 
 
     </div>

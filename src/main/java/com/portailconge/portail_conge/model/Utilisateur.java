@@ -1,8 +1,8 @@
 package com.portailconge.portail_conge.model;
 
-import java.time.LocalDate;
-
 import jakarta.persistence.*;
+import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "utilisateur")
@@ -11,11 +11,68 @@ public class Utilisateur {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
     @Lob
     @Column(name = "photo", columnDefinition = "LONGBLOB")
     private byte[] photo;
 
-    // getters et setters pour photo
+    private String photoUrl;
+    private String signatureImagePath;
+    private Boolean responsableRh = false;
+
+    private String matricule;
+    private String nom;
+    private String prenom;
+
+    @Column(unique = true)
+    private String email;
+
+    private String telephone;
+
+    @Column(name = "mot_de_passe")
+    private String motDePasse;
+
+    private String cin;
+    private Integer soldeConge;
+
+    @ManyToOne
+    @JoinColumn(name = "departement_id")
+    private Departement departement;
+
+    private String role;
+
+    // ===== Relations avec d'autres utilisateurs =====
+    @ManyToOne
+    @JoinColumn(name = "interimaire_id")
+    private Utilisateur interimaire; // utilisateur intérimaire
+
+    private LocalDate debutInterim;
+    private LocalDate finInterim;
+
+    // ===== Relations avec les demandes de congé =====
+    @OneToMany(mappedBy = "demandeur", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<DemandeConge> demandesConge;
+
+    @OneToMany(mappedBy = "responsable")
+    private List<DemandeConge> demandesResponsable;
+
+    @OneToMany(mappedBy = "interimaire")
+    private List<DemandeConge> demandesInterimaire;
+
+    // ===== Relations avec le personnel (si tu as une table Personnel) =====
+    @OneToMany(mappedBy = "utilisateur", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Personnel> personnels;
+
+    // ===== Getters et Setters =====
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public byte[] getPhoto() {
         return photo;
     }
@@ -24,47 +81,12 @@ public class Utilisateur {
         this.photo = photo;
     }
 
-    private String signatureImagePath;
-    private Boolean responsableRh = false; // false par défaut
-
-    public Boolean getResponsableRh() {
-        return responsableRh;
+    public String getPhotoUrl() {
+        return photoUrl;
     }
 
-    public void setResponsableRh(Boolean responsableRh) {
-        this.responsableRh = responsableRh;
-    }
-
-    @ManyToOne
-    @JoinColumn(name = "interimaire_id")
-    private Utilisateur interimaire; // L’utilisateur qui est intérimaire
-
-    private LocalDate debutInterim;
-    private LocalDate finInterim;
-
-    // ===== Getters et setters =====
-    public Utilisateur getInterimaire() {
-        return interimaire;
-    }
-
-    public void setInterimaire(Utilisateur interimaire) {
-        this.interimaire = interimaire;
-    }
-
-    public LocalDate getDebutInterim() {
-        return debutInterim;
-    }
-
-    public void setDebutInterim(LocalDate debutInterim) {
-        this.debutInterim = debutInterim;
-    }
-
-    public LocalDate getFinInterim() {
-        return finInterim;
-    }
-
-    public void setFinInterim(LocalDate finInterim) {
-        this.finInterim = finInterim;
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
     }
 
     public String getSignatureImagePath() {
@@ -75,44 +97,12 @@ public class Utilisateur {
         this.signatureImagePath = signatureImagePath;
     }
 
-    private String photoUrl;
-    private String matricule;
-    private String nom;
-    private String prenom;
-    @Column(unique = true)
-    private String email;
-
-    private String telephone;
-
-    @Column(name = "mot_de_passe")
-    private String motDePasse;
-
-    private String cin;
-
-    private Integer soldeConge;
-
-    @ManyToOne
-    @JoinColumn(name = "departement_id")
-    private Departement departement;
-
-    private String role;
-
-    // Getters et setters
-
-    public String getPhotoUrl() {
-        return photoUrl;
+    public Boolean getResponsableRh() {
+        return responsableRh;
     }
 
-    public void setPhotoUrl(String photoUrl) {
-        this.photoUrl = photoUrl;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
+    public void setResponsableRh(Boolean responsableRh) {
+        this.responsableRh = responsableRh;
     }
 
     public String getMatricule() {
@@ -195,6 +185,63 @@ public class Utilisateur {
         this.role = role;
     }
 
+    public Utilisateur getInterimaire() {
+        return interimaire;
+    }
+
+    public void setInterimaire(Utilisateur interimaire) {
+        this.interimaire = interimaire;
+    }
+
+    public LocalDate getDebutInterim() {
+        return debutInterim;
+    }
+
+    public void setDebutInterim(LocalDate debutInterim) {
+        this.debutInterim = debutInterim;
+    }
+
+    public LocalDate getFinInterim() {
+        return finInterim;
+    }
+
+    public void setFinInterim(LocalDate finInterim) {
+        this.finInterim = finInterim;
+    }
+
+    public List<DemandeConge> getDemandesConge() {
+        return demandesConge;
+    }
+
+    public void setDemandesConge(List<DemandeConge> demandesConge) {
+        this.demandesConge = demandesConge;
+    }
+
+    public List<DemandeConge> getDemandesResponsable() {
+        return demandesResponsable;
+    }
+
+    public void setDemandesResponsable(List<DemandeConge> demandesResponsable) {
+        this.demandesResponsable = demandesResponsable;
+    }
+
+    public List<DemandeConge> getDemandesInterimaire() {
+        return demandesInterimaire;
+    }
+
+    public void setDemandesInterimaire(List<DemandeConge> demandesInterimaire) {
+        this.demandesInterimaire = demandesInterimaire;
+    }
+
+    public List<Personnel> getPersonnels() {
+        return personnels;
+    }
+
+    public void setPersonnels(List<Personnel> personnels) {
+        this.personnels = personnels;
+    }
+
+    // ===== Enum pour les rôles =====
     public enum Role {
         PERSONNEL, RESPONSABLE, RH, DIRECTEUR, ADMISSION
     }

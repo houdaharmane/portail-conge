@@ -325,22 +325,24 @@
 <div style="display: flex; gap: 20px; height: 500px;">
   <div class="request-list" id="requestList" style="flex: 1; overflow-y: auto;">
     <div 
-      th:each="demande : ${demandes}" 
-      th:id="'demande-'+${demande.id}" 
-      class="request-item"
-      th:data-id="${demande.id}"
-      th:data-nom="${demande.demandeur.nom}"
-      th:data-date-debut="${#temporals.format(demande.dateDebut, 'dd/MM/yyyy')}"
-      th:data-date-fin="${demande.dateFin != null ? #temporals.format(demande.dateFin, 'dd/MM/yyyy') : 'N/A'}"
-      th:data-statut="${demande.statut}"
-      onclick="selectRequest(this)">
-      
-      <strong th:text="${demande.demandeur.nom}">Nom</strong>
-      <br/>
-      <small th:text="|Du ${#temporals.format(demande.dateDebut, 'dd/MM/yyyy')} au ${demande.dateFin != null ? #temporals.format(demande.dateFin, 'dd/MM/yyyy') : '...'}|">
-        Dates
-      </small>
-    </div>
+  th:each="demande : ${demandes}" 
+  th:id="'demande-'+${demande.id}" 
+  class="request-item"
+  th:data-id="${demande.id}"
+  th:data-nom="${demande.demandeur.nom}"
+  th:data-date-debut="${#temporals.format(demande.dateDebut, 'dd/MM/yyyy')}"
+  th:data-date-fin="${demande.dateFin != null ? #temporals.format(demande.dateFin, 'dd/MM/yyyy') : 'N/A'}"
+  th:data-statut="${demande.statut}"
+  th:data-interimaire="${demande.interimaire != null ? demande.interimaire.nom + ' ' + demande.interimaire.prenom : ''}"
+  onclick="selectRequest(this)">
+  
+  <strong th:text="${demande.demandeur.nom}">Nom</strong>
+  <br/>
+  <small th:text="|Du ${#temporals.format(demande.dateDebut, 'dd/MM/yyyy')} au ${demande.dateFin != null ? #temporals.format(demande.dateFin, 'dd/MM/yyyy') : '...'}|">
+    Dates
+  </small>
+</div>
+
     <div th:if="${#lists.isEmpty(demandes)}" style="color: white; text-align: center; margin-top: 20px;">
       Aucune demande à traiter
     </div>
@@ -397,35 +399,39 @@ themeToggleBtn.addEventListener('click', () => {
 
     let currentSelected = null;
 
-    function selectRequest(elem) {
-      if(currentSelected) {
-        currentSelected.classList.remove('active');
-      }
-      elem.classList.add('active');
-      currentSelected = elem;
+   function selectRequest(elem) {
+  if(currentSelected) {
+    currentSelected.classList.remove('active');
+  }
+  elem.classList.add('active');
+  currentSelected = elem;
 
-      const demandeId = elem.getAttribute('data-id');
-      const nom = elem.getAttribute('data-nom');
-      const dateDebut = elem.getAttribute('data-date-debut');
-      const dateFin = elem.getAttribute('data-date-fin');
-      const statut = elem.getAttribute('data-statut');
+  const demandeId = elem.getAttribute('data-id');
+  const nom = elem.getAttribute('data-nom');
+  const dateDebut = elem.getAttribute('data-date-debut');
+  const dateFin = elem.getAttribute('data-date-fin');
+  const statut = elem.getAttribute('data-statut');
+  const interimaire = elem.getAttribute('data-interimaire');
 
-      detailsHeader.textContent = "Demande de " + nom;
-      detailsContent.innerHTML = `
-        <p><strong>Date de début:</strong> ${dateDebut}</p>
-        <p><strong>Date de fin:</strong> ${dateFin}</p>
-        <p><strong>Statut:</strong> ${statut}</p>
-      `;
-      actionsContainer.style.display = "flex";
+  detailsHeader.textContent = "Demande de " + nom;
 
-      btnApprove.href = '/approuver/' + demandeId;
-      btnReject.href = '/rejeter/' + demandeId;
-    }
+  let content = `
+    <p><strong>Date de début:</strong> ${dateDebut}</p>
+    <p><strong>Date de fin:</strong> ${dateFin}</p>
+    <p><strong>Statut:</strong> ${statut}</p>
+  `;
 
-    window.onload = function() {
-      const firstRequest = requestList.querySelector('.request-item');
-      if(firstRequest) selectRequest(firstRequest);
-    }
+  if (interimaire && interimaire.trim() !== "") {
+    content += `<p style="color:#0074C7;"><strong>Transférée à l’intérimaire :</strong> ${interimaire}</p>`;
+  }
+
+  detailsContent.innerHTML = content;
+  actionsContainer.style.display = "flex";
+
+  btnApprove.href = '/approuver/' + demandeId;
+  btnReject.href = '/rejeter/' + demandeId;
+}
+
   </script>
 </body>
 </html>

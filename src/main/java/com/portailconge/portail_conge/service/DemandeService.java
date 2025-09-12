@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -26,8 +28,23 @@ public class DemandeService {
         return demandeCongeRepository.findAll(PageRequest.of(page, size));
     }
 
-    public List<DemandeConge> getDemandesApprouveesParResponsable() {
-        return demandeCongeRepository.findByStatut(StatutDemande.APPROUVEE_RESP);
+    public List<DemandeConge> getDemandesPourResponsable(Utilisateur responsable) {
+        // On filtre d'abord les demandes
+        List<DemandeConge> filtered = demandeCongeRepository.findByStatut(StatutDemande.APPROUVEE_RESP)
+                .stream()
+                .filter(d -> d.getDemandeur() != null && d.getDemandeur().getDepartement() != null)
+                .filter(d -> {
+                    int depDemandeurId = d.getDemandeur().getDepartement().getId();
+                    int depResponsableId = responsable.getDepartement().getId();
+                    return depDemandeurId == depResponsableId || depDemandeurId == 1;
+                })
+                .toList(); // immutable list
+
+        // Crée une nouvelle liste mutable pour le tri
+        List<DemandeConge> sortedList = new ArrayList<>(filtered);
+        sortedList.sort(Comparator.comparing(DemandeConge::getDateSoumission).reversed());
+
+        return sortedList;
     }
 
     public List<DemandeConge> getCongesByUtilisateur(Utilisateur utilisateur) {

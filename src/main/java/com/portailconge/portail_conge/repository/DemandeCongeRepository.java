@@ -153,4 +153,54 @@ public interface DemandeCongeRepository extends JpaRepository<DemandeConge, Long
                         @Param("statut") StatutDemande statut,
                         @Param("annee") int annee);
 
+        List<DemandeConge> findByDemandeur_DepartementAndDemandeur_RoleAndStatutIn(
+                        Departement departement,
+                        String role,
+                        List<StatutDemande> statuts);
+
+        List<DemandeConge> findByResponsableAndStatut(Utilisateur responsable, StatutDemande statut);
+
+        // Récupérer les demandes pour lesquelles l'utilisateur est intérimaire et qui
+        // sont en attente
+        List<DemandeConge> findByInterimaireAndStatut(Utilisateur interimaire, StatutDemande statut);
+
+        // Récupérer aussi les demandes déléguées à un intérimaire
+        List<DemandeConge> findByInterimaire(Utilisateur interimaire);
+
+        List<Utilisateur> findByDepartement(Departement departement);
+
+        // Pour récupérer toutes les demandes dont l'utilisateur est responsable
+        List<DemandeConge> findByResponsable(Utilisateur responsable);
+
+        List<DemandeConge> findAllByStatut(String statut);
+
+        List<DemandeConge> findAllByStatut(StatutDemande statut);
+
+        List<DemandeConge> findByStatutAndDemandeurDepartementId(StatutDemande statut, Long depId);
+
+        List<DemandeConge> findByDemandeur_DepartementAndDemandeur_Role(
+                        Departement departement, String role);
+
+        // 1. Pour récupérer les demandes approuvées hors département RH (id = 1)
+        @Query("SELECT d FROM DemandeConge d WHERE d.statut = 'APPROUVEE_RESP' AND d.demandeur.departement.id <> 1")
+        List<DemandeConge> findDemandesApprouveesHorsRH();
+
+        // 2. Pour récupérer toutes les demandes du département RH (id = 1), tous
+        // statuts
+        @Query("SELECT d FROM DemandeConge d WHERE d.demandeur.departement.id = 1")
+        List<DemandeConge> findDemandesDuDepartementRH();
+
+        @Query("SELECT d FROM DemandeConge d " +
+                        "WHERE (d.statut = 'APPROUVEE_RESPONSABLE') " +
+                        "   OR (d.statut = 'EN_ATTENTE_RESPONSABLE' AND d.demandeur.departement.id = 1)")
+        List<DemandeConge> findDemandesApprouveesEtEnAttenteRH();
+
+        // Demandes approuvées par d'autres responsables (hors RH)
+        @Query("SELECT d FROM DemandeConge d WHERE d.statut = 'APPROUVEE_RH' AND d.demandeur.role != 'RH'")
+        List<DemandeConge> findDemandesApprouveesAutresResponsables();
+
+        // Demandes en attente pour responsables, seulement pour le département 1
+        @Query("SELECT d FROM DemandeConge d WHERE d.statut = 'EN_ATTENTE' AND d.demandeur.departement.id = 1")
+        List<DemandeConge> findDemandesEnAttenteResponsableDepartement1();
+
 }

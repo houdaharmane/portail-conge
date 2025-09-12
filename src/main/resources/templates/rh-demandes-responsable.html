@@ -33,6 +33,7 @@
            height: 100vh;
            background: var(--bg-color);
            color: var(--text-color);
+           overflow: hidden;
        }
 
        /* Sidebar */
@@ -81,25 +82,33 @@
            border-left: 4px solid #fff;
        }
 
-       /* Main container */
-       .main-container {
-           flex: 1;
-           display: flex;
-           flex-direction: column;
-           overflow-y: auto;
-       }
+     .main-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; 
+}
 
-       /* Header */
-       .header {
-           height: 60px;
-           background-color: var(--header-bg);
-           display: flex;
-           align-items: center;
-           justify-content: space-between;
-           padding: 0 20px;
-           border-bottom: 1px solid #ccc;
-           box-shadow: 0 2px 8px #e9953d11;
-       }
+.header {
+    position: sticky; /* ou fixed si tu veux collé à toute la fenêtre */
+    top: 0;
+    z-index: 1000;
+    flex-shrink: 0;
+    height: 60px;
+    background-color: var(--header-bg);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    border-bottom: 1px solid #ccc;
+    box-shadow: 0 2px 8px #e9953d11;
+}
+
+.main-content {
+    flex: 1;       
+    overflow-y: auto;  
+}
+
        .header a {
            color: #0074C7;
            text-decoration: none;
@@ -285,22 +294,23 @@
     const cards = document.querySelectorAll('.card');
     const btnSearch = document.getElementById('btnSearch');
 
-    function filterCards() {
-        const search = searchInput.value.toLowerCase();
-        const dep = filterDepartement.value.toLowerCase();
+   function filterCards() {
+    const search = searchInput.value.toLowerCase().trim();
+    const dep = filterDepartement.value.toLowerCase().trim();
 
-        cards.forEach(card => {
-            const matricule = card.dataset.matricule?.toLowerCase() || "";
-            const nom = card.dataset.nom?.toLowerCase() || "";
-            const prenom = card.dataset.prenom?.toLowerCase() || "";
-            const departement = card.dataset.departement?.toLowerCase() || "";
+    cards.forEach(card => {
+        const matricule = (card.dataset.matricule || "").toLowerCase();
+        const nom = (card.dataset.nom || "").toLowerCase();
+        const prenom = (card.dataset.prenom || "").toLowerCase();
+        const departement = (card.dataset.departement || "").toLowerCase().trim();
 
-            const matchSearch = matricule.includes(search) || nom.includes(search) || prenom.includes(search);
-            const matchDep = dep === "" || departement === dep;
+        const matchSearch = matricule.includes(search) || nom.includes(search) || prenom.includes(search);
+        const matchDep = dep === "" || departement === dep; // comparaison normalisée
 
-            card.style.display = (matchSearch && matchDep) ? "flex" : "none";
-        });
-    }
+        card.style.display = (matchSearch && matchDep) ? "flex" : "none";
+    });
+}
+
 
     // Événements
     searchInput.addEventListener('input', filterCards);
